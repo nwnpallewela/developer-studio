@@ -105,6 +105,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.Directi
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.DirectionXQueryMediatorAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.DirectionXSLTMediatorAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.export.EsbModelExportAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.ESBBreakpointAction;
 
 /**
  * @generated
@@ -316,6 +317,7 @@ public class DiagramEditorContextMenuProvider extends DiagramContextMenuProvider
 									contextAction = contextActions.get(contextObj.eClass().getInstanceClass());
 									addBranchContextAction = addBranchContextActions.get(contextObj.eClass()
 											.getInstanceClass());
+									menu.appendToGroup("editGroup", new ESBBreakpointAction(part));
 								}
 
 								if (null != contextAction) {
@@ -324,7 +326,9 @@ public class DiagramEditorContextMenuProvider extends DiagramContextMenuProvider
 								if (null != addBranchContextAction) {
 									menu.appendToGroup("editGroup", addBranchContextAction);
 								}
+								
 							}
+							
 							//appendToGroupDirection(menu);
 						}
 					});
