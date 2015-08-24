@@ -8,44 +8,29 @@ import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.MediatorImpl;
 
-public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
-	
+public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public SequenceBreakpointBuilder() {
-		this.Type = ESBDebuggerConstants.SEQUENCE;
+	public APIBreakpointBuilder() {
+		this.Type = ESBDebuggerConstants.API;
 	}
 
 	@Override
 	public IBreakpoint getESBBreakpoint(TreeIterator<EObject> treeIterator,
-			IResource resource, EObject selection) throws CoreException {
+			IResource resource,EObject selection) throws CoreException {
 		int lineNumber = -1;
-		String message = MEDIATION_COMPONENT_ATTRIBUTE + Type;
+		String message = "";
 		EObject next = treeIterator.next();
-
-		System.out.println("**************" + next.toString());
-
 		while (treeIterator.hasNext()) {
 			next = treeIterator.next();
 			if (next instanceof MediatorImpl) {
 				System.out.println(next.toString());
 			}
 		}
-		if (resource != null) {
-			boolean breakpointExists = deteleExistingBreakpoint(resource,
-					message, lineNumber);
-			if (breakpointExists) {
-				message = CLEAR_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR
-						+ message;
-			} else {
-				message = SET_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR
-						+ message;
-			}
-		}
+		
+		deteleExistingBreakpoint(resource, message, lineNumber);
 
 		ESBBreakpoint esbBreakpoint = new ESBBreakpoint(resource, lineNumber,
 				message);
-		
-		System.out.println("Breakpoint model Identifier : "+esbBreakpoint.getModelIdentifier());
 		return esbBreakpoint;
 	}
 

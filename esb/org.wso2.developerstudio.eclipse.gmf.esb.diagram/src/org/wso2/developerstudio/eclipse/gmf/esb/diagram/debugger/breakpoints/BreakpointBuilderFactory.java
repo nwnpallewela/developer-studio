@@ -12,11 +12,11 @@ public class BreakpointBuilderFactory {
 		case ESBDebuggerConstants.SEQUENCE:
 			return new SequenceBreakpointBuilder();
 		case ESBDebuggerConstants.TEMPLATE:
-			return new ProxyBreakpointBuilder();
+			return new TemplateBreakpointBuilder();
 		case ESBDebuggerConstants.API:
-			return new ProxyBreakpointBuilder();
+			return new APIBreakpointBuilder();
 		case ESBDebuggerConstants.CONNECTOR:
-			return new ProxyBreakpointBuilder();
+			return new ConnectorBreakpointBuilder();
 		default:
 			return null;
 		}

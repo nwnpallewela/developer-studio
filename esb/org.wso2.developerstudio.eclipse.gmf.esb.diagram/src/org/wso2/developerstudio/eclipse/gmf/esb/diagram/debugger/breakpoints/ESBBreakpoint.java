@@ -16,76 +16,61 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints;
 
-import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.eclipse.core.resources.IMarker;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 
-public class ESBBreakpoint implements IBreakpoint{
+public class ESBBreakpoint extends Breakpoint{
 
-	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public ESBBreakpoint() {
 	}
 
-	@Override
-	public void delete() throws CoreException {
-		// TODO Auto-generated method stub
-		
+
+	public ESBBreakpoint(final IResource resource, final int lineNumber , final String message) throws CoreException {
+		this(resource, lineNumber,message, true);
 	}
 
-	@Override
-	public IMarker getMarker() {
-		// TODO Auto-generated method stub
-		return null;
+	protected ESBBreakpoint(final IResource resource, final int lineNumber,final String message, final boolean persistent) throws CoreException {
+		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				IMarker marker = resource.createMarker("org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ESBBreakpointMarker");
+				setMarker(marker);
+				marker.setAttribute(IBreakpoint.ENABLED, true);
+				marker.setAttribute(IBreakpoint.PERSISTED, true);
+				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
+				marker.setAttribute(IMarker.MESSAGE,message );
+			}
+		};
+		run(getMarkerRule(resource), runnable);
 	}
-
 	@Override
 	public String getModelIdentifier() {
-		// TODO Auto-generated method stub
+		return ESBDebugModelPresentation.ID;
+	}
+
+
+	public int getLineNumber() throws CoreException {
+		IMarker m = getMarker();
+		if (m != null) {
+			return m.getAttribute(IMarker.LINE_NUMBER, -1);
+		}
+		return -1;
+	}
+
+
+	public String getMessage() {
+		IMarker m = getMarker();
+		if (m != null) {
+			return m.getAttribute(IMarker.MESSAGE, null);
+		}
 		return null;
-	}
-
-	@Override
-	public boolean isEnabled() throws CoreException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isPersisted() throws CoreException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isRegistered() throws CoreException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void setEnabled(boolean arg0) throws CoreException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setMarker(IMarker arg0) throws CoreException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setPersisted(boolean arg0) throws CoreException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setRegistered(boolean arg0) throws CoreException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
