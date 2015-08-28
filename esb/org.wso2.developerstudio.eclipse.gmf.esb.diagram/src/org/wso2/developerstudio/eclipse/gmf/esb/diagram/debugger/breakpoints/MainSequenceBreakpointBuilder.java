@@ -23,36 +23,51 @@ import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
-import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
 /**
- * This class builds ESB breakpoints related to Sequences.
+ * This class builds ESB breakpoints related to Main Sequence.
  */
-public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
+public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public SequenceBreakpointBuilder() {
+	private static final String OUT_SEQ_POSITION = "1 ";
+	private static final String In_SEQ_POSITION = "0 ";
+
+	public MainSequenceBreakpointBuilder() {
 		this.Type = ESBDebuggerConstants.SEQUENCE;
 	}
 
 	@Override
 	public IBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection,
-			boolean selectedMediatorReversed) throws CoreException {
+			IResource resource, EObject selection, boolean reversed)
+			throws CoreException {
 
 		int lineNumber = -1;
 		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
 		EObject next = treeIterator.next();
 
-		SequencesImpl sequence = (SequencesImpl) next;
+		ProxyServiceImpl mainSequence = (ProxyServiceImpl) next;
 
 		String message = getInitialMessage();
+
 		message = addSequenceTypeAttribute(message);
 
-		message = addSequenceKeyAttribute(message, sequence);
+		message = addSequenceKeyAttribute(message);
 
-		String position = getMediatorPosition(sequence.getOutputConnector(),
-				selection);
-		message = addMediatorPositionAttribute(message, position);
+		if (reversed) {
+			String position = OUT_SEQ_POSITION
+					+ getMediatorPosition(
+							mainSequence.getOutSequenceOutputConnector(),
+							selection);
+
+			message = addMediatorPositionAttribute(message, position);
+		} else {
+
+			String position = In_SEQ_POSITION
+					+ getMediatorPosition(mainSequence.getOutputConnector(),
+							selection);
+			message = addMediatorPositionAttribute(message, position);
+		}
 
 		boolean breakpointExists = deteleExistingBreakpoint(resource, message,
 				lineNumber);
@@ -64,16 +79,13 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		return esbBreakpoint;
 	}
 
-	private String addSequenceKeyAttribute(String message,
-			SequencesImpl sequence) {
-
+	private String addSequenceKeyAttribute(String message) {
 		return message + ATTRIBUTE_SEPERATOR
 				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
-				+ sequence.getName();
+				+ ESBDebuggerConstants.MAIN;
 	}
 
 	private String addSequenceTypeAttribute(String message) {
-
 		return message + ATTRIBUTE_SEPERATOR
 				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
 				+ ESBDebuggerConstants.NAMED;

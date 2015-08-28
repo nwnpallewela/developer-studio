@@ -41,7 +41,7 @@ public interface Mediator extends EsbElement {
 	 * @generated
 	 */
 	boolean isReverse();
-
+	
 	/**
 	 * Sets the value of the '{@link org.wso2.developerstudio.eclipse.gmf.esb.Mediator#isReverse <em>Reverse</em>}' attribute.
 	 * <!-- begin-user-doc -->

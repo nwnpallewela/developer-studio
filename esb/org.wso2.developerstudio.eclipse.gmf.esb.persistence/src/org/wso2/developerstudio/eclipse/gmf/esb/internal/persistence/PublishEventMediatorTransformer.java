@@ -58,7 +58,7 @@ public class PublishEventMediatorTransformer extends AbstractEsbNodeTransformer 
 		try {
 			info.getParentSequence().addChild(createPublishEventMediator(visualPublishEvent));
 			// Transform the publishEvent mediator output data flow path.
-			doTransform(info, visualPublishEvent.getOutputconnector());
+			doTransform(info, visualPublishEvent.getOutputConnector());
 		} catch (JaxenException e) {
 			throw new TransformerException(e);
 		}
@@ -142,7 +142,7 @@ public class PublishEventMediatorTransformer extends AbstractEsbNodeTransformer 
 
 		try {
 			sequence.addChild(createPublishEventMediator(visualPublishEvent));
-			doTransformWithinSequence(info, visualPublishEvent.getOutputconnector().getOutgoingLink(), sequence);
+			doTransformWithinSequence(info, visualPublishEvent.getOutputConnector().getOutgoingLink(), sequence);
 		} catch (JaxenException e) {
 			throw new TransformerException(e);
 		}		

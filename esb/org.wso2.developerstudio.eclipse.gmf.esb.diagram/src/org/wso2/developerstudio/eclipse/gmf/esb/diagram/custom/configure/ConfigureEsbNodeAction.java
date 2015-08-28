@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure;
 
 import org.eclipse.emf.edit.domain.EditingDomain;

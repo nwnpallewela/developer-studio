@@ -44,7 +44,7 @@ public class PublishEventMediatorOutputConnectorCreateCommand extends EditElemen
 	 */
 	public boolean canExecute() {
 		PublishEventMediator container = (PublishEventMediator) getElementToEdit();
-		if (container.getOutputconnector() != null) {
+		if (container.getOutputConnector() != null) {
 			return false;
 		}
 		return true;

@@ -18,7 +18,15 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 
-	public static final String ESB_BREAKPOINT_MARKER_TYPE ="org.wso2.developerstudio.eclipse.esb.debugger.ESBLineBreakpointMarker";
+	public static final String COMMAND_LABEL = "Toggle Breakpoint";
+	public static final String COMMAND_TOOL_TIP = "Set breakpoint for this mediator";
+	public static final String ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.action";
+	public static final String EMPTY_SELECTION = "Empty selection.";
+
+	public static final String TEMPLATE_SEQUENCE = "template_sequence";
+	public static final String MAIN = "main";
+	public static final String MAIN_SEQUENCE = "main_sequence";
+	public static final String ESB_BREAKPOINT_MARKER_TYPE = "org.wso2.developerstudio.eclipse.esb.debugger.ESBLineBreakpointMarker";
 	public static final String AXIS2_PROPERTIES = "axis2-properties";
 	public static final String COMMAND_RESPONCE = "command-responce";
 	public static final String EVENT = "event";
@@ -63,5 +71,5 @@ public class ESBDebuggerConstants {
 	public static final String URI_MAPPING = "url-mapping";
 	public static final String API_INSEQ = "api_inseq";
 	public static final String API_OUTSEQ = "api_outseq";
-	
+
 }

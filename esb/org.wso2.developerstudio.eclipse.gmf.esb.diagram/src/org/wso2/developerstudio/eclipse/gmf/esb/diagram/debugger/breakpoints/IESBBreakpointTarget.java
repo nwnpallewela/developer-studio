@@ -32,8 +32,6 @@ public interface IESBBreakpointTarget {
 	void toggleDiagramBreakpoints(EditPart selectedEP, EObject selectedObj)
 			throws CoreException;
 
-	boolean canToggleDiagramBreakpoints(EditPart selectedEP,
-			EObject selectedObj);
+	boolean canToggleDiagramBreakpoints(EditPart selectedEP, EObject selectedObj);
 
 }
-

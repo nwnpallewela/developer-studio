@@ -83,14 +83,14 @@ public interface PublishEventMediator extends Mediator {
 	 * @model containment="true"
 	 * @generated
 	 */
-	PublishEventMediatorOutputConnector getOutputconnector();
+	PublishEventMediatorOutputConnector getOutputConnector();
 
 	/**
 	 * Sets the value of the '{@link org.wso2.developerstudio.eclipse.gmf.esb.PublishEventMediator#getOutputconnector <em>Outputconnector</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Outputconnector</em>' containment reference.
-	 * @see #getOutputconnector()
+	 * @see #getOutputConnector()
 	 * @generated
 	 */
 	void setOutputconnector(PublishEventMediatorOutputConnector value);

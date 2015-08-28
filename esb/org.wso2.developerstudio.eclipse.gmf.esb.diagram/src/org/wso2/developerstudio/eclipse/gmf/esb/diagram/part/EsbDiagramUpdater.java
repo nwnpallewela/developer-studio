@@ -2639,7 +2639,7 @@ public class EsbDiagramUpdater {
 			}
 		}
 		{
-			PublishEventMediatorOutputConnector childElement = modelElement.getOutputconnector();
+			PublishEventMediatorOutputConnector childElement = modelElement.getOutputConnector();
 			int visualID = EsbVisualIDRegistry.getNodeVisualID(view, childElement);
 			if (visualID == PublishEventMediatorOutputConnectorEditPart.VISUAL_ID) {
 				result.add(new EsbNodeDescriptor(childElement, visualID));

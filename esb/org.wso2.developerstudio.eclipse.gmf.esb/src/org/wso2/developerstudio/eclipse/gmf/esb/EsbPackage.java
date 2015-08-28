@@ -27472,7 +27472,7 @@ int FILTER_MEDIATOR_FEATURE_COUNT = MEDIATOR_FEATURE_COUNT + 9;
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference '<em>Outputconnector</em>'.
-	 * @see org.wso2.developerstudio.eclipse.gmf.esb.PublishEventMediator#getOutputconnector()
+	 * @see org.wso2.developerstudio.eclipse.gmf.esb.PublishEventMediator#getOutputConnector()
 	 * @see #getPublishEventMediator()
 	 * @generated
 	 */

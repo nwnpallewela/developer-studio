@@ -21,101 +21,88 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeNodeEditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractInputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractOutputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.EsbLinkEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
-import org.wso2.developerstudio.eclipse.gmf.esb.impl.MediatorImpl;
-import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
 public class ESBBreakpointTarget implements IESBBreakpointTarget {
 
 	BreakpointBuilderFactory breakpointBuilderFactory;
 
+	/**
+	 * This method checks whether selected part can be assign as a line
+	 * breakpoint.
+	 */
 	@Override
 	public boolean canToggleLineBreakpoints(IWorkbenchPart part,
 			ISelection selection) {
 		return false;
 	}
 
+	/**
+	 * This method checks whether selected part can be assign as a diagram
+	 * breakpoint.
+	 */
 	@Override
 	public boolean canToggleDiagramBreakpoints(EditPart part, EObject selection) {
 		return true;
 	}
 
+	/**
+	 * This method performs the source view breakpoint insertion action
+	 */
 	@Override
-	public void toggleLineBreakpoints(IWorkbenchPart part, ISelection selection)
-			throws CoreException {
-		// GraphicalEditor textEditor = getEditor(part);
-		if (part != null) {
-			/*
-			 * IResource resource = (IResource)
-			 * textEditor.getEditorInput().getAdapter(IResource.class);
-			 * ITextSelection textSelection = (ITextSelection) selection; int
-			 * lineNumber = textSelection.getStartLine();
-			 */
-			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-					.getBreakpointManager()
-					.getBreakpoints(ESBDebugModelPresentation.ID);
-			for (int i = 0; i < breakpoints.length; i++) {
-				// IBreakpoint breakpoint = breakpoints[i];
-				/*
-				 * if (resource.equals(breakpoint.getMarker().getResource())) {
-				 * if (((ILineBreakpoint) breakpoint).getLineNumber() ==
-				 * (lineNumber + 1)) { // existing breakpoint; delete
-				 * breakpoint.delete(); return; } }
-				 */
-			}
-
-			// new breakpoint; create
-			ESBBreakpoint lineBreakpoint = new ESBBreakpoint();
-			DebugPlugin.getDefault().getBreakpointManager()
-					.addBreakpoint(lineBreakpoint);
-		}
+	public void toggleLineBreakpoints(IWorkbenchPart part, ISelection selection) {
 	}
 
+	/**
+	 * This method performs the graphical view breakpoint insertion action
+	 */
 	@Override
 	public void toggleDiagramBreakpoints(EditPart part, EObject selection)
 			throws CoreException {
-		
-		EditPart editPart = part;
-		IProject project = EditorUtils.getActiveProject();
+
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
-		if (activeEditor instanceof EsbMultiPageEditor) {
+
+		if (activeEditor instanceof EsbMultiPageEditor && part instanceof AbstractMediator) {
+
+			boolean partReversed = ((AbstractMediator) part).reversed;
+			IProject project = EditorUtils.getActiveProject();
 			Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
 					.getDiagram();
 			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
 			EsbServer esbServer = esbDiagram.getServer();
 			esbServer.setLockmode(true);
+
 			if (breakpointBuilderFactory == null) {
 				breakpointBuilderFactory = new BreakpointBuilderFactory();
 			}
+
 			IESBBreakpointBuilder breakpointBuilder = breakpointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType().getName());
-			TreeIterator<EObject> treeIterator = esbServer.eAllContents();
-			IResource resource = (IResource) project.getAdapter(IResource.class);
-			IBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
-					treeIterator, resource,selection);
-			System.out.println(DebugPlugin.getDefault().getBreakpointManager().hasBreakpoints());
-			DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(breakpoint);
-			System.out.println(breakpoint.isPersisted()+" : "+breakpoint.isRegistered());
-			System.out.println(DebugPlugin.getDefault().getBreakpointManager().hasBreakpoints());
-			
+			if (breakpointBuilder != null) {
+				IResource resource = (IResource) project
+						.getAdapter(IResource.class);
+
+				IBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
+						esbServer, resource, selection, partReversed);
+
+				DebugPlugin.getDefault().getBreakpointManager()
+						.addBreakpoint(breakpoint);
+			}
+			/*
+			 * System.out.println(breakpoint.isPersisted() + " : " +
+			 * breakpoint.isRegistered());
+			 */
+
 		}
-
 	}
-
 }

@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
+import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.MediatorImpl;
 
@@ -15,17 +16,11 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	}
 
 	@Override
-	public IBreakpoint getESBBreakpoint(TreeIterator<EObject> treeIterator,
-			IResource resource,EObject selection) throws CoreException {
+	public IBreakpoint getESBBreakpoint(EsbServer esbServer,
+			IResource resource, EObject selection,boolean reversed) throws CoreException {
 		int lineNumber = -1;
 		String message = "";
-		EObject next = treeIterator.next();
-		while (treeIterator.hasNext()) {
-			next = treeIterator.next();
-			if (next instanceof MediatorImpl) {
-				System.out.println(next.toString());
-			}
-		}
+		
 		
 		deteleExistingBreakpoint(resource, message, lineNumber);
 

@@ -68,10 +68,10 @@ public class PublishEventMediatorImpl extends MediatorImpl implements PublishEve
 	protected PublishEventMediatorInputConnector inputConnector;
 
 	/**
-	 * The cached value of the '{@link #getOutputconnector() <em>Outputconnector</em>}' containment reference.
+	 * The cached value of the '{@link #getOutputConnector() <em>Outputconnector</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getOutputconnector()
+	 * @see #getOutputConnector()
 	 * @generated
 	 * @ordered
 	 */
@@ -244,7 +244,7 @@ public class PublishEventMediatorImpl extends MediatorImpl implements PublishEve
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public PublishEventMediatorOutputConnector getOutputconnector() {
+	public PublishEventMediatorOutputConnector getOutputConnector() {
 		return outputconnector;
 	}
 
@@ -428,7 +428,7 @@ public class PublishEventMediatorImpl extends MediatorImpl implements PublishEve
 			case EsbPackage.PUBLISH_EVENT_MEDIATOR__INPUT_CONNECTOR:
 				return getInputConnector();
 			case EsbPackage.PUBLISH_EVENT_MEDIATOR__OUTPUTCONNECTOR:
-				return getOutputconnector();
+				return getOutputConnector();
 			case EsbPackage.PUBLISH_EVENT_MEDIATOR__STREAM_NAME:
 				return getStreamName();
 			case EsbPackage.PUBLISH_EVENT_MEDIATOR__STREAM_VERSION:
