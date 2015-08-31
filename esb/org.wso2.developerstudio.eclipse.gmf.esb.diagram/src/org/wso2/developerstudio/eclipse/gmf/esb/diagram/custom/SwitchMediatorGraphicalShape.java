@@ -27,7 +27,7 @@ public class SwitchMediatorGraphicalShape extends RoundedRectangle {
 		layoutThis.makeColumnsEqualWidth = true;
 		this.setLayoutManager(layoutThis);
 		this.setCornerDimensions(new Dimension(1, 1));
-		//this.setFill(false); // dont uncoment this since we need to show the selection color from botom do not repaiint
+		//this.setFill(false); // don't uncomment this since we need to show the selection color from bottom do not repaint
 		this.setOutline(false);
 		this.setBorder(new LineBorder(new Color(null, 224, 224, 224), 2, SWT.BORDER_DASH));
 		createContents();

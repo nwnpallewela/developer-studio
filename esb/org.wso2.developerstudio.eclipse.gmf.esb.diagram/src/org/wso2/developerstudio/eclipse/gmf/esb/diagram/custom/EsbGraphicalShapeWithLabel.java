@@ -35,8 +35,10 @@ import org.eclipse.swt.graphics.FontData;
 public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 
 	public GridData tempConstraintPropertyValueRectangle;
+	private GridData tempConstraintMainImageRectangle;
 	public RoundedRectangle tempPropertyValueRectangle1;
 	private WrappingLabel propertyNameLabel;
+	private RoundedRectangle mainImageRectangle;
 	static int Figure_PreferredWidth = FixedSizedAbstractMediator.FigureWidth;
 	static int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20; //Additional 20 to show the editable label
 	static int Image_PreferredWidth = 75;
@@ -63,7 +65,76 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
         
 		createContents();
 	}
+	
+	public void changeBreakpointHitMediatorIcon(boolean hit){
+		if(hit){
+			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
+	        border.setColor(EditPartDrawingHelper.FigureBreakpointHitColor);
+	        this.setBorder(border);
+		}else{
+			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
+	        border.setColor(EditPartDrawingHelper.FigureNormalColor);
+	        this.setBorder(border);
+		}
+	}
 
+	public void changeBreakpointMediatorIcon(String status) {
+		if (status.equals("BreakpointAdded")) {
+
+			String filePath = getIconPath();
+			filePath = filePath.replace("/ico20", "/ico20debug");
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(filePath, Image_PreferredWidth,
+							Image_PreferredHeight);
+
+			RoundedRectangle mainImageRectangleTemp = new RoundedRectangle();
+			mainImageRectangleTemp.setCornerDimensions(new Dimension(8, 8));
+			mainImageRectangleTemp.setOutline(false);
+			mainImageRectangleTemp.setPreferredSize(new Dimension(
+					Image_PreferredWidth, Image_PreferredHeight));
+			mainImageRectangleTemp.add(iconImageFigure);
+			this.remove(mainImageRectangle);
+			this.add(mainImageRectangleTemp, tempConstraintMainImageRectangle);
+			mainImageRectangle = mainImageRectangleTemp;
+
+			RoundedRectangle propertyValueRectangle1Temp = new RoundedRectangle();
+			propertyValueRectangle1Temp
+					.setCornerDimensions(new Dimension(0, 0));
+			propertyValueRectangle1Temp.setOutline(false);
+			propertyValueRectangle1Temp.setLayoutManager(new StackLayout());
+			this.remove(tempPropertyValueRectangle1);
+			propertyValueRectangle1Temp.add(propertyNameLabel);
+			this.add(propertyValueRectangle1Temp,
+					tempConstraintPropertyValueRectangle);
+			tempPropertyValueRectangle1 = propertyValueRectangle1Temp;
+		} else {
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(getIconPath(), Image_PreferredWidth,
+							Image_PreferredHeight);
+
+			RoundedRectangle mainImageRectangleTemp = new RoundedRectangle();
+			mainImageRectangleTemp.setCornerDimensions(new Dimension(8, 8));
+			mainImageRectangleTemp.setOutline(false);
+			mainImageRectangleTemp.setPreferredSize(new Dimension(
+					Image_PreferredWidth, Image_PreferredHeight));
+			mainImageRectangleTemp.add(iconImageFigure);
+			this.remove(mainImageRectangle);
+			this.add(mainImageRectangleTemp, tempConstraintMainImageRectangle);
+			mainImageRectangle = mainImageRectangleTemp;
+
+			RoundedRectangle propertyValueRectangle1Temp = new RoundedRectangle();
+			propertyValueRectangle1Temp
+					.setCornerDimensions(new Dimension(0, 0));
+			propertyValueRectangle1Temp.setOutline(false);
+			propertyValueRectangle1Temp.setLayoutManager(new StackLayout());
+			this.remove(tempPropertyValueRectangle1);
+			propertyValueRectangle1Temp.add(propertyNameLabel);
+			this.add(propertyValueRectangle1Temp,
+					tempConstraintPropertyValueRectangle);
+			tempPropertyValueRectangle1 = propertyValueRectangle1Temp;
+		}
+
+	}
 	private void createContents() {
 
 		/* main image grid data */
@@ -71,11 +142,11 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		constraintMainImageRectangle.verticalAlignment = GridData.BEGINNING;
 		constraintMainImageRectangle.horizontalAlignment = GridData.CENTER;
 		constraintMainImageRectangle.verticalSpan = 1;
-
+		tempConstraintMainImageRectangle=constraintMainImageRectangle;
 		ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure(getIconPath(),
 				Image_PreferredWidth, Image_PreferredHeight);
 
-		RoundedRectangle mainImageRectangle = new RoundedRectangle();
+		mainImageRectangle = new RoundedRectangle();
 		mainImageRectangle.setCornerDimensions(new Dimension(8, 8));
 		mainImageRectangle.setOutline(false);
 		mainImageRectangle.setPreferredSize(new Dimension(Image_PreferredWidth,

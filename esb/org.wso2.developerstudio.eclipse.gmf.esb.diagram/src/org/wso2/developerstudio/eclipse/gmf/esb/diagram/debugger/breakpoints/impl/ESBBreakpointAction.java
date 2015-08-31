@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
@@ -30,14 +29,20 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
  * A {@link AbstractActionHandler} used to hook-up action for set and clear
  * breakpoints in esb design view editor.
  */
 public class ESBBreakpointAction extends ConfigureEsbNodeAction {
+
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	/**
 	 * Creates a new {@link ESBBreakpointAction} instance.
@@ -61,16 +66,13 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 				.getImageDescriptor(ISharedImages.IMG_ETOOL_PRINT_EDIT_DISABLED));
 	}
 
-	public void init() {
-		super.init();
-	}
-
 	/**
 	 * Utility method for retrieving the currently selected {@link EditPart}.
 	 * 
 	 * @return current selected {@link EditPart} or null if multiple edit parts
 	 *         or no edit parts are selected.
 	 */
+	@Override
 	protected EditPart getSelectedEditPart() {
 		IStructuredSelection selection = getStructuredSelection();
 		if (selection.size() == 1) {
@@ -87,6 +89,7 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 	 * 
 	 * @return editing domain for this action.
 	 */
+	@Override
 	protected TransactionalEditingDomain getEditingDomain() {
 		IWorkbenchPart part = getWorkbenchPart();
 
@@ -110,17 +113,20 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 	 * This method performs the action when click the menu item Toggle
 	 * Breakpoint
 	 */
+	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
 
 		EditPart selectedEP = getSelectedEditPart();
-		Assert.isNotNull(selectedEP, ESBDebuggerConstants.EMPTY_SELECTION);
-		EObject selectedObj = ((View) selectedEP.getModel()).getElement();
-		IESBBreakpointTarget target = new ESBBreakpointTarget();
-		if (target.canToggleDiagramBreakpoints(selectedEP, selectedObj)) {
-			try {
-				target.toggleDiagramBreakpoints(selectedEP, selectedObj);
-			} catch (CoreException e) {
-				e.printStackTrace();
+		if (selectedEP != null && selectedEP instanceof AbstractMediator) {
+			EObject selectedObj = ((View) selectedEP.getModel()).getElement();
+			if (ESBBreakpointTarget.canToggleDiagramBreakpoints(selectedEP,
+					selectedObj)) {
+				try {
+					ESBBreakpointTarget.toggleDiagramBreakpoints(
+							(AbstractMediator) selectedEP, selectedObj);
+				} catch (CoreException e) {
+					log.error("Error while registering the breakpoint", e);
+				}
 			}
 		}
 	}

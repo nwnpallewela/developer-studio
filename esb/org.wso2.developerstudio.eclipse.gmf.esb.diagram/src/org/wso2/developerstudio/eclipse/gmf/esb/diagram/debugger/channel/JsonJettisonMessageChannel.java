@@ -28,7 +28,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.MessageAttribute;
 
 public class JsonJettisonMessageChannel implements IChannelCommunication {
-	
+
 	public static final String COMMAND_KEY = "command";
 
 	@Override
@@ -49,27 +49,43 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	 * 
 	 */
 	@Override
-	public String createBreakpointCommand(String operation, String type, Map<String, String> attributeValues) {
-		
-		MessageAttribute messageModel = DebuggerCommunicationMessageModel.getMessageModel(ESBDebuggerConstants.BREAKPOINT, type);
+	public String createBreakpointCommand(String operation, String type,
+			Map<String, String> attributeValues) {
+
+		MessageAttribute messageModel = DebuggerCommunicationMessageModel
+				.getMessageModel(ESBDebuggerConstants.BREAKPOINT, type);
 		try {
-			return buildMessage(messageModel,attributeValues).toString();
+			return buildMessage(messageModel, attributeValues).toString();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private JSONObject buildMessage(MessageAttribute messageModel, Map<String, String> attributeValues) throws JSONException {
+	private JSONObject buildMessage(MessageAttribute messageModel,
+			Map<String, String> attributeValues) throws JSONException {
 		JSONObject jsonCommand = new JSONObject();
 		Set<String> attributePropertyNames = messageModel.getAttributes();
 		for (String propertyName : attributePropertyNames) {
 			if (messageModel.getAttribute(propertyName) == null) {
 				if (attributeValues.containsKey(propertyName)) {
-					jsonCommand.put(propertyName, attributeValues.get(propertyName));
+					String value = attributeValues.get(propertyName);
+					if (propertyName
+							.equals(ESBDebuggerConstants.MEDIATION_COMPONENT)
+							&& (value.equals(ESBDebuggerConstants.PROXY)||value.equals(ESBDebuggerConstants.API))) {
+						jsonCommand.put(
+								ESBDebuggerConstants.MEDIATION_COMPONENT,
+								ESBDebuggerConstants.SEQUENCE);
+					} else {
+						jsonCommand.put(propertyName, value);
+					}
+
 				}
-			} else{
-				jsonCommand.put(propertyName, buildMessage(messageModel.getAttribute(propertyName),attributeValues));
+			} else {
+				jsonCommand.put(
+						propertyName,
+						buildMessage(messageModel.getAttribute(propertyName),
+								attributeValues));
 			}
 		}
 		return jsonCommand;
@@ -89,18 +105,18 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	}
 
 	private Map<String, String> convertJsonToMap(JSONObject responceMessage) {
-		   Iterator<?> keys = responceMessage.keys();
-		   Map<String, String> message = new LinkedHashMap<>();
-		   String value = "";
-	        while( keys.hasNext() ){
-	            String key = (String)keys.next();
-				try {
-					value = responceMessage.getString(key);
-					message.put(key, value);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} 
-	        }
+		Iterator<?> keys = responceMessage.keys();
+		Map<String, String> message = new LinkedHashMap<>();
+		String value = "";
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			try {
+				value = responceMessage.getString(key);
+				message.put(key, value);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		return message;
 	}
 
@@ -118,9 +134,10 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	@Override
 	public String createGetPropertiesCommand(Map<String, String> attributeValues) {
-		MessageAttribute messageModel = DebuggerCommunicationMessageModel.getPropertyMessageModel(ESBDebuggerConstants.GET_PROPERTY);
+		MessageAttribute messageModel = DebuggerCommunicationMessageModel
+				.getPropertyMessageModel(ESBDebuggerConstants.GET_PROPERTY);
 		try {
-			return buildMessage(messageModel,attributeValues).toString();
+			return buildMessage(messageModel, attributeValues).toString();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

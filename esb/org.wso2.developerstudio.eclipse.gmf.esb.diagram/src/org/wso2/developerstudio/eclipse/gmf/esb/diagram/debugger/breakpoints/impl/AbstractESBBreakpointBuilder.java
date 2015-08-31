@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -74,6 +74,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.URLRewriteMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ValidateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XQueryMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public abstract class AbstractESBBreakpointBuilder implements
@@ -86,17 +87,17 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String KEY_VALUE_SEPERATOR = ":";
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
+	
+	protected String type;
 
-	String Type;
-
-	String addMediatorPositionAttribute(String message, String position) {
+	protected String addMediatorPositionAttribute(String message, String position) {
 
 		return message + ATTRIBUTE_SEPERATOR
 				+ ESBDebuggerConstants.MEDIATOR_POSITION + KEY_VALUE_SEPERATOR
 				+ position;
 	}
 
-	String addBreakpointOperationAttribute(String message,
+	protected String addBreakpointOperationAttribute(String message,
 			boolean breakpointExists) {
 		if (breakpointExists) {
 			return CLEAR_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR + message;
@@ -105,9 +106,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
-	String getInitialMessage() {
+	protected String getInitialMessage() {
 		return ESBDebuggerConstants.MEDIATION_COMPONENT + KEY_VALUE_SEPERATOR
-				+ Type;
+				+ type;
 	}
 
 	/**
@@ -116,46 +117,12 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param instance
 	 * @return
 	 */
-	String getInstanceId(String instance) {
+	protected String getInstanceId(String instance) {
 		int indexOfAt = instance.indexOf(INSTANCE_ID_PREFIX);
 		return instance.substring(indexOfAt + 1,
 				instance.indexOf(INSTANCE_ID_POSTFIX, indexOfAt));
 	}
 
-	/**
-	 * This method deletes the breakpoint in Breakpoint Manager if it is exact
-	 * match for passed breakpoint and returns true.
-	 * 
-	 * @param resource
-	 * @param message
-	 * @param lineNumber
-	 * @return
-	 * @throws CoreException
-	 */
-	boolean deteleExistingBreakpoint(IResource resource, String message,
-			int lineNumber) throws CoreException {
-		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-				.getBreakpointManager().getBreakpoints();
-		for (IBreakpoint breakpoint : breakpoints) {
-			/*
-			 * System.out.println("all breakpoints: " +
-			 * breakpoint.getModelIdentifier());
-			 */
-			if (resource.equals(breakpoint.getMarker().getResource())) {
-				if ((((ESBBreakpoint) breakpoint).getMessage())
-						.equals(SET_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR
-								+ message)) {
-					breakpoint.delete();
-					return true;
-				} else if (((ESBBreakpoint) breakpoint).getLineNumber() == (lineNumber + 1)
-						&& lineNumber != -1) {
-					breakpoint.delete();
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * This method returns mediator position in sequence specified by the
@@ -165,7 +132,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param selection
 	 * @return
 	 */
-	String getMediatorPosition(OutputConnector outConnector, EObject selection) {
+	protected String getMediatorPosition(OutputConnector outConnector, EObject selection) {
 		OutputConnector tempConnector = outConnector;
 		int count = 0;
 		String position = "";
@@ -191,7 +158,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param selection
 	 * @return
 	 */
-	String getMediatorPositionInFaultSeq(EList<EsbElement> eList,
+	protected String getMediatorPositionInFaultSeq(EList<EsbElement> eList,
 			EObject selection) {
 		int count = 0;
 		String position = "";
@@ -213,7 +180,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	InputConnector getInputConnector(Mediator mediator) {
+	protected InputConnector getInputConnector(Mediator mediator) {
 
 		if (mediator instanceof AggregateMediator) {
 			return ((AggregateMediator) mediator).getInputConnector();
@@ -321,7 +288,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	OutputConnector getOutputConnector(Mediator mediator) {
+	protected OutputConnector getOutputConnector(Mediator mediator) {
 
 		if (mediator instanceof AggregateMediator) {
 			return ((AggregateMediator) mediator).getOutputConnector();

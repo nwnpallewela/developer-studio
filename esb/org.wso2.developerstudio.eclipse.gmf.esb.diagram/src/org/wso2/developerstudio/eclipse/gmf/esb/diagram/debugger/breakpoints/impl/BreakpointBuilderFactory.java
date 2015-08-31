@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
@@ -31,7 +32,7 @@ public class BreakpointBuilderFactory {
 	 * @param type
 	 * @return BreakpointBuilder
 	 */
-	public IESBBreakpointBuilder getBreakpointBuilder(String type) {
+	public static IESBBreakpointBuilder getBreakpointBuilder(String type) {
 		
 		String lowerCaseType = type.toLowerCase();
 		

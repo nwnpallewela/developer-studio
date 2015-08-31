@@ -2,6 +2,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutListener;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.NonResizableEditPolicyEx;
@@ -78,5 +79,11 @@ public class complexFiguredAbstractMediator extends AbstractMediator{
 		 		
 		 	}
 		 });
+	}
+
+	@Override
+	public RoundedRectangle getPrimaryShape() { 
+		//This method must be implemented in subclasses
+		return null;
 	}
 }

@@ -26,6 +26,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.impl.EAttributeImpl;
@@ -149,6 +150,14 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	 * variable to avoid calling reverse method twice.
 	 */
 	public boolean reversed = false;
+
+	/**
+	 * This method should return Shape Object of RoundedRectangle which contain
+	 * mediator icon.
+	 * 
+	 * @return
+	 */
+	public abstract RoundedRectangle getPrimaryShape();
 
 	public AbstractMediator(View view) {
 		super(view);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
@@ -32,11 +32,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	public ProxyBreakpointBuilder() {
-		this.Type = ESBDebuggerConstants.PROXY;
+		this.type = ESBDebuggerConstants.PROXY;
 	}
 
 	@Override
-	public IBreakpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection,
 			boolean selectedMediatorReversed) throws CoreException {
 
@@ -57,47 +57,40 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 				position = getMediatorPosition(
 						proxy.getOutSequenceOutputConnector(), selection);
 
-				message = addProxyOutSequenceKeyAttribute(message);
+				message = addProxyOutSequenceTypeAttribute(message);
 			} else {
-				message = addFaultSequenceKeyAttribute(message, proxy);
+				message = addFaultSequenceTypeAttribute(message, proxy);
 			}
 			message = addMediatorPositionAttribute(message, position);
 		} else {
-			message = addProxyInSequenceKeyAttribute(message);
+			message = addProxyInSequenceTypeAttribute(message);
 			String position = getMediatorPosition(proxy.getOutputConnector(),
 					selection);
 			message = addMediatorPositionAttribute(message, position);
 		}
 
-		boolean breakpointExists = deteleExistingBreakpoint(resource, message,
-				lineNumber);
-		message = addBreakpointOperationAttribute(message, breakpointExists);
-
-		System.out.println(message);
-		ESBBreakpoint esbBreakpoint = new ESBBreakpoint(resource, lineNumber,
-				message);
-		return esbBreakpoint;
+		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addProxyInSequenceKeyAttribute(String message) {
+	private String addProxyInSequenceTypeAttribute(String message) {
 
 		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
+				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
 				+ ESBDebuggerConstants.PROXY_INSEQ;
 	}
 
-	private String addFaultSequenceKeyAttribute(String message,
+	private String addFaultSequenceTypeAttribute(String message,
 			ProxyServiceImpl proxy) {
 
 		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
+				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
 				+ proxy.getFaultSequenceName();
 	}
 
-	private String addProxyOutSequenceKeyAttribute(String message) {
+	private String addProxyOutSequenceTypeAttribute(String message) {
 
 		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
+				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
 				+ ESBDebuggerConstants.PROXY_OUTSEQ;
 	}
 

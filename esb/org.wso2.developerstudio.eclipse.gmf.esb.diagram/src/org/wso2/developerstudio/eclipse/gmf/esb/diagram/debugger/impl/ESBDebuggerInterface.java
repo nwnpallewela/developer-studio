@@ -140,7 +140,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	public void sendBreakpointCommand(String operation, String type,
 			Map<String, String> attributeValues) {
 		try {
-			// System.out.println(messageChannel.createBreakpointCommand(operation,type,attributeValues));
+			System.out.println(messageChannel.createBreakpointCommand(operation,type,attributeValues));
 			fRequestWriter.println(messageChannel.createBreakpointCommand(
 					operation, type, attributeValues));
 			fRequestWriter.flush();

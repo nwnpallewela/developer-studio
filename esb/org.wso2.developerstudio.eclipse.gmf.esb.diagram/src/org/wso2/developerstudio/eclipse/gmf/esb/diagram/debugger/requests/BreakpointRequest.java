@@ -26,10 +26,13 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	public static final int REMOVED = 2;
 	private final int mType;
 	private final int mLine;
+	private final String mMessage;
+	
 
 	public BreakpointRequest(IBreakpoint breakpoint, int type) {
 		mType = type;
 		mLine = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
+		mMessage = breakpoint.getMarker().getAttribute(IMarker.MESSAGE, "");
 	}
 
 	public int getType() {
@@ -39,9 +42,13 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	public int getLine() {
 		return mLine;
 	}
+	
+	public String getMessage() {
+		return mMessage;
+	}
 
 	@Override
 	public String toString() {
-		return "BreakpointEvent: " + ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line " + getLine();
+		return "BreakpointEvent: " + ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line : " + getLine()+" , message : "+getMessage();
 	}
 }

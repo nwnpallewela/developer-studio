@@ -105,7 +105,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.Directi
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.DirectionXQueryMediatorAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.DirectionXSLTMediatorAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.export.EsbModelExportAction;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.ESBBreakpointAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl.ESBBreakpointAction;
 
 /**
  * @generated

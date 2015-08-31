@@ -40,6 +40,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 
 public class ESBDebugger implements IESBDebugger {
 
+	public static final int BREAKPOINT_ADDED = 1;
+	public static final int BREAKPOINT_REMOVED = 2;
 	private EventDispatchJob mDispatcher;
 	private boolean mIsStepping = false;
 	private IESBDebuggerInterface mDebuggerInterface;
@@ -120,7 +122,6 @@ public class ESBDebugger implements IESBDebugger {
 
 	@Override
 	public void handleEvent(final IDebugEvent event) {
-		System.out.println("Debugger.handleEvent() " + event);
 
 		if (event instanceof ResumeRequest) {
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
@@ -130,19 +131,32 @@ public class ESBDebugger implements IESBDebugger {
 		} else if (event instanceof DisconnectRequest) {
 
 		} else if (event instanceof BreakpointRequest) {
-			int line = ((BreakpointRequest) event).getLine();
-			if (line != -1) {
-				if (((BreakpointRequest) event).getType() == BreakpointRequest.ADDED)
-					mBreakpoints.add(line);
-
-				else if (((BreakpointRequest) event).getType() == BreakpointRequest.REMOVED)
-					mBreakpoints.remove(line);
-			}
+				sendBreakpointForServer((BreakpointRequest) event);
 
 		} else if (event instanceof FetchVariablesRequest) {
 			// fireEvent(new VariablesEvent(mInterpreter.getVariables()));
 
 		}
+	}
+
+	private void sendBreakpointForServer(BreakpointRequest event) {
+		Map<String, String> attributeValues = new HashMap<>();
+		String breakpointMessage = event.getMessage();
+		String[] attributeList = breakpointMessage.split(",");
+		for (String attribute : attributeList) {
+			String[] keyValuePair = attribute.split(":");
+			attributeValues.put(keyValuePair[0], keyValuePair[1]);
+		}
+		attributeValues.put("command-argument", "breakpoint");
+		if(event.getType()==BREAKPOINT_ADDED){
+			attributeValues.put("command", "set");
+		}else{
+			attributeValues.put("command", "clear");
+		}
+		mDebuggerInterface.sendBreakpointCommand(
+				attributeValues.get("command"),
+				attributeValues.get("mediation-component"), attributeValues);
+
 	}
 
 	public void setEventDispatcher(final EventDispatchJob dispatcher) {
@@ -157,7 +171,6 @@ public class ESBDebugger implements IESBDebugger {
 	 *            event to handle
 	 */
 	private void fireEvent(final IDebugEvent event) {
-		System.out.println("Debugger.fireEvent() " + event);
 
 		mDispatcher.addEvent(event);
 	}
@@ -169,7 +182,6 @@ public class ESBDebugger implements IESBDebugger {
 
 	@Override
 	public void notifyResponce(Map<String, String> responce) {
-		System.out.println("Debugger : " + responce.toString());
 	}
 
 	@Override
@@ -185,7 +197,6 @@ public class ESBDebugger implements IESBDebugger {
 		} else if (event.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
 
 		}
-		System.out.println("Event in Debugger : " + event.toString());
 	}
 
 }

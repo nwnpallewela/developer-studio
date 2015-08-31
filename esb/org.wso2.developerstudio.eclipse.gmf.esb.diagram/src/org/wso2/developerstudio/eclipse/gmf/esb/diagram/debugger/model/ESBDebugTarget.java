@@ -69,7 +69,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	 *            event to handle
 	 */
 	void fireModelEvent(final IDebugEvent event) {
-		System.out.println("Target.fireEvent() " + event);
 		mDispatcher.addEvent(event);
 	}
 
@@ -77,11 +76,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	public void handleEvent(final IDebugEvent event) {
 
 		if (!isDisconnected()) {
-			System.out.println("Target.handleEvent() " + event);
 
 			if (event instanceof DebuggerStartedEvent) {
 				// create debug thread
-				System.out.println("TreadCreated !!!");
 				ESBThread thread = new ESBThread(this);
 				mThreads.add(thread);
 				thread.fireCreationEvent();
@@ -99,11 +96,12 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 						.getBreakpointManager()
 						.getBreakpoints(getModelIdentifier());
-				for (IBreakpoint breakpoint : breakpoints)
+				for (IBreakpoint breakpoint : breakpoints) {
 					breakpointAdded(breakpoint);
+				}
 
 				// resume execution after setting breakpoints
-				// resume();
+				resume();
 				// suspend();
 
 			} else if (event instanceof SuspendedEvent) {
@@ -181,7 +179,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		 * breakpoint on our source file return true; }
 		 */
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -212,27 +210,23 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public void breakpointAdded(final IBreakpoint breakpoint) {
-		if ((supportsBreakpoint(breakpoint))
-				&& (isEnabledBreakpoint(breakpoint)))
+
+		if (supportsBreakpoint(breakpoint) && isEnabledBreakpoint(breakpoint)) {
 			fireModelEvent(new BreakpointRequest(breakpoint,
 					BreakpointRequest.ADDED));
+			System.out.println("Breakpoint Added");
+		}
 	}
 
 	@Override
 	public void breakpointRemoved(final IBreakpoint breakpoint,
 			final IMarkerDelta delta) {
-		if (supportsBreakpoint(breakpoint)) {
-			// we need to fire the event before we delete the marker (as the
-			// marker contains line information for the breakpoint)
+		if (supportsBreakpoint(breakpoint) && isEnabledBreakpoint(breakpoint)) {
+
 			fireModelEvent(new BreakpointRequest(breakpoint,
 					BreakpointRequest.REMOVED));
+			System.out.println("Breakpoint Removed");
 
-			// try to remove temporary run to line marker
-			/*
-			 * try { if (breakpoint instanceof ESBRunToLineBreakpoint)
-			 * breakpoint.getMarker().delete(); } catch (CoreException e) { //
-			 * ignore invalid marker }
-			 */
 		}
 	}
 
