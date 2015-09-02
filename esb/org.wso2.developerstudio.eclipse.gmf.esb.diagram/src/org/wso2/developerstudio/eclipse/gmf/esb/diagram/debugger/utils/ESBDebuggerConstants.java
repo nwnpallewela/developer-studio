@@ -18,6 +18,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 
+	public static final String TERMINATED_EVENT = "terminated";
+	
+	public static final String AXIS2_PROPERTIES = "axis2-properties";
+	public static final String SYNAPSE_PROPERTIES = "synapse-properties";
+	
+	
 	public static final String COMMAND_LABEL = "Toggle Breakpoint";
 	public static final String COMMAND_TOOL_TIP = "Set breakpoint for this mediator";
 	public static final String ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.action";
@@ -29,8 +35,7 @@ public class ESBDebuggerConstants {
 	public static final String MAIN = "main";
 	public static final String MAIN_SEQUENCE = "main_sequence";
 	public static final String ESB_LINE_BREAKPOINT_MARKER = "org.wso2.developerstudio.eclipse.esb.debugger.ESBLineBreakpointMarker";
-	public static final String AXIS2_PROPERTIES = "axis2-properties";
-	public static final String COMMAND_RESPONCE = "command-responce";
+	public static final String COMMAND_RESPONSE = "command-response";
 	public static final String EVENT = "event";
 	public static final String RESUME = "resume";
 	public static final String SUCCESSFUL = "successful";

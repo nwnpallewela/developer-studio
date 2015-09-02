@@ -151,13 +151,6 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	 */
 	public boolean reversed = false;
 
-	/**
-	 * This method should return Shape Object of RoundedRectangle which contain
-	 * mediator icon.
-	 * 
-	 * @return
-	 */
-	public abstract RoundedRectangle getPrimaryShape();
 
 	public AbstractMediator(View view) {
 		super(view);

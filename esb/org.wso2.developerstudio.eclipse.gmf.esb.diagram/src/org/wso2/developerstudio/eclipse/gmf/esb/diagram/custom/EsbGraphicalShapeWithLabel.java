@@ -19,6 +19,8 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -45,8 +47,14 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	static int Image_PreferredHeight = 52;
 	static int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2; //equals to 10
 	static int marginHeight = 10;
+	private LayeredPane pane; 
+	private Layer figureLayer;
+	private Layer breakpointLayer;
+	
 
 	public EsbGraphicalShapeWithLabel() {
+		pane = new LayeredPane();
+		pane.setLayoutManager(new StackLayout());
 		GridLayout layoutThis = new GridLayout();
 		layoutThis.numColumns = 1;
 		layoutThis.makeColumnsEqualWidth = true;
@@ -64,6 +72,37 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
         this.setBorder(border);
         
 		createContents();
+		pane.add(figureLayer);
+		this.add(pane);
+	}
+	
+	public void addBreakpointMark(){
+		breakpointLayer=new Layer();
+		breakpointLayer.setLayoutManager(new StackLayout());
+		GridData constraintBreakpointImageRectangle = new GridData();
+		constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
+		constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
+		constraintBreakpointImageRectangle.verticalSpan = 1;
+		ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure("icons/ico20debug/breakpoint.gif",
+				10, 10);
+
+		RoundedRectangle mainImageRectangle = new RoundedRectangle();
+		mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
+		mainImageRectangle.setOutline(false);
+		mainImageRectangle.setPreferredSize(new Dimension(10,
+				10));
+		mainImageRectangle.add(iconImageFigure);
+		breakpointLayer.add(mainImageRectangle, constraintBreakpointImageRectangle);
+		//breakpointLayer.add(iconImageFigure);
+		this.remove(pane);
+		pane.add(breakpointLayer);
+		this.add(pane);
+	}
+	
+	public void removeBreakpointMark() {
+		this.remove(pane);
+		pane.remove(breakpointLayer);
+		this.add(pane);		
 	}
 	
 	public void changeBreakpointHitMediatorIcon(boolean hit){
@@ -138,6 +177,8 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	private void createContents() {
 
 		/* main image grid data */
+		figureLayer=new Layer();
+		figureLayer.setLayoutManager(new GridLayout());
 		GridData constraintMainImageRectangle = new GridData();
 		constraintMainImageRectangle.verticalAlignment = GridData.BEGINNING;
 		constraintMainImageRectangle.horizontalAlignment = GridData.CENTER;
@@ -152,14 +193,14 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		mainImageRectangle.setPreferredSize(new Dimension(Image_PreferredWidth,
 				Image_PreferredHeight));
 		mainImageRectangle.add(iconImageFigure);
-		this.add(mainImageRectangle, constraintMainImageRectangle);
+		figureLayer.add(mainImageRectangle, constraintMainImageRectangle);
 
 		RoundedRectangle propertyValueRectangle1 = new RoundedRectangle();
 		propertyValueRectangle1.setCornerDimensions(new Dimension(0, 0));
 		propertyValueRectangle1.setOutline(false);
 	
 		GridData constraintPropertyValueRectangle = new GridData();
-		constraintPropertyValueRectangle.verticalAlignment = GridData.FILL;
+		constraintPropertyValueRectangle.verticalAlignment = GridData.BEGINNING;
 		constraintPropertyValueRectangle.horizontalAlignment = GridData.FILL;
 		constraintPropertyValueRectangle.horizontalIndent = 0;
 		constraintPropertyValueRectangle.horizontalSpan = 1;
@@ -178,7 +219,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		propertyNameLabel.setPreferredSize(new Dimension(FixedSizedAbstractMediator.maxFigureWidth, 20));
 		
 		propertyValueRectangle1.add(propertyNameLabel);
-		this.add(propertyValueRectangle1, constraintPropertyValueRectangle);
+		figureLayer.add(propertyValueRectangle1, constraintPropertyValueRectangle);
 		tempPropertyValueRectangle1=propertyValueRectangle1;
 		tempConstraintPropertyValueRectangle=constraintPropertyValueRectangle;
 	}
@@ -198,4 +239,6 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	public Color getLabelBackColor() {
 		return this.getBackgroundColor();
 	}
+
+	
 }

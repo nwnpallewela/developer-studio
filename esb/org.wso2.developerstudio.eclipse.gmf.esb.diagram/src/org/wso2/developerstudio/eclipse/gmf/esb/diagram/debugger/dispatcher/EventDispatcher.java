@@ -37,7 +37,6 @@ public class EventDispatcher extends Thread {
 			while (true) {
 				if (fEventReader.ready()) {
 					String buffer = fEventReader.readLine();
-					System.out.println("Event   : " + buffer);
 					esbDebuggerInterface.notifyEvent(buffer);
 				}
 			}

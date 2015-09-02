@@ -161,7 +161,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	public void notifyResponce(String buffer) {
-		System.out.println("Responce in interface : " + buffer);
 		esbDebugger.notifyResponce(messageChannel.getResponce(buffer));
 
 	}

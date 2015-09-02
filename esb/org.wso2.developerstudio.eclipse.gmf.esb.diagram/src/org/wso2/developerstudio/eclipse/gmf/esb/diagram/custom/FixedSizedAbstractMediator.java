@@ -18,7 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom;
 
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.gef.ui.figures.DefaultSizeNodeFigure;
@@ -38,6 +37,8 @@ public abstract class FixedSizedAbstractMediator extends AbstractMediator {
 		super(view);
 		this.setSelected(false);
 	}
+	
+	public abstract EsbGraphicalShapeWithLabel getPrimaryShape();
 	
 	public IFigure getFigure() {
 		IFigure figure = super.getFigure();

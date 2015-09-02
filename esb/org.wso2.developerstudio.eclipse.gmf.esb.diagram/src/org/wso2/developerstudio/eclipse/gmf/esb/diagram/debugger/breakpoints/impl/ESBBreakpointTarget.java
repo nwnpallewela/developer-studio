@@ -31,6 +31,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
@@ -95,9 +96,11 @@ public class ESBBreakpointTarget {
 				if (existingBreakpoint == null) {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.addBreakpoint(breakpoint);
+					((FixedSizedAbstractMediator)part).getPrimaryShape().addBreakpointMark();
 				} else {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.removeBreakpoint(existingBreakpoint, true);
+					((FixedSizedAbstractMediator)part).getPrimaryShape().removeBreakpointMark();
 					// existingBreakpoint.delete();
 				}
 

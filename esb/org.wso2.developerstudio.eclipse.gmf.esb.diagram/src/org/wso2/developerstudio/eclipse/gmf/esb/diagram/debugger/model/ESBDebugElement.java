@@ -67,7 +67,7 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 
 	@Override
 	public boolean canResume() {
-		return true;
+		return isSuspended();
 	}
 
 	@Override

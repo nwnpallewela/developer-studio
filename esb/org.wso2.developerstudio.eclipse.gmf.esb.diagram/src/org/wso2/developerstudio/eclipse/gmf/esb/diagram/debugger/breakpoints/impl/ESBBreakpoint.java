@@ -73,6 +73,14 @@ public class ESBBreakpoint extends Breakpoint{
 		}
 		return null;
 	}
+	
+	public IResource getResource(){
+		IMarker m = getMarker();
+		if (m != null) {
+			return m.getResource();
+		}
+		return null;
+	}
 
 }
 

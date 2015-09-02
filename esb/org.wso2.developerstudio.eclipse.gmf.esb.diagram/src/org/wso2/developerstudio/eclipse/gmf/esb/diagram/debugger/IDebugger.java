@@ -18,6 +18,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 
@@ -34,8 +35,6 @@ public interface IDebugger {
 
 	public void terminated();
 
-	public void suspended(int lineNumber);
-
 	public void resumed();
 
 	public void setDebuggerInterface(int commandPort, int eventPort)
@@ -44,4 +43,6 @@ public interface IDebugger {
 	public IESBDebuggerInterface getESBDebuggerInterface();
 
 	public void setEventDispatcher(EventDispatchJob dispatcher);
+
+	void suspended(Map<String, String> position);
 }

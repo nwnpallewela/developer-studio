@@ -16,18 +16,20 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 
+import java.util.Map;
+
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final int mLineNumber;
+	private final Map<String, String> mPosition;
 
-	public SuspendedEvent(int lineNumber) {
-		mLineNumber = lineNumber;
+	public SuspendedEvent(Map<String, String> position) {
+		mPosition = position;
 	}
 
-	public int getLineNumber() {
-		return mLineNumber;
+	public Map<String, String> getDetail() {
+		return mPosition;
 	}
 }

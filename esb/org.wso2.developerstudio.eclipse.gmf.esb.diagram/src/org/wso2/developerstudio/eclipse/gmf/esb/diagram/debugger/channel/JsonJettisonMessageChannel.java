@@ -94,10 +94,12 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	@Override
 	public Map<String, String> getResponce(String responce) {
+		
 		Map<String, String> message = new LinkedHashMap<>();
 		try {
 			JSONObject responceMessage = new JSONObject(responce);
 			message = convertJsonToMap(responceMessage);
+			String test=message.get(ESBDebuggerConstants.COMMAND_RESPONSE);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -81,9 +81,5 @@ public class complexFiguredAbstractMediator extends AbstractMediator{
 		 });
 	}
 
-	@Override
-	public RoundedRectangle getPrimaryShape() { 
-		//This method must be implemented in subclasses
-		return null;
-	}
+	
 }
