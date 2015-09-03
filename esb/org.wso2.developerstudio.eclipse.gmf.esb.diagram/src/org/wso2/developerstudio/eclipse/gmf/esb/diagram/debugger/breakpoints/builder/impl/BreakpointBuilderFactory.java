@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.impl;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**

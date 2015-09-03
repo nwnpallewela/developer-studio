@@ -34,7 +34,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.impl.BreakpointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
@@ -85,8 +86,7 @@ public class ESBBreakpointTarget {
 			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
 			EsbServer esbServer = esbDiagram.getServer();
 
-			IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
-					.getBreakpointBuilder(esbServer.getType().getName());
+			 IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory.getBreakpointBuilder(esbServer.getType().getName());
 
 			if (breakpointBuilder != null) {
 				IResource resource = (IResource) file
