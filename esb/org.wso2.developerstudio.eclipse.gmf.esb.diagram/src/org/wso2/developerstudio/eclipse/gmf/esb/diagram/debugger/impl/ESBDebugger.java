@@ -78,20 +78,6 @@ public class ESBDebugger implements IESBDebugger {
 		}
 		mDebuggerInterface.intializeDispatchers();
 
-		Map<String, String> attributeValues = new HashMap<>();
-		attributeValues.put("command", "set");
-		attributeValues.put("command-argument", "breakpoint");
-		attributeValues.put("mediation-component", "sequence");
-		attributeValues.put("sequence-type", "named");
-		attributeValues.put("sequence-key", "main");
-		attributeValues.put("mediator-position", "0 1");
-		mDebuggerInterface.sendBreakpointCommand(ESBDebuggerConstants.SET,
-				ESBDebuggerConstants.SEQUENCE, attributeValues);
-		attributeValues.put("mediator-position", "1 0");
-		mDebuggerInterface.sendBreakpointCommand(ESBDebuggerConstants.SET,
-				ESBDebuggerConstants.SEQUENCE, attributeValues);
-
-
 	}
 
 	@Override

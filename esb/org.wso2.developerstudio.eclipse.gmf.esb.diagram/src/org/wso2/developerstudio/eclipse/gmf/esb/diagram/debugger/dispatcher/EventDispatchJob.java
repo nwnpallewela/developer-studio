@@ -35,7 +35,7 @@ public class EventDispatchJob extends Job {
 
 	public EventDispatchJob(final IEventProcessor host,
 			final IEventProcessor debugger) {
-		super("Text Debugger event dispatcher");
+		super("ESB Mediation Debugger event dispatcher");
 
 		mHost = host;
 		mDebugger = debugger;

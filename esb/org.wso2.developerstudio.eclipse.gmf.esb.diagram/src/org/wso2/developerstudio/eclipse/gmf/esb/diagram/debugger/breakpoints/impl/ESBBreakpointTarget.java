@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +28,7 @@ import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
@@ -77,7 +79,7 @@ public class ESBBreakpointTarget {
 		if (activeEditor instanceof EsbMultiPageEditor) {
 
 			boolean partReversed = part.reversed;
-			IProject project = EditorUtils.getActiveProject();
+			IFile file = ((FileEditorInput)(((EsbMultiPageEditor)activeEditor).getEditorInput())).getFile();
 			Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
 					.getDiagram();
 			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
@@ -87,7 +89,7 @@ public class ESBBreakpointTarget {
 					.getBreakpointBuilder(esbServer.getType().getName());
 
 			if (breakpointBuilder != null) {
-				IResource resource = (IResource) project
+				IResource resource = (IResource) file
 						.getAdapter(IResource.class);
 
 				ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(

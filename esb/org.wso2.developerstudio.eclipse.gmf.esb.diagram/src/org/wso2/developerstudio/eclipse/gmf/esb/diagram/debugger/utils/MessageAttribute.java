@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +40,20 @@ public class MessageAttribute {
 	
 	public Set<String> getAttributes(){
 		return childAttributes.keySet();
+	}
+	
+	public ArrayList<String> getAttributeKeys(){
+		Set<String> firstkeys = childAttributes.keySet();
+		List<String> allKeys = new ArrayList<>();
+		for (String key : firstkeys) {
+			allKeys.add(key);
+			if(childAttributes.get(key)!=null){
+				ArrayList<String> temp = childAttributes.get(key).getAttributeKeys();
+				allKeys.addAll(temp);
+			}
+		}
 		
+		return (ArrayList<String>) allKeys;
 	}
 	
 	public void print(){
