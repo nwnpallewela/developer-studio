@@ -131,6 +131,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 		try {
 			fRequestWriter.println(messageChannel.createCommand(command));
 			fRequestWriter.flush();
+			
 		} catch (Exception ex) {
 		}
 
@@ -171,6 +172,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 			fRequestWriter.println(messageChannel
 					.createGetPropertiesCommand(attributeValues));
 			fRequestWriter.flush();
+			System.out.println(messageChannel
+					.createGetPropertiesCommand(attributeValues));
 		} catch (Exception ex) {
 
 		}

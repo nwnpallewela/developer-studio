@@ -99,7 +99,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 	 * public IFile getSourceFile() { return (getDebugTarget()).getFile(); }
 	 */
 
-	public synchronized void setVariables(Map<String, String> variables) {
+	public synchronized void setVariables(Map<String, String> variables) throws DebugException {
 		for (String name : variables.keySet()) {
 			boolean processed = false;
 			// try to find existing variable

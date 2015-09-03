@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Debugger
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
@@ -50,10 +52,12 @@ public class ESBDebugger implements IESBDebugger {
 	private IESBDebuggerInterface mDebuggerInterface;
 	private final Set<Integer> mBreakpoints = new HashSet<Integer>();
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+	private Map<String, String> mVariables;
 
 	public ESBDebugger(IESBDebuggerInterface debuggerInterface) {
 		mDebuggerInterface = debuggerInterface;
 		mDebuggerInterface.attachDebugger(this);
+		mVariables = new HashMap<>();
 	}
 
 	@Override
@@ -116,16 +120,20 @@ public class ESBDebugger implements IESBDebugger {
 			System.out.println("Debugger Resume execution");
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
 			mDebuggerInterface.sendCommand(ESBDebuggerConstants.RESUME);
-			
-		} else if (event instanceof BreakpointRequest) {
-			
-				sendBreakpointForServer((BreakpointRequest) event);
 
-		} 
+		} else if (event instanceof BreakpointRequest) {
+
+			sendBreakpointForServer((BreakpointRequest) event);
+
+		} else if (event instanceof FetchVariablesRequest) {
+			if (mVariables != null) {
+				fireEvent(new VariablesEvent(mVariables));
+			}
+		}
 	}
 
 	private void sendBreakpointForServer(BreakpointRequest event) {
-		
+
 		Map<String, String> attributeValues = new HashMap<>();
 		String breakpointMessage = event.getMessage();
 		String[] attributeList = breakpointMessage.split(",");
@@ -134,9 +142,9 @@ public class ESBDebugger implements IESBDebugger {
 			attributeValues.put(keyValuePair[0], keyValuePair[1]);
 		}
 		attributeValues.put("command-argument", "breakpoint");
-		if(event.getType()==BREAKPOINT_ADDED){
+		if (event.getType() == BREAKPOINT_ADDED) {
 			attributeValues.put("command", "set");
-		}else{
+		} else {
 			attributeValues.put("command", "clear");
 		}
 		mDebuggerInterface.sendBreakpointCommand(
@@ -168,18 +176,36 @@ public class ESBDebugger implements IESBDebugger {
 
 	@Override
 	public void notifyResponce(Map<String, String> responce) {
-		
+
 		if (responce.containsKey(ESBDebuggerConstants.COMMAND_RESPONSE)) {
 			if (ESBDebuggerConstants.FAILED.equals(responce
 					.get(ESBDebuggerConstants.COMMAND_RESPONSE))) {
 				log.error(responce.get(ESBDebuggerConstants.FAILED_REASON));
-				System.out.println("Logging error");
 			}
-		}else{
-			if(responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)){
-				System.out.println(responce.get(ESBDebuggerConstants.AXIS2_PROPERTIES));
-			} else if(responce.containsKey(ESBDebuggerConstants.SYNAPSE_PROPERTIES)){
-				System.out.println(responce.get(ESBDebuggerConstants.SYNAPSE_PROPERTIES));
+		} else {
+			if (responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
+
+				mVariables.put(ESBDebuggerConstants.AXIS2_PROPERTIES,
+						responce.get(ESBDebuggerConstants.AXIS2_PROPERTIES));
+			} else if (responce
+					.containsKey(ESBDebuggerConstants.SYNAPSE_PROPERTIES)) {
+				mVariables.put(ESBDebuggerConstants.SYNAPSE_PROPERTIES,
+						responce.get(ESBDebuggerConstants.SYNAPSE_PROPERTIES));
+			} else if (responce
+					.containsKey(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES)) {
+				mVariables
+						.put(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES,
+								responce.get(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES));
+			} else if (responce
+					.containsKey(ESBDebuggerConstants.OPERATION_PROPERTIES)) {
+				mVariables
+						.put(ESBDebuggerConstants.OPERATION_PROPERTIES,
+								responce.get(ESBDebuggerConstants.OPERATION_PROPERTIES));
+			} else if (responce
+					.containsKey(ESBDebuggerConstants.TRANSPORT_PROPERTIES)) {
+				mVariables
+						.put(ESBDebuggerConstants.TRANSPORT_PROPERTIES,
+								responce.get(ESBDebuggerConstants.TRANSPORT_PROPERTIES));
 			}
 		}
 
@@ -194,17 +220,36 @@ public class ESBDebugger implements IESBDebugger {
 		if (ESBDebuggerConstants.BREAKPOINT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
 			suspended(event);
-			Map<String, String> attributeValues = new HashMap<>();
-			attributeValues.put("command", "get");
-			attributeValues.put("command-argument", "properties");
-			attributeValues.put("context", "axis2");
-			mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
+			getPropertiesFromESB();
 
 		} else if (ESBDebuggerConstants.TERMINATED_EVENT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
-			//terminated();
+			// terminated();
 			System.out.println("Terminated event from esb");
 		}
+	}
+
+	private void getPropertiesFromESB() {
+		Map<String, String> attributeValues = new LinkedHashMap<>();
+		attributeValues.put(ESBDebuggerConstants.COMMAND,
+				ESBDebuggerConstants.COMMAND_GET);
+		attributeValues.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
+				ESBDebuggerConstants.PROPERTIES);
+		attributeValues.put(ESBDebuggerConstants.CONTEXT,
+				ESBDebuggerConstants.AXIS2);
+		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
+		attributeValues.put(ESBDebuggerConstants.CONTEXT,
+				ESBDebuggerConstants.AXIS2_CLIENT);
+		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
+		attributeValues.put(ESBDebuggerConstants.CONTEXT,
+				ESBDebuggerConstants.TRANSPORT);
+		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
+		attributeValues.put(ESBDebuggerConstants.CONTEXT,
+				ESBDebuggerConstants.OPERATION);
+		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
+		attributeValues.put(ESBDebuggerConstants.CONTEXT,
+				ESBDebuggerConstants.SYANPSE);
+		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
 	}
 
 }

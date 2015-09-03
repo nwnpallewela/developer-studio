@@ -50,6 +50,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	private LayeredPane pane; 
 	private Layer figureLayer;
 	private Layer breakpointLayer;
+	private boolean breakpointHitStatus;
 	
 
 	public EsbGraphicalShapeWithLabel() {
@@ -68,7 +69,12 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		this.setOutline(false);
 
 		RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
-        border.setColor(EditPartDrawingHelper.FigureNormalColor);
+		if(breakpointHitStatus){
+			border.setColor(EditPartDrawingHelper.FigureBreakpointHitColor);
+		}else{
+			border.setColor(EditPartDrawingHelper.FigureNormalColor);
+		}
+        
         this.setBorder(border);
         
 		createContents();
@@ -106,10 +112,12 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	}
 	
 	public void changeBreakpointHitMediatorIcon(boolean hit){
+		breakpointHitStatus=hit;
 		if(hit){
 			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
 	        border.setColor(EditPartDrawingHelper.FigureBreakpointHitColor);
 	        this.setBorder(border);
+	        
 		}else{
 			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
 	        border.setColor(EditPartDrawingHelper.FigureNormalColor);

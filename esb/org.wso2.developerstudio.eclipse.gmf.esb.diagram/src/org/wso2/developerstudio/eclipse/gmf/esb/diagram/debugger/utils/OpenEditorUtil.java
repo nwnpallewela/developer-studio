@@ -3,7 +3,11 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -11,9 +15,19 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
+import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
+import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbEditorInput;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
@@ -28,14 +42,14 @@ public class OpenEditorUtil {
 	 * Open the ESB diagram editor for the given ESB configuration file  
 	 * @param fileTobeOpened
 	 */
-	public static IEditorPart openSeparateEditor(final IFile fileTobeOpened) {
+	public static IEditorPart openSeparateEditor(final IFile fileTobeOpened,final SuspendedEvent event) {
 		try {
 			final String source = FileUtils.readFileToString(fileTobeOpened.getLocation().toFile());
 			final Deserializer deserializer = Deserializer.getInstance();
 			
 			
 			
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			    @Override
 			    public void run() {
 			    	try {
@@ -49,7 +63,7 @@ public class OpenEditorUtil {
 					final EsbDiagramEditor graphicalEditor = multipageEitor.getGraphicalEditor();
 
 					if (graphicalEditor != null) {
-						Display.getCurrent().asyncExec(new Runnable() {
+						Display.getCurrent().syncExec(new Runnable() {
 							public void run() {
 								try {
 									deserializer.updateDesign(source, graphicalEditor);
@@ -63,6 +77,23 @@ public class OpenEditorUtil {
 							}
 						});
 					}
+					
+					Diagram diagram = multipageEitor.getDiagram();
+					EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
+					EsbServer esbServer = esbDiagram.getServer();
+
+					 IMediatorLocator mediatorLocator = MediatorLocatorFactory.getMediatorLocator(esbServer.getType().getName());
+					 if (mediatorLocator != null) {
+
+						 EditPart editPart = mediatorLocator.getMediatorEditPart(esbServer,event);
+						 //editPart.setSelected( EditPart.SELECTED_PRIMARY);
+						 if(editPart instanceof AbstractMediator){
+							( (FixedSizedAbstractMediator)editPart).getPrimaryShape().changeBreakpointHitMediatorIcon(true);
+						 }
+						
+
+						}
+					
 			    }
 			    catch (Exception e1) {
 					log.error("Error occured while getting artifact type for the given ESB configuration ", e1);

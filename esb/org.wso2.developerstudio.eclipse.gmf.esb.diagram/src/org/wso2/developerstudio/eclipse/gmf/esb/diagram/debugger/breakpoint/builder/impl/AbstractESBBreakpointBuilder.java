@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.impl;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -70,7 +70,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.URLRewriteMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ValidateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XQueryMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public abstract class AbstractESBBreakpointBuilder implements
@@ -176,7 +176,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	protected InputConnector getInputConnector(Mediator mediator) {
+	public static InputConnector getInputConnector(Mediator mediator) {
 
 		if (mediator instanceof AggregateMediator) {
 			return ((AggregateMediator) mediator).getInputConnector();
@@ -284,7 +284,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	protected OutputConnector getOutputConnector(Mediator mediator) {
+	public static OutputConnector getOutputConnector(Mediator mediator) {
 
 		if (mediator instanceof AggregateMediator) {
 			return ((AggregateMediator) mediator).getOutputConnector();

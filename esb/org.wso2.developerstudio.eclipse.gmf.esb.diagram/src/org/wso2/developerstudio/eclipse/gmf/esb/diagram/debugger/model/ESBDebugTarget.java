@@ -37,7 +37,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.OpenEditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
@@ -47,6 +47,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 
@@ -117,7 +118,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				resume();
 
 			} else if (event instanceof SuspendedEvent) {
-				
+				fireModelEvent(new FetchVariablesRequest());
 				setState(State.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
@@ -134,8 +135,13 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 			} else if (event instanceof VariablesEvent) {
 				
-				getThreads()[0].getTopStackFrame().setVariables(
-						((VariablesEvent) event).getVariables());
+				try {
+					getThreads()[0].getTopStackFrame().setVariables(
+							((VariablesEvent) event).getVariables());
+				} catch (DebugException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			} else if (event instanceof TerminatedEvent) {
 				// debugger is terminated
@@ -161,7 +167,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		if (file.exists()) {
 			
 			
-			OpenEditorUtil.openSeparateEditor(file);
+			OpenEditorUtil.openSeparateEditor(file,event);
 		}
 		}catch(NullPointerException e){
 			e.printStackTrace();

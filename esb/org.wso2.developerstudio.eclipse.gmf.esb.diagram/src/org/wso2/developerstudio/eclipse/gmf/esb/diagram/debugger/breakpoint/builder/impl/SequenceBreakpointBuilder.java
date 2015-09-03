@@ -14,52 +14,62 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.impl;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
-import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
-import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 
-public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
+/**
+ * This class builds ESB breakpoints related to Sequences.
+ */
+public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public TemplateBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.TEMPLATE;
+	public SequenceBreakpointBuilder() {
+		this.type = ESBDebuggerConstants.SEQUENCE;
 	}
 
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection, boolean reversed)
-			throws CoreException {
+			IResource resource, EObject selection,
+			boolean selectedMediatorReversed) throws CoreException {
 
 		int lineNumber = -1;
 		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
 		EObject next = treeIterator.next();
 
-		TemplateImpl template = (TemplateImpl) next;
-		EsbElement sequnce = template.getChild();
+		SequencesImpl sequence = (SequencesImpl) next;
+
 		String message = getInitialMessage();
+		message = addSequenceTypeAttribute(message);
 
-		message = addTemplateKeyAttribute(message, template);
+		message = addSequenceKeyAttribute(message, sequence);
 
-		String position = getMediatorPosition(
-				((SequencesImpl) sequnce).getOutputConnector(), selection);
-
+		String position = getMediatorPosition(sequence.getOutputConnector(),
+				selection);
 		message = addMediatorPositionAttribute(message, position);
 
 		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addTemplateKeyAttribute(String message, TemplateImpl template) {
+	private String addSequenceKeyAttribute(String message,
+			SequencesImpl sequence) {
+
 		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.TEMPLATE_KEY + KEY_VALUE_SEPERATOR
-				+ template.getName();
+				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
+				+ sequence.getName();
+	}
+
+	private String addSequenceTypeAttribute(String message) {
+
+		return message + ATTRIBUTE_SEPERATOR
+				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
+				+ ESBDebuggerConstants.NAMED;
 	}
 
 }

@@ -20,20 +20,21 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public class ESBVariable extends ESBDebugElement implements IVariable {
 
 	private final String mName;
 	private IValue mValue;
 
-	protected ESBVariable(IDebugTarget target, String name, String value) {
+	protected ESBVariable(IDebugTarget target, String name, String value) throws DebugException {
 		super(target);
 		mName = name;
 		setValue(value);
 	}
 
 	@Override
-	public void setValue(String expression) {
+	public void setValue(String expression) throws DebugException {
 		mValue = new ESBValue(getDebugTarget(), expression);
 	}
 
@@ -69,7 +70,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 
 	@Override
 	public String getReferenceTypeName() throws DebugException {
-		return "text type";
+		return ESBDebuggerConstants.VARIABLE_TYPE;
 	}
 
 	@Override

@@ -17,11 +17,24 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
-
+	//synapse(default)|axis2|transport|axis2-client|operation
+	public static final String AXIS2 = "axis2";
+	public static final String OPERATION = "operation";
+	public static final String AXIS2_CLIENT = "axis2-client";
+	public static final String TRANSPORT = "transport";
+	public static final String SYANPSE = "synapse";
+	public static final String COMMAND_GET = "get";
+	
+	public static final String VARIABLE_TYPE = "ESB Message";
+	public static final String PROPERTIES = "properties";
+	
 	public static final String TERMINATED_EVENT = "terminated";
 	
 	public static final String AXIS2_PROPERTIES = "axis2-properties";
 	public static final String SYNAPSE_PROPERTIES = "synapse-properties";
+	public static final String OPERATION_PROPERTIES = "axis2Operation-properties";
+	public static final String AXIS2_CLIENT_PROPERTIES = "axis2Client-properties";
+	public static final String TRANSPORT_PROPERTIES = "axis2Transport-properties";
 	
 	
 	public static final String COMMAND_LABEL = "Toggle Breakpoint";

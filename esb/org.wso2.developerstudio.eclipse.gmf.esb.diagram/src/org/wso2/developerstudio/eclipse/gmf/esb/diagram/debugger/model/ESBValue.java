@@ -16,24 +16,86 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public class ESBValue extends ESBDebugElement implements IValue {
 
 	private final String mValue;
+	private List<IVariable> mchildren;
 
-	public ESBValue(IDebugTarget target, String value) {
+	public ESBValue(IDebugTarget target, String value) throws DebugException {
 		super(target);
 
 		mValue = value;
+		if (value.contains("{")) {
+			try {
+				JSONObject responceMessage = new JSONObject(value);
+				Map<String, String> message = convertJsonToMap(responceMessage);
+				for (String name : message.keySet()) {
+					boolean processed = false;
+					// try to find existing variable
+					if (mchildren != null) {
+						for (IVariable variable : mchildren) {
+							if (variable.getName().equals(name)) {
+								// variable exists
+								variable.setValue(message.get(name));
+								((ESBVariable) variable)
+										.fireChangeEvent(DebugEvent.CONTENT);
+								processed = true;
+								break;
+							}
+						}
+					} else {
+						mchildren = new ArrayList<>();
+					}
+
+					if (!processed) {
+						// not found, create new variable
+						ESBVariable esbVariable = new ESBVariable(
+								getDebugTarget(), name, message.get(name));
+						mchildren.add(esbVariable);
+						esbVariable.fireCreationEvent();
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	private Map<String, String> convertJsonToMap(JSONObject responceMessage) {
+		Iterator<?> keys = responceMessage.keys();
+		Map<String, String> message = new LinkedHashMap<>();
+		String value = "";
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			try {
+				value = responceMessage.getString(key);
+				message.put(key, value);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		return message;
 	}
 
 	@Override
 	public String getReferenceTypeName() throws DebugException {
-		return "text type";
+		return ESBDebuggerConstants.VARIABLE_TYPE;
 	}
 
 	@Override
@@ -48,12 +110,18 @@ public class ESBValue extends ESBDebugElement implements IValue {
 
 	@Override
 	public IVariable[] getVariables() throws DebugException {
-		return new IVariable[0];
+
+		IVariable[] variables = new ESBVariable[mchildren.size()];
+		int count = 0;
+		for (IVariable variable : mchildren) {
+			variables[count] = variable;
+			count++;
+		}
+		return variables;
 	}
 
 	@Override
 	public boolean hasVariables() throws DebugException {
-		return false;
+		return (mchildren != null && mchildren.size() > 0);
 	}
 }
-

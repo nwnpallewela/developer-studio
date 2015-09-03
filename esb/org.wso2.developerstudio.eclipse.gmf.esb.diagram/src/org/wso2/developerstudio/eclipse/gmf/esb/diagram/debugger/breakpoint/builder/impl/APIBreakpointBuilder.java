@@ -1,17 +1,17 @@
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.builder.impl;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
-public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
+public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public ConnectorBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.CONNECTOR;
+	public APIBreakpointBuilder() {
+		this.type = ESBDebuggerConstants.API;
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		int lineNumber = -1;
 		String message = "";
 		
-
+		
 
 		ESBBreakpoint esbBreakpoint = new ESBBreakpoint(resource, lineNumber,
 				message);
