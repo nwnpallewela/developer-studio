@@ -28,7 +28,7 @@ public class ESBProcess extends ESBDebugElement implements IProcess {
 
 	@Override
 	public String getLabel() {
-		return "Text Process";
+		return "ESB Process";
 	}
 
 	@Override

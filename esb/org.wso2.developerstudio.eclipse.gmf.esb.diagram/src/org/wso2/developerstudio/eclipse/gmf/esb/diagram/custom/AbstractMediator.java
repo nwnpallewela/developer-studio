@@ -135,7 +135,7 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	private AbstractInputConnectorEditPart connectedInputConnector;
 	private AbstractOutputConnectorEditPart connectedOutputConnector;
 	private AbstractMediator instance=null;
-	
+	private boolean breakpointHitStatus = false;
 	public int x=0;
 	public int y=0;
 	
@@ -158,6 +158,22 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 		instance=this;
 	}
 
+	/**
+	 * 
+	 * @return the breakpointHitStatus
+	 */
+	public boolean isBreakpointHit(){
+		return breakpointHitStatus;
+	}
+	
+	/**
+	 * 
+	 * @param breakpointHitStatus
+	 */
+	public void setBreakpointHitStatus(boolean breakpointHitStatus){
+		this.breakpointHitStatus=breakpointHitStatus;
+	}
+	
 	protected NodeFigure createMainFigure() {
 		return null;
 	}

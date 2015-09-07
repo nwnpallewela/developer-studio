@@ -41,6 +41,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.MediationFlowCompleteEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
@@ -126,7 +127,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 			} else if (event instanceof ResumedEvent) {
 				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
-					System.out.println("Debug Target Resume execution");
 					setState(State.RESUMED);
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
 
@@ -153,6 +153,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 				mDispatcher.terminate();
 				fireTerminateEvent();
+			}else if (event instanceof MediationFlowCompleteEvent) {
+				setState(State.RESUMED);
+				OpenEditorUtil.removeBreakpointHitStatus();
 			}
 		}
 	}

@@ -30,6 +30,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
  * Draws a Figure with a label
@@ -44,16 +47,21 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	static int Figure_PreferredWidth = FixedSizedAbstractMediator.FigureWidth;
 	static int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20; //Additional 20 to show the editable label
 	static int Image_PreferredWidth = 75;
-	static int Image_PreferredHeight = 52;
+	static int Image_PreferredHeight = 42;
 	static int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2; //equals to 10
 	static int marginHeight = 10;
 	private LayeredPane pane; 
 	private Layer figureLayer;
 	private Layer breakpointLayer;
-	private boolean breakpointHitStatus;
+	
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 	
 
 	public EsbGraphicalShapeWithLabel() {
+		initializeShape();
+	}
+	
+	private void initializeShape(){
 		pane = new LayeredPane();
 		pane.setLayoutManager(new StackLayout());
 		GridLayout layoutThis = new GridLayout();
@@ -69,11 +77,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		this.setOutline(false);
 
 		RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
-		if(breakpointHitStatus){
-			border.setColor(EditPartDrawingHelper.FigureBreakpointHitColor);
-		}else{
-			border.setColor(EditPartDrawingHelper.FigureNormalColor);
-		}
+		border.setColor(EditPartDrawingHelper.FigureNormalColor);
         
         this.setBorder(border);
         
@@ -82,49 +86,64 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		this.add(pane);
 	}
 	
-	public void addBreakpointMark(){
-		breakpointLayer=new Layer();
-		breakpointLayer.setLayoutManager(new StackLayout());
-		GridData constraintBreakpointImageRectangle = new GridData();
-		constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
-		constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
-		constraintBreakpointImageRectangle.verticalSpan = 1;
-		ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure("icons/ico20debug/breakpoint.gif",
-				10, 10);
+	public void addBreakpointMark() {
+		if (pane != null) {
+			breakpointLayer = new Layer();
+			breakpointLayer.setLayoutManager(new StackLayout());
+			GridData constraintBreakpointImageRectangle = new GridData();
+			constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.verticalSpan = 1;
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(
+							"icons/ico20debug/toggle_breakpoint_red.gif", 10,
+							10);
+//			ImageFigure iconImageFigure = EditPartDrawingHelper
+//					.getIconImageFigure(
+//							"icons/ico20debug/breakpoint_16.gif", 10,
+//							10);
 
-		RoundedRectangle mainImageRectangle = new RoundedRectangle();
-		mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
-		mainImageRectangle.setOutline(false);
-		mainImageRectangle.setPreferredSize(new Dimension(10,
-				10));
-		mainImageRectangle.add(iconImageFigure);
-		breakpointLayer.add(mainImageRectangle, constraintBreakpointImageRectangle);
-		//breakpointLayer.add(iconImageFigure);
-		this.remove(pane);
-		pane.add(breakpointLayer);
-		this.add(pane);
-	}
-	
-	public void removeBreakpointMark() {
-		this.remove(pane);
-		pane.remove(breakpointLayer);
-		this.add(pane);		
-	}
-	
-	public void changeBreakpointHitMediatorIcon(boolean hit){
-		breakpointHitStatus=hit;
-		if(hit){
-			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
-	        border.setColor(EditPartDrawingHelper.FigureBreakpointHitColor);
-	        this.setBorder(border);
-	        
-		}else{
-			RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
-	        border.setColor(EditPartDrawingHelper.FigureNormalColor);
-	        this.setBorder(border);
+			RoundedRectangle mainImageRectangle = new RoundedRectangle();
+			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			mainImageRectangle.setOutline(false);
+			mainImageRectangle.setPreferredSize(new Dimension(10, 10));
+			mainImageRectangle.setAlpha(0);
+			mainImageRectangle.add(iconImageFigure);
+			iconImageFigure.translate(10, 3);
+			breakpointLayer.add(mainImageRectangle,
+					constraintBreakpointImageRectangle);
+			try {
+				this.remove(pane);
+			} catch (NullPointerException e) {
+				log.error("Mediator icon figure does not have a layer pane", e);
+			}
+			pane.add(breakpointLayer);
+			this.add(pane);
+		} else {
+			log.warn("Mediator Figure layers misplaced");
+			initializeShape();
+			addBreakpointMark();
 		}
 	}
 
+	public void removeBreakpointMark() {
+		try {
+			this.remove(pane);
+		} catch (NullPointerException e) {
+			log.error("Mediator icon figure does not have a layer pane", e);
+		}
+
+		try {
+			pane.remove(breakpointLayer);
+		} catch (NullPointerException e) {
+			log.error(
+					"Mediator icon layer pane does not have a breakpoint layer",
+					e);
+		}
+		this.add(pane);
+
+	}
+	
 	public void changeBreakpointMediatorIcon(String status) {
 		if (status.equals("BreakpointAdded")) {
 

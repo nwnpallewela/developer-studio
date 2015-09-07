@@ -70,8 +70,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.URLRewriteMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ValidateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XQueryMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public abstract class AbstractESBBreakpointBuilder implements
 		IESBBreakpointBuilder {
@@ -83,6 +86,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String KEY_VALUE_SEPERATOR = ":";
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 	
 	protected String type;
 
@@ -132,6 +136,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 		OutputConnector tempConnector = outConnector;
 		int count = 0;
 		String position = "";
+		try{
 		while (tempConnector != null) {
 			EObject mediator = tempConnector.getOutgoingLink().getTarget()
 					.eContainer();
@@ -143,6 +148,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 				count++;
 				tempConnector = getOutputConnector((Mediator) mediator);
 			}
+		}
+		}catch (NullPointerException e){
+			log.error("Diagram links are not properly connected", e);
 		}
 		return position;
 	}

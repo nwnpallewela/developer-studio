@@ -17,7 +17,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -36,6 +35,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
@@ -80,13 +80,15 @@ public class ESBBreakpointTarget {
 		if (activeEditor instanceof EsbMultiPageEditor) {
 
 			boolean partReversed = part.reversed;
-			IFile file = ((FileEditorInput)(((EsbMultiPageEditor)activeEditor).getEditorInput())).getFile();
+			IFile file = ((FileEditorInput) (((EsbMultiPageEditor) activeEditor)
+					.getEditorInput())).getFile();
 			Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
 					.getDiagram();
 			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
 			EsbServer esbServer = esbDiagram.getServer();
 
-			 IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory.getBreakpointBuilder(esbServer.getType().getName());
+			IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
+					.getBreakpointBuilder(esbServer.getType().getName());
 
 			if (breakpointBuilder != null) {
 				IResource resource = (IResource) file
@@ -98,11 +100,13 @@ public class ESBBreakpointTarget {
 				if (existingBreakpoint == null) {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.addBreakpoint(breakpoint);
-					((FixedSizedAbstractMediator)part).getPrimaryShape().addBreakpointMark();
+					((FixedSizedAbstractMediator) part).getPrimaryShape()
+							.addBreakpointMark();
 				} else {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.removeBreakpoint(existingBreakpoint, true);
-					((FixedSizedAbstractMediator)part).getPrimaryShape().removeBreakpointMark();
+					((FixedSizedAbstractMediator) part).getPrimaryShape()
+							.removeBreakpointMark();
 					// existingBreakpoint.delete();
 				}
 
@@ -121,21 +125,24 @@ public class ESBBreakpointTarget {
 	private static ESBBreakpoint getMatchingBreakpoint(
 			ESBBreakpoint targetBreakpoint) throws CoreException {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-				.getBreakpointManager().getBreakpoints();
-		for (IBreakpoint breakpoint : breakpoints) {
-			/*
-			 * System.out.println("all breakpoints: " +
-			 * breakpoint.getModelIdentifier());
-			 */
-			if ((targetBreakpoint.getMarker().getResource()).equals(breakpoint
-					.getMarker().getResource())) {
-				if ((((ESBBreakpoint) breakpoint).getMessage())
-						.equals(targetBreakpoint.getMessage())) {
-					return (ESBBreakpoint) breakpoint;
-				} else if (((ESBBreakpoint) breakpoint).getLineNumber() == (targetBreakpoint
-						.getLineNumber() + 1)
-						&& targetBreakpoint.getLineNumber() != -1) {
-					return (ESBBreakpoint) breakpoint;
+				.getBreakpointManager()
+				.getBreakpoints(ESBDebugModelPresentation.ID);
+		if (breakpoints != null) {
+			for (IBreakpoint breakpoint : breakpoints) {
+				/*
+				 * System.out.println("all breakpoints: " +
+				 * breakpoint.getModelIdentifier());
+				 */
+				if ((targetBreakpoint.getMarker().getResource())
+						.equals(breakpoint.getMarker().getResource())) {
+					if ((((ESBBreakpoint) breakpoint).getMessage())
+							.equals(targetBreakpoint.getMessage())) {
+						return (ESBBreakpoint) breakpoint;
+					} else if (((ESBBreakpoint) breakpoint).getLineNumber() == (targetBreakpoint
+							.getLineNumber() + 1)
+							&& targetBreakpoint.getLineNumber() != -1) {
+						return (ESBBreakpoint) breakpoint;
+					}
 				}
 			}
 		}

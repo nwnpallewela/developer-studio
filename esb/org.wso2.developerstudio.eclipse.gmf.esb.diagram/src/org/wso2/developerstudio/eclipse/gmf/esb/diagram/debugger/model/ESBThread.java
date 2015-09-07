@@ -59,7 +59,7 @@ public class ESBThread extends ESBDebugElement implements IThread {
 
 	@Override
 	public String getName() {
-		return "Text Thread";
+		return "ESB Thread";
 	}
 
 	@Override

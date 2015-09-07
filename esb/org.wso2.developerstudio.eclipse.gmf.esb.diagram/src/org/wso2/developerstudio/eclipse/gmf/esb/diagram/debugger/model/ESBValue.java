@@ -31,64 +31,65 @@ import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
+/**
+ * This class object holds variable values to be shown in the variables table
+ *
+ */
 public class ESBValue extends ESBDebugElement implements IValue {
 
-	private final String mValue;
-	private List<IVariable> mchildren;
+	private static final CharSequence JASON_OBJECT_IDENTIFING_KEY = "{";
+	private static final String EMPTY_STRING = "";
+	private final String variableValue;
+	private List<IVariable> valueChildren;
 
-	public ESBValue(IDebugTarget target, String value) throws DebugException {
+	public ESBValue(IDebugTarget target, String value) throws DebugException,
+			JSONException {
 		super(target);
 
-		mValue = value;
-		if (value.contains("{")) {
-			try {
-				JSONObject responceMessage = new JSONObject(value);
-				Map<String, String> message = convertJsonToMap(responceMessage);
-				for (String name : message.keySet()) {
-					boolean processed = false;
-					// try to find existing variable
-					if (mchildren != null) {
-						for (IVariable variable : mchildren) {
-							if (variable.getName().equals(name)) {
-								// variable exists
-								variable.setValue(message.get(name));
-								((ESBVariable) variable)
-										.fireChangeEvent(DebugEvent.CONTENT);
-								processed = true;
-								break;
-							}
+		variableValue = value;
+		if (value.contains(JASON_OBJECT_IDENTIFING_KEY)) {
+			JSONObject responceMessage = new JSONObject(value);
+			Map<String, String> message = convertJsonToMap(responceMessage);
+			for (String name : message.keySet()) {
+				boolean processed = false;
+
+				if (valueChildren != null) {
+					for (IVariable variable : valueChildren) {
+						if (variable.getName().equals(name)) {
+							variable.setValue(message.get(name));
+							((ESBVariable) variable)
+									.fireChangeEvent(DebugEvent.CONTENT);
+							processed = true;
+							break;
 						}
-					} else {
-						mchildren = new ArrayList<>();
 					}
-
-					if (!processed) {
-						// not found, create new variable
-						ESBVariable esbVariable = new ESBVariable(
-								getDebugTarget(), name, message.get(name));
-						mchildren.add(esbVariable);
-						esbVariable.fireCreationEvent();
-					}
+				} else {
+					valueChildren = new ArrayList<>();
 				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
 
+				if (!processed) {
+					ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
+							name, message.get(name));
+					valueChildren.add(esbVariable);
+					esbVariable.fireCreationEvent();
+				}
+			}
 		}
 	}
 
-	private Map<String, String> convertJsonToMap(JSONObject responceMessage) {
-		Iterator<?> keys = responceMessage.keys();
+	/**
+	 * This method convert JSON Message to Map Object.
+	 */
+	private Map<String, String> convertJsonToMap(JSONObject responceMessage)
+			throws JSONException {
+
 		Map<String, String> message = new LinkedHashMap<>();
-		String value = "";
+		String value = EMPTY_STRING;
+		Iterator<?> keys = responceMessage.keys();
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
-			try {
-				value = responceMessage.getString(key);
-				message.put(key, value);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			value = responceMessage.getString(key);
+			message.put(key, value);
 		}
 		return message;
 	}
@@ -98,30 +99,42 @@ public class ESBValue extends ESBDebugElement implements IValue {
 		return ESBDebuggerConstants.VARIABLE_TYPE;
 	}
 
+	/**
+	 * This method returns the value contains in this ESBValue object.
+	 */
 	@Override
 	public String getValueString() throws DebugException {
-		return mValue;
+		return variableValue;
 	}
 
+	/**
+	 * This should return false if the ESBValue is Garbage Collected.
+	 */
 	@Override
 	public boolean isAllocated() throws DebugException {
 		return true;
 	}
 
+	/**
+	 * This method returns Array of child variables contain in this ESBValue.
+	 */
 	@Override
 	public IVariable[] getVariables() throws DebugException {
 
-		IVariable[] variables = new ESBVariable[mchildren.size()];
+		IVariable[] variables = new ESBVariable[valueChildren.size()];
 		int count = 0;
-		for (IVariable variable : mchildren) {
+		for (IVariable variable : valueChildren) {
 			variables[count] = variable;
 			count++;
 		}
 		return variables;
 	}
 
+	/**
+	 * This method returns true if this ESBValue has child variables
+	 */
 	@Override
 	public boolean hasVariables() throws DebugException {
-		return (mchildren != null && mchildren.size() > 0);
+		return !(valueChildren == null || valueChildren.isEmpty());
 	}
 }

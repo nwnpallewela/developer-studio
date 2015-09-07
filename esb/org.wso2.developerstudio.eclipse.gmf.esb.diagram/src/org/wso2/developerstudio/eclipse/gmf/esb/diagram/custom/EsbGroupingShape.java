@@ -33,7 +33,9 @@ public class EsbGroupingShape extends RoundedRectangle {
 		//this.setFill(false); // dont uncoment this since we need to show the selection color from botom do not repaiint
 	
 		this.setOutline(false);
-		this.setBorder(new LineBorder(new Color(null, 224, 224, 224), 2, SWT.BORDER_DASH));
+		this.setBorder(new LineBorder(
+				EditPartDrawingHelper.ComplexFigureSelectedBorderColor, 2,
+				SWT.BORDER_DASH));
 		createContents();
 	}
 

@@ -16,33 +16,60 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
+import org.codehaus.jettison.json.JSONException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * This class represents variables to show in the variable tab.
+ *
+ */
 public class ESBVariable extends ESBDebugElement implements IVariable {
 
 	private final String mName;
 	private IValue mValue;
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	protected ESBVariable(IDebugTarget target, String name, String value) throws DebugException {
+	protected ESBVariable(IDebugTarget target, String name, String value)
+			throws DebugException {
 		super(target);
 		mName = name;
 		setValue(value);
 	}
 
+	/**
+	 * Sets value of the variable when given as a String object.
+	 * 
+	 * @throws DebugException
+	 */
 	@Override
 	public void setValue(String expression) throws DebugException {
-		mValue = new ESBValue(getDebugTarget(), expression);
+		try {
+			mValue = new ESBValue(getDebugTarget(), expression);
+		} catch (JSONException e) {
+			log.warn(
+					"ESBVariable values extraction from json property messages failed",
+					e);
+		}
 	}
 
+	/**
+	 * Sets value of the variable when given as a IValue object.
+	 */
 	@Override
 	public void setValue(IValue value) {
 		mValue = value;
 	}
 
+	/**
+	 * Returns whether this variable supports value modification.
+	 */
 	@Override
 	public boolean supportsValueModification() {
 		return false;
@@ -58,24 +85,33 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 		return false;
 	}
 
+	/**
+	 * Returns the value of this variable.
+	 */
 	@Override
 	public IValue getValue() {
 		return mValue;
 	}
 
+	/**
+     * Returns the name of this variable.
+     */
 	@Override
 	public String getName() {
 		return mName;
 	}
 
+	/**
+	 * Returns a description of the type of data this variable is declared to reference.
+	 */
 	@Override
 	public String getReferenceTypeName() throws DebugException {
 		return ESBDebuggerConstants.VARIABLE_TYPE;
 	}
 
+	
 	@Override
 	public boolean hasValueChanged() throws DebugException {
 		return false;
 	}
 }
-

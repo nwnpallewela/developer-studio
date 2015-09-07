@@ -29,16 +29,15 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.MediationFlowCompleteEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -224,9 +223,13 @@ public class ESBDebugger implements IESBDebugger {
 
 		} else if (ESBDebuggerConstants.TERMINATED_EVENT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
-			// terminated();
-			System.out.println("Terminated event from esb");
+			mediationFlowCompleted();
 		}
+	}
+
+	private void mediationFlowCompleted() {
+		fireEvent(new MediationFlowCompleteEvent());
+		
 	}
 
 	private void getPropertiesFromESB() {
