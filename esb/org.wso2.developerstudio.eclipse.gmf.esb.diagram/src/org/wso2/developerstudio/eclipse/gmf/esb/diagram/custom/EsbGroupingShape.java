@@ -3,6 +3,8 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.ImageFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -16,11 +18,22 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditorPlugin;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class EsbGroupingShape extends RoundedRectangle {
 
 	RectangleFigure propertyValueRectangle1;
+	RoundedRectangle leftRectangle;
+	RoundedRectangle container;
+	private LayeredPane pane; 
+	private Layer figureLayer;
+	private Layer breakpointLayer;
+	static int Image_PreferredWidth = 75;
+	static int Image_PreferredHeight = 42;
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public EsbGroupingShape() {
 		GridLayout layoutThis = new GridLayout();
@@ -38,10 +51,73 @@ public class EsbGroupingShape extends RoundedRectangle {
 				SWT.BORDER_DASH));
 		createContents();
 	}
+	
+	public void addBreakpointMark() {
+		if (pane != null) {
+			breakpointLayer = new Layer();
+			breakpointLayer.setLayoutManager(new StackLayout());
+			GridData constraintBreakpointImageRectangle = new GridData();
+			constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.verticalSpan = 1;
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(
+							"icons/ico20debug/toggle_breakpoint_red.gif", 10,
+							10);
+//			ImageFigure iconImageFigure = EditPartDrawingHelper
+//					.getIconImageFigure(
+//							"icons/ico20debug/breakpoint_16.gif", 10,
+//							10);
+
+			RoundedRectangle mainImageRectangle = new RoundedRectangle();
+			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			mainImageRectangle.setOutline(false);
+			mainImageRectangle.setPreferredSize(new Dimension(10, 10));
+			mainImageRectangle.setAlpha(0);
+			mainImageRectangle.add(iconImageFigure);
+			iconImageFigure.translate(0, 2);
+			breakpointLayer.add(mainImageRectangle,
+					constraintBreakpointImageRectangle);
+			try {
+				container.remove(pane);
+			} catch (NullPointerException e) {
+				log.error("Mediator icon figure does not have a layer pane", e);
+			}
+			pane.add(breakpointLayer);
+			container.add(pane);
+		} else {
+			log.warn("Mediator Figure layers misplaced");
+		//	initializeShape();
+			addBreakpointMark();
+		}
+	}
+
+	public void removeBreakpointMark() {
+		try {
+			container.remove(pane);
+		} catch (NullPointerException e) {
+			log.error("Mediator icon figure does not have a layer pane", e);
+		}
+
+		try {
+			pane.remove(breakpointLayer);
+		} catch (NullPointerException e) {
+			log.error(
+					"Mediator icon layer pane does not have a breakpoint layer",
+					e);
+		}
+		container.add(pane);
+
+	}
 
 	private void createContents() {
 		// Create left side rectangle.
-		RoundedRectangle leftRectangle = new RoundedRectangle();
+		pane = new LayeredPane();
+		pane.setLayoutManager(new StackLayout());
+		figureLayer=new Layer();
+		figureLayer.setLayoutManager(new GridLayout());
+		
+		leftRectangle = new RoundedRectangle();
 		leftRectangle.setCornerDimensions(new Dimension(1, 1));
 		leftRectangle.setOutline(false);
 		leftRectangle.setFill(false);
@@ -63,7 +139,8 @@ public class EsbGroupingShape extends RoundedRectangle {
 		this.add(leftRectangle, constraintGraphicalNodeContainer);
 
 		// Create inner rectangle inside the left side rectangle.
-		RoundedRectangle container = createInnerRectangle(leftRectangle);
+		
+		container = createInnerRectangle(leftRectangle);
 
 		ImageDescriptor imgDesc = EsbDiagramEditorPlugin.getBundledImageDescriptor(getIconPath());
 
@@ -87,8 +164,7 @@ public class EsbGroupingShape extends RoundedRectangle {
 		constraintImageRectangle.verticalSpan = 2;
 		constraintImageRectangle.grabExcessHorizontalSpace = true;
 		constraintImageRectangle.grabExcessVerticalSpace = true;
-		container.add(img, constraintImageRectangle);
-
+		figureLayer.add(img, constraintImageRectangle);
 
 		// Rectangle to hold item name (ex. Aggregate, Cache, etc.).
 		RectangleFigure esbNodeTypeNameRectangle = new RectangleFigure();
@@ -114,11 +190,13 @@ public class EsbGroupingShape extends RoundedRectangle {
 		esbNodeTypeNameLabel.setFont(new Font(null, "Arial", 10, SWT.BOLD));
 		esbNodeTypeNameLabel.setAlignment(SWT.CENTER);
 		esbNodeTypeNameLabel.setPreferredSize(new Dimension(64, 20));
-
-		container.add(esbNodeTypeNameLabel, constraintEsbNodeTypeNameRectangle);
+		figureLayer.add(esbNodeTypeNameLabel, constraintEsbNodeTypeNameRectangle);
+		pane.add(figureLayer);
+		container.add(pane);
 	}
 
 	private RoundedRectangle createInnerRectangle(RoundedRectangle leftRectangle) {
+		
 		RoundedRectangle innerRect = new RoundedRectangle();
 		innerRect.setCornerDimensions(new Dimension(1, 1));
 		innerRect.setOutline(false);

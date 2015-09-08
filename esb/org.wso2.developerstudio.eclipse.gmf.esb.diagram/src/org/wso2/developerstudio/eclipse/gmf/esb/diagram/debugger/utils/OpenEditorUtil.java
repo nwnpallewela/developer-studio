@@ -47,12 +47,16 @@ public class OpenEditorUtil {
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 	private static AbstractMediator previousHitPoint;
-	
-	public static void removeBreakpointHitStatus(){
-		if(previousHitPoint!=null){
+
+	public static void removeBreakpointHitStatus() {
+		if (previousHitPoint != null) {
 			previousHitPoint.setBreakpointHitStatus(false);
 			previousHitPoint.setSelected(EditPart.SELECTED_NONE);
 		}
+	}
+
+	public static AbstractMediator getPreviousHitEditPart() {
+		return previousHitPoint;
 	}
 
 	/**
@@ -115,15 +119,21 @@ public class OpenEditorUtil {
 								.getMediatorLocator(esbServer.getType()
 										.getName());
 						if (mediatorLocator != null) {
-							if(previousHitPoint!=null){
+							if (previousHitPoint != null) {
 								previousHitPoint.setBreakpointHitStatus(false);
-								previousHitPoint.setSelected(EditPart.SELECTED_NONE);
+								previousHitPoint
+										.setSelected(EditPart.SELECTED_NONE);
 							}
 							EditPart editPart = mediatorLocator
 									.getMediatorEditPart(esbServer, event);
 							if (editPart instanceof AbstractMediator) {
 								((AbstractMediator) editPart)
 										.setBreakpointHitStatus(true);
+								while(true){
+									if(((AbstractMediator) editPart).isBreakpointHit()==true){
+										break;
+									}
+								}
 								editPart.setSelected(EditPart.SELECTED);
 								previousHitPoint = ((AbstractMediator) editPart);
 							}

@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -312,7 +313,7 @@ public class LogMediatorEditPart extends FixedSizedAbstractMediator {
 		private WrappingLabel fFigureLogCatogeryLogPropertyLabel;
 
 		private WrappingLabel fFigureLogDescriptionLabel;
-
+		
 		/**
 		 * @generated
 		 */
@@ -355,7 +356,11 @@ public class LogMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Logs a message");
+			if(StringUtils.isEmpty(toolTipMessage)){
+				return new Label("Logs a message");
+			}else{
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

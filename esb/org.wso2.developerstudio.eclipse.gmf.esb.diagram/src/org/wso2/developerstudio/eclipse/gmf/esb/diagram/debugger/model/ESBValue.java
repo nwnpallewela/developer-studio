@@ -29,7 +29,10 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 
 /**
  * This class object holds variable values to be shown in the variables table
@@ -59,6 +62,12 @@ public class ESBValue extends ESBDebugElement implements IValue {
 							variable.setValue(message.get(name));
 							((ESBVariable) variable)
 									.fireChangeEvent(DebugEvent.CONTENT);
+							if(variable.getName().equalsIgnoreCase("envelope")){
+								AbstractMediator mediator = OpenEditorUtil.getPreviousHitEditPart();
+								if(mediator instanceof FixedSizedAbstractMediator){
+									((FixedSizedAbstractMediator) mediator).getPrimaryShape().setToolTipMessage(formatMessage(message.get(name)));
+								}
+							}
 							processed = true;
 							break;
 						}
@@ -71,10 +80,31 @@ public class ESBValue extends ESBDebugElement implements IValue {
 					ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
 							name, message.get(name));
 					valueChildren.add(esbVariable);
+					if(name.equalsIgnoreCase("envelope")){
+						AbstractMediator mediator = OpenEditorUtil.getPreviousHitEditPart();
+						if(mediator instanceof FixedSizedAbstractMediator){
+							((FixedSizedAbstractMediator) mediator).getPrimaryShape().setToolTipMessage(formatMessage(message.get(name)));
+						}
+					}
 					esbVariable.fireCreationEvent();
 				}
 			}
 		}
+	}
+
+	private String formatMessage(String string) {
+		String[] envelopeAttributes = string.split("><");
+		String message = "";
+		for (String attribute : envelopeAttributes) {
+			if (attribute.startsWith("<")) {
+				message = message + attribute + ">" + "\n";
+			} else {
+				message = message + "<" + attribute + ">" + "\n";
+			}
+			System.out.println(message);
+		}
+		System.out.println(message);
+		return message;
 	}
 
 	/**

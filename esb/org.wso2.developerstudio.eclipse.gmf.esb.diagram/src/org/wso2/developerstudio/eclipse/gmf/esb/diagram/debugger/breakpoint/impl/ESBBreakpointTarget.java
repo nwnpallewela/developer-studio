@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
@@ -32,7 +33,10 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EsbGroupingShape;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FilterMediatorGraphicalShape;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -100,13 +104,31 @@ public class ESBBreakpointTarget {
 				if (existingBreakpoint == null) {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.addBreakpoint(breakpoint);
-					((FixedSizedAbstractMediator) part).getPrimaryShape()
-							.addBreakpointMark();
+					if (part instanceof FixedSizedAbstractMediator) {
+						((FixedSizedAbstractMediator) part).getPrimaryShape()
+								.addBreakpointMark();
+					}else if(part instanceof complexFiguredAbstractMediator){
+						RoundedRectangle shape=((complexFiguredAbstractMediator) part).getPrimaryShape();
+						if(shape instanceof EsbGroupingShape ){
+						((EsbGroupingShape)shape).addBreakpointMark();
+						}else if(shape instanceof FilterMediatorGraphicalShape){
+							//((FilterMediatorGraphicalShape)shape).addBreakpointMark();
+						}
+					}
 				} else {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.removeBreakpoint(existingBreakpoint, true);
-					((FixedSizedAbstractMediator) part).getPrimaryShape()
-							.removeBreakpointMark();
+					if (part instanceof FixedSizedAbstractMediator) {
+						((FixedSizedAbstractMediator) part).getPrimaryShape()
+								.removeBreakpointMark();
+					}else if(part instanceof complexFiguredAbstractMediator){
+						RoundedRectangle shape=((complexFiguredAbstractMediator) part).getPrimaryShape();
+								if(shape instanceof EsbGroupingShape ){
+								((EsbGroupingShape)shape).removeBreakpointMark();
+								}else if(shape instanceof FilterMediatorGraphicalShape){
+									//((FilterMediatorGraphicalShape)shape).addBreakpointMark();
+								}
+					}
 					// existingBreakpoint.delete();
 				}
 
