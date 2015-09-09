@@ -329,7 +329,7 @@ public class LogMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureLogCatogeryLogPropertyLabel = new WrappingLabel();
-			fFigureLogCatogeryLogPropertyLabel.setText("<...>");
+			fFigureLogCatogeryLogPropertyLabel.setText("<...>"); //$NON-NLS-1$
 			fFigureLogCatogeryLogPropertyLabel.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureLogCatogeryLogPropertyLabel);
 
@@ -348,16 +348,16 @@ public class LogMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/log-mediator.gif";
+			return "icons/ico20/log-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Log";
+			return Messages.LogMediatorEditPart_NODE_NAME;
 		}
 
 		public IFigure getToolTip() {
 			if(StringUtils.isEmpty(toolTipMessage)){
-				return new Label("Logs a message");
+				return new Label(Messages.LogMediatorEditPart_TOOL_TIP_MESSAGE);
 			}else{
 				return new Label(toolTipMessage);
 			}
