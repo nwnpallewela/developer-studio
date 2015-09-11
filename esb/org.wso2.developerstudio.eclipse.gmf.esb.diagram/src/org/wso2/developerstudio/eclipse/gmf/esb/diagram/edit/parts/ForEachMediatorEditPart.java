@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -365,7 +366,7 @@ public class ForEachMediatorEditPart extends SingleCompartmentComplexFiguredAbst
 		private void createContents() {
 
 			fFigureForEachMediatorPropertyValue = new WrappingLabel();
-			fFigureForEachMediatorPropertyValue.setText("<...>");
+			fFigureForEachMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureForEachMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -378,15 +379,20 @@ public class ForEachMediatorEditPart extends SingleCompartmentComplexFiguredAbst
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/foreach-mediator.gif";
+			return "icons/ico20/foreach-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "ForEach";
+			return Messages.ForEachMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Splits a message according to an xpath expression");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.ForEachMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

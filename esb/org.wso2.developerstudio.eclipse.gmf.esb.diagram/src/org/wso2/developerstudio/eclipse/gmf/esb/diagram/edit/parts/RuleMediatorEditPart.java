@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -325,7 +326,7 @@ public class RuleMediatorEditPart extends SingleCompartmentComplexFiguredAbstrac
 		private void createContents() {
 
 			fFigureRuleMediatorPropertyValue = new WrappingLabel();
-			fFigureRuleMediatorPropertyValue.setText("<...>");
+			fFigureRuleMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureRuleMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -338,15 +339,19 @@ public class RuleMediatorEditPart extends SingleCompartmentComplexFiguredAbstrac
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/rule-mediator.gif";
+			return "icons/ico20/rule-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Rule";
+			return Messages.RuleMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Executes Rules");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.RuleMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -275,7 +276,7 @@ public class EnqueueMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureEnqueueMediatorPropertyValue = new WrappingLabel();
-			fFigureEnqueueMediatorPropertyValue.setText("<...>");
+			fFigureEnqueueMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureEnqueueMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureEnqueueMediatorPropertyValue);
 
@@ -294,15 +295,20 @@ public class EnqueueMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/enqueue-mediator.gif";
+			return "icons/ico20/enqueue-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Enqueue";
+			return Messages.EnqueueMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Create a enqueue meadiator");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.EnqueueMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

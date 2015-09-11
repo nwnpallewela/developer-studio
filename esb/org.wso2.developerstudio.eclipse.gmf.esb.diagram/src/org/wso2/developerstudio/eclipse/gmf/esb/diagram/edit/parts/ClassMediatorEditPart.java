@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class ClassMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureClassMediatorPropertyValue = new WrappingLabel();
-			fFigureClassMediatorPropertyValue.setText("<...>");
+			fFigureClassMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureClassMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureClassMediatorPropertyValue);
 
@@ -345,15 +346,19 @@ public class ClassMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/class-mediator.gif";
+			return "icons/ico20/class-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Class";
+			return Messages.ClassMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Create and execute a custom mediator");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.ClassMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

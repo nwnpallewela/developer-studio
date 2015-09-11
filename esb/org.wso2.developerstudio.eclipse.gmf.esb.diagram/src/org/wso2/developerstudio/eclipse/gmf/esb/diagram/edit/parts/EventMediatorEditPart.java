@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class EventMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureEventMediatorPropertyValue = new WrappingLabel();
-			fFigureEventMediatorPropertyValue.setText("<...>");
+			fFigureEventMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureEventMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureEventMediatorPropertyValue);
 
@@ -345,15 +346,19 @@ public class EventMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/event-mediator.gif";
+			return "icons/ico20/event-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Event";
+			return Messages.EventMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Send event notifications to an event source");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.EventMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

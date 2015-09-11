@@ -21,6 +21,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditorPlu
 public class CloneMediatorGraphicalShape extends RoundedRectangle {
 
 	RectangleFigure propertyValueRectangle1;
+	protected String toolTipMessage;
+
+	public void setToolTipMessage(String message) {
+		toolTipMessage = message;
+	}
 
 	public CloneMediatorGraphicalShape() {
 		GridLayout layoutThis = new GridLayout();

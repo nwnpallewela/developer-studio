@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -289,7 +290,7 @@ public class URLRewriteMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureURLRewriteMediatorPropertyValue = new WrappingLabel();
-			fFigureURLRewriteMediatorPropertyValue.setText("<...>");
+			fFigureURLRewriteMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureURLRewriteMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureURLRewriteMediatorPropertyValue);
 
@@ -308,15 +309,20 @@ public class URLRewriteMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/urlRewrite-mediator.gif";
+			return "icons/ico20/urlRewrite-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "URLRewrite";
+			return Messages.URLRewriteMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("URLRewrite");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.URLRewriteMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

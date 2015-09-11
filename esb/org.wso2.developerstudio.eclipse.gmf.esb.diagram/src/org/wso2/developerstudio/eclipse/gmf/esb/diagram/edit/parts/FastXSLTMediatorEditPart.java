@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -273,11 +274,7 @@ public class FastXSLTMediatorEditPart extends FixedSizedAbstractMediator {
 	 */
 	public class FastXSLTMediatorFigure extends EsbGraphicalShapeWithLabel {
 
-		private static final String TOOL_TIP = "Fast XSLT transformations";
-
-		private static final String NODE_NAME = "Fast XSLT";
-
-		private static final String ICONS_LOCATION = "icons/ico20/fastxslt-mediator.png";
+		private static final String ICONS_LOCATION = "icons/ico20/fastxslt-mediator.png"; //$NON-NLS-1$
 
 		/**
 		 * @generated NOT
@@ -301,7 +298,7 @@ public class FastXSLTMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureFastXSLTMediatorPropertyValueLabel = new WrappingLabel();
-			fFigureFastXSLTMediatorPropertyValueLabel.setText("<...>");
+			fFigureFastXSLTMediatorPropertyValueLabel.setText("<...>"); //$NON-NLS-1$
 			fFigureFastXSLTMediatorPropertyValueLabel.setAlignment(SWT.CENTER);
 			// this.getPropertyValueRectangle1().add(fFigureXSLTMediatorPropertyValueLabel);
 
@@ -324,11 +321,16 @@ public class FastXSLTMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getNodeName() {
-			return NODE_NAME;
+			return Messages.FastXSLTMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label(TOOL_TIP);
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.FastXSLTMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

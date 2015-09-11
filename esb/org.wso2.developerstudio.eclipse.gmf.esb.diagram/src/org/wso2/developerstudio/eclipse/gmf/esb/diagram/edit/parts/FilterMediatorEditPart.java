@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -378,7 +379,7 @@ public class FilterMediatorEditPart extends MultipleCompartmentComplexFiguredAbs
 		private void createContents() {
 
 			fFigureFilterMediatorPropertyValue = new WrappingLabel();
-			fFigureFilterMediatorPropertyValue.setText("<...>");
+			fFigureFilterMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureFilterMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -391,15 +392,19 @@ public class FilterMediatorEditPart extends MultipleCompartmentComplexFiguredAbs
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/filter-mediator.gif";
+			return "icons/ico20/filter-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Filter";
+			return Messages.FilterMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Filter a messages using XPath, If else kind of logic");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.FilterMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

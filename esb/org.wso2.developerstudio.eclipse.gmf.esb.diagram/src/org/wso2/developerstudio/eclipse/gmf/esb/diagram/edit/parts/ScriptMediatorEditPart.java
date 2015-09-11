@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class ScriptMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureScriptMediatorPropertyValue = new WrappingLabel();
-			fFigureScriptMediatorPropertyValue.setText("<...>");
+			fFigureScriptMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureScriptMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureScriptMediatorPropertyValue);
 
@@ -345,15 +346,19 @@ public class ScriptMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/script-mediator.gif";
+			return "icons/ico20/script-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Script";
+			return Messages.ScriptMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Executes a mediator written in a Scripting language");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.ScriptMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

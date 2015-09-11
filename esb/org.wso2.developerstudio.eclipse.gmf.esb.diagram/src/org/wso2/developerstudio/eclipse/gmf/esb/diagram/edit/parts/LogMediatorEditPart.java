@@ -352,13 +352,13 @@ public class LogMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getNodeName() {
-			return Messages.LogMediatorEditPart_NODE_NAME;
+			return Messages.LogMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			if(StringUtils.isEmpty(toolTipMessage)){
-				return new Label(Messages.LogMediatorEditPart_TOOL_TIP_MESSAGE);
-			}else{
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.LogMediatorEditPart_ToolTipMessage);
+			} else {
 				return new Label(toolTipMessage);
 			}
 		}

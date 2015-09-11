@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -296,7 +297,7 @@ public class PayloadFactoryMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigurePayloadFactoryMediatorPropertyValue = new WrappingLabel();
-			fFigurePayloadFactoryMediatorPropertyValue.setText("<...>");
+			fFigurePayloadFactoryMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigurePayloadFactoryMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigurePayloadFactoryMediatorPropertyValue);
 
@@ -315,16 +316,23 @@ public class PayloadFactoryMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/payloadFactory-mediator.gif";
+			return "icons/ico20/payloadFactory-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "PayloadFactory";
+			return Messages.PayloadFactoryMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("PayloadFactory");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.PayloadFactoryMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
+
 		}
+		
 
 	}
 

@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -310,7 +311,7 @@ public class BuilderMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureBuilderMediatorPropertyValue = new WrappingLabel();
-			fFigureBuilderMediatorPropertyValue.setText("<...>");
+			fFigureBuilderMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureBuilderMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureBuilderMediatorPropertyValue);
 
@@ -329,15 +330,20 @@ public class BuilderMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/builder-mediator.gif";
+			return "icons/ico20/builder-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Builder";
+			return Messages.BuilderMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Builder");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.BuilderMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -297,7 +298,7 @@ public class BAMMediatorEditPart extends FixedSizedAbstractMediator {
 		 */
 		private void createContents() {
 			WrappingLabel bAMPropertyLabel0 = new WrappingLabel();
-			bAMPropertyLabel0.setText("<...>");
+			bAMPropertyLabel0.setText("<...>"); //$NON-NLS-1$
 			bAMPropertyLabel0.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(bAMPropertyLabel0);
 
@@ -309,15 +310,20 @@ public class BAMMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/bam-mediator.gif";
+			return "icons/ico20/bam-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "BAM";
+			return Messages.BAMMediatorEditPart_NodeName;
 		}
 
+		
 		public IFigure getToolTip() {
-			return new Label("BAM");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.BAMMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

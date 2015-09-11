@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -311,16 +312,19 @@ public class CallMediatorEditPart extends SingleCompartmentComplexFiguredAbstrac
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/call-mediator.gif";
+			return "icons/ico20/call-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Call";
+			return Messages.CallMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label(
-					"Send messages out of the ESB to an endpoint and invokes the service in a synchronous manner");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.CallMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

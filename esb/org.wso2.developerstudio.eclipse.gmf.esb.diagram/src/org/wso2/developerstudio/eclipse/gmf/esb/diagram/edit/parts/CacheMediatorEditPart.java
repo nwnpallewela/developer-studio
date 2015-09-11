@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -366,7 +367,7 @@ public class CacheMediatorEditPart extends SingleCompartmentComplexFiguredAbstra
 		private void createContents() {
 
 			fFigureCacheMediatorPropertyValue = new WrappingLabel();
-			fFigureCacheMediatorPropertyValue.setText("<...>");
+			fFigureCacheMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureCacheMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -379,15 +380,19 @@ public class CacheMediatorEditPart extends SingleCompartmentComplexFiguredAbstra
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/cache-mediator.gif";
+			return "icons/ico20/cache-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Cache";
+			return Messages.CacheMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Evaluate messages based on weather the same message came to the ESB");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.CacheMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

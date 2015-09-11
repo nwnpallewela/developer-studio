@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -335,7 +336,7 @@ public class XQueryMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureXQueryMediatorPropertyValue = new WrappingLabel();
-			fFigureXQueryMediatorPropertyValue.setText("<...>");
+			fFigureXQueryMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureXQueryMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureXQueryMediatorPropertyValue);
 
@@ -354,15 +355,19 @@ public class XQueryMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/xquery-mediator.gif";
+			return "icons/ico20/xquery-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "XQuery";
+			return Messages.XQueryMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("XQuey");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.XQueryMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 	}
 

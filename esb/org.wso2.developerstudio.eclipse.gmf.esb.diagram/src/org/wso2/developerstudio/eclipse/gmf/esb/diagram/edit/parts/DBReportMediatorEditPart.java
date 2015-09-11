@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class DBReportMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureDBReportMediatorPropertyValue = new WrappingLabel();
-			fFigureDBReportMediatorPropertyValue.setText("<...>");
+			fFigureDBReportMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureDBReportMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureDBReportMediatorPropertyValue);
 
@@ -345,15 +346,20 @@ public class DBReportMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/dbreport-mediator.gif";
+			return "icons/ico20/dbreport-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "DBReport";
+			return Messages.DBReportMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Writes data to a database");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.DBReportMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

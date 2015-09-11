@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -373,7 +374,7 @@ public class ThrottleMediatorEditPart extends MultipleCompartmentComplexFiguredA
 		private void createContents() {
 
 			fFigureThrottleMediatorPropertyValue = new WrappingLabel();
-			fFigureThrottleMediatorPropertyValue.setText("<...>");
+			fFigureThrottleMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureThrottleMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -386,15 +387,20 @@ public class ThrottleMediatorEditPart extends MultipleCompartmentComplexFiguredA
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/throttle-mediator.gif";
+			return "icons/ico20/throttle-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Throttle";
+			return Messages.ThrottleMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Limit the number of messages");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.ThrottleMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

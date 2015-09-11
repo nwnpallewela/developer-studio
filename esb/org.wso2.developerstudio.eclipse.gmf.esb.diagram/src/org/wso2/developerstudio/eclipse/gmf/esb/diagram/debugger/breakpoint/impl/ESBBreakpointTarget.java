@@ -40,6 +40,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbs
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
@@ -104,32 +105,12 @@ public class ESBBreakpointTarget {
 				if (existingBreakpoint == null) {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.addBreakpoint(breakpoint);
-					if (part instanceof FixedSizedAbstractMediator) {
-						((FixedSizedAbstractMediator) part).getPrimaryShape()
-								.addBreakpointMark();
-					}else if(part instanceof complexFiguredAbstractMediator){
-						RoundedRectangle shape=((complexFiguredAbstractMediator) part).getPrimaryShape();
-						if(shape instanceof EsbGroupingShape ){
-						((EsbGroupingShape)shape).addBreakpointMark();
-						}else if(shape instanceof FilterMediatorGraphicalShape){
-							//((FilterMediatorGraphicalShape)shape).addBreakpointMark();
-						}
-					}
+					ESBDebugerUtil.addBreakpointMark(part);
 				} else {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.removeBreakpoint(existingBreakpoint, true);
-					if (part instanceof FixedSizedAbstractMediator) {
-						((FixedSizedAbstractMediator) part).getPrimaryShape()
-								.removeBreakpointMark();
-					}else if(part instanceof complexFiguredAbstractMediator){
-						RoundedRectangle shape=((complexFiguredAbstractMediator) part).getPrimaryShape();
-								if(shape instanceof EsbGroupingShape ){
-								((EsbGroupingShape)shape).removeBreakpointMark();
-								}else if(shape instanceof FilterMediatorGraphicalShape){
-									//((FilterMediatorGraphicalShape)shape).addBreakpointMark();
-								}
-					}
-					// existingBreakpoint.delete();
+					ESBDebugerUtil.removeBreakpointMark(part);
+
 				}
 
 			}

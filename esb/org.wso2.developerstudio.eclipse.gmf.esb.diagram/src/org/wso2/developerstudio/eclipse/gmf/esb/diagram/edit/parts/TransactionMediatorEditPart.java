@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -288,7 +289,7 @@ public class TransactionMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureTransactionMediatorPropertyValue = new WrappingLabel();
-			fFigureTransactionMediatorPropertyValue.setText("<...>");
+			fFigureTransactionMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureTransactionMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureTransactionMediatorPropertyValue);
 
@@ -307,15 +308,20 @@ public class TransactionMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/transaction-mediator.gif";
+			return "icons/ico20/transaction-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Transaction";
+			return Messages.TransactionMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Executes a set of mediators transactionally");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.TransactionMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

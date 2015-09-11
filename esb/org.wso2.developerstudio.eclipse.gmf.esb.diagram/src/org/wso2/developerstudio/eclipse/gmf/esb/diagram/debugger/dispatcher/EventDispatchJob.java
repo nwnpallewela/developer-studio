@@ -30,15 +30,15 @@ public class EventDispatchJob extends Job {
 
 	private final List<IDebugEvent> mEvents = new ArrayList<IDebugEvent>();
 	private boolean mTerminated = false;
-	private final IEventProcessor mHost;
-	private final IEventProcessor mDebugger;
+	private final IEventProcessor debugTarget;
+	private final IEventProcessor debugger;
 
-	public EventDispatchJob(final IEventProcessor host,
+	public EventDispatchJob(final IEventProcessor debugTarget,
 			final IEventProcessor debugger) {
 		super("ESB Mediation Debugger event dispatcher");
 
-		mHost = host;
-		mDebugger = debugger;
+		this.debugTarget = debugTarget;
+		this.debugger = debugger;
 
 		setSystem(true);
 	}
@@ -88,9 +88,9 @@ public class EventDispatchJob extends Job {
 	private void handleEvent(final IDebugEvent event) {
 		// forward event handling to target
 		if (event instanceof IModelRequest) {
-			mDebugger.handleEvent(event);
+			debugger.handleEvent(event);
 		} else if (event instanceof IDebugEvent) {
-			mHost.handleEvent(event);
+			debugTarget.handleEvent(event);
 		} else {
 			throw new RuntimeException("Unknown event detected: " + event);
 		}

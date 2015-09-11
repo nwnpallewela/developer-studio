@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -336,7 +337,7 @@ public class FaultMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureFaultMediatorPropertyValue = new WrappingLabel();
-			fFigureFaultMediatorPropertyValue.setText("<...>");
+			fFigureFaultMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureFaultMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureFaultMediatorPropertyValue);
 
@@ -355,15 +356,19 @@ public class FaultMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/fault-mediator.gif";
+			return "icons/ico20/fault-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Fault";
+			return Messages.FaultMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Create SOAP Faults");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.FaultMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

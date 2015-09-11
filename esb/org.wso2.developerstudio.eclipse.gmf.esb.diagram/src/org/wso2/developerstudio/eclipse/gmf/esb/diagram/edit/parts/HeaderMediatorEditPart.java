@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class HeaderMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureHeaderMediatorPropertyValue = new WrappingLabel();
-			fFigureHeaderMediatorPropertyValue.setText("<...>");
+			fFigureHeaderMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureHeaderMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureHeaderMediatorPropertyValue);
 
@@ -345,15 +346,20 @@ public class HeaderMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/header-mediator.gif";
+			return "icons/ico20/header-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Header";
+			return Messages.HeaderMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Sets or remove SOAP headers");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.HeaderMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
+
 		}
 
 	}

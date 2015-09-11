@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class OAuthMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureOAuthMediatorPropertyValue = new WrappingLabel();
-			fFigureOAuthMediatorPropertyValue.setText("<...>");
+			fFigureOAuthMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureOAuthMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureOAuthMediatorPropertyValue);
 
@@ -345,15 +346,20 @@ public class OAuthMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/oauth-mediator.gif";
+			return "icons/ico20/oauth-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "OAuth";
+			return Messages.OAuthMediatorEditPart_NodeName;
 		}
 
+		
 		public IFigure getToolTip() {
-			return new Label("2-legged OAuth support");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.OAuthMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

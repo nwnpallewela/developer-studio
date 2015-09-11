@@ -1,7 +1,9 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RoundedRectangle;
@@ -368,7 +370,7 @@ public class AggregateMediatorEditPart extends SingleCompartmentComplexFiguredAb
 		private void createContents() {
 
 			fFigureAggregateMediatorPropertyValue = new WrappingLabel();
-			fFigureAggregateMediatorPropertyValue.setText("<...>");
+			fFigureAggregateMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureAggregateMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 		}
@@ -378,6 +380,15 @@ public class AggregateMediatorEditPart extends SingleCompartmentComplexFiguredAb
 		 */
 		public WrappingLabel getFigureAggregateMediatorPropertyValue() {
 			return fFigureAggregateMediatorPropertyValue;
+		}
+
+		public IFigure getToolTip() {
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.AggregateMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

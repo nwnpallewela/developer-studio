@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -284,7 +285,7 @@ public class SmooksMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureSmooksMediatorPropertyValue = new WrappingLabel();
-			fFigureSmooksMediatorPropertyValue.setText("<...>");
+			fFigureSmooksMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureSmooksMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureSmooksMediatorPropertyValue);
 
@@ -303,16 +304,21 @@ public class SmooksMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/smooks-mediator.gif";
+			return "icons/ico20/smooks-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Smooks";
+			return Messages.SmooksMediatorEditPart_NodeName;
 		}
-
+		
 		public IFigure getToolTip() {
-			return new Label("Create a smooks meadiator");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.SmooksMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
+		
 
 	}
 

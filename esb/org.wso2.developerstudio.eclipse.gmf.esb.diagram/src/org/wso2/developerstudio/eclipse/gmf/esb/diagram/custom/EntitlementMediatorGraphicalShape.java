@@ -37,6 +37,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditorPlu
 public class EntitlementMediatorGraphicalShape extends RoundedRectangle{
 
 	RectangleFigure propertyValueRectangle1;
+	protected String toolTipMessage;
+
+	public void setToolTipMessage(String message) {
+		toolTipMessage = message;
+	}
 
 	public EntitlementMediatorGraphicalShape() {
 		GridLayout layoutThis = new GridLayout();

@@ -168,6 +168,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void sendGetPropertiesCommand(Map<String, String> attributeValues) {
+		
 		try {
 			fRequestWriter.println(messageChannel
 					.createGetPropertiesCommand(attributeValues));

@@ -7,6 +7,7 @@ import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtil
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -94,7 +95,7 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 	 */
 	protected IFigure contentPane;
 
-	private static IDeveloperStudioLog log = Logger.getLog("org.wso2.developerstudio.eclipse.gmf.esb.diagram");
+	private static IDeveloperStudioLog log = Logger.getLog("org.wso2.developerstudio.eclipse.gmf.esb.diagram"); //$NON-NLS-1$
 
 	/**
 	 * @generated
@@ -319,17 +320,17 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 		artifact.setName(name);
 		artifact.setVersion(version);
 		artifact.setType(type);
-		artifact.setServerRole("EnterpriseServiceBus");
+		artifact.setServerRole("EnterpriseServiceBus"); //$NON-NLS-1$
 		artifact.setGroupId(groupId);
 		artifact.setFile(path);
 		return artifact;
 	}
 
 	private String getMavenGroupID(IProject project) {
-		String groupID = "com.example";
+		String groupID = "com.example"; //$NON-NLS-1$
 		try {
-			MavenProject mavenProject = MavenUtils.getMavenProject(project.getFile("pom.xml").getLocation().toFile());
-			groupID = mavenProject.getGroupId() + ".template";
+			MavenProject mavenProject = MavenUtils.getMavenProject(project.getFile("pom.xml").getLocation().toFile()); //$NON-NLS-1$
+			groupID = mavenProject.getGroupId() + ".template"; //$NON-NLS-1$
 		} catch (Exception e) {
 			//ignore. Then group id would be default. 
 		}
@@ -341,26 +342,26 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 		IProject activeProject = getActiveProject();
 		ESBProjectArtifact esbProjectArtifact = new ESBProjectArtifact();
 		try {
-			esbProjectArtifact.fromFile(activeProject.getFile("artifact.xml").getLocation().toFile());
-			esbProjectArtifact.addESBArtifact(createArtifact(templateName, getMavenGroupID(activeProject), "1.0.0",
-					"src/main/synapse-config/templates/" + templateName + ".xml", "synapse/sequenceTemplate"));
+			esbProjectArtifact.fromFile(activeProject.getFile("artifact.xml").getLocation().toFile()); //$NON-NLS-1$
+			esbProjectArtifact.addESBArtifact(createArtifact(templateName, getMavenGroupID(activeProject), "1.0.0", //$NON-NLS-1$
+					"src/main/synapse-config/templates/" + templateName + ".xml", "synapse/sequenceTemplate")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			esbProjectArtifact.toFile();
 		} catch (Exception e) {
-			log.error("Error while updating Artifact.xml");
+			log.error("Error while updating Artifact.xml"); //$NON-NLS-1$
 		}
 	}
 
 	public boolean createAndOpenFile(String name, String fileURI1, String fileURI2, IProject currentProject) {
-		IFile file = currentProject.getFile(TEMPLATE_RESOURCE_DIR + "/" + fileURI1);
+		IFile file = currentProject.getFile(TEMPLATE_RESOURCE_DIR + "/" + fileURI1); //$NON-NLS-1$
 		if (!file.exists()) {
-			IFile fileTobeOpened = currentProject.getFile(SYNAPSE_CONFIG_DIR + "/templates/" + name + ".xml");
+			IFile fileTobeOpened = currentProject.getFile(SYNAPSE_CONFIG_DIR + "/templates/" + name + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
 			try {
 				if (fileTobeOpened.exists()) {
 					OpenEditorUtils oeUtils = new OpenEditorUtils();
 					oeUtils.openSeparateEditor(fileTobeOpened);
 				} else {
 					addSequenceToArtifactXML(name);
-					String path = fileTobeOpened.getParent().getFullPath() + "/";
+					String path = fileTobeOpened.getParent().getFullPath() + "/"; //$NON-NLS-1$
 					ArtifactTemplate sequenceArtifactTemplate = TemplateList.getArtifactTemplates()[0];
 					fileTobeOpened.create(sequenceArtifactTemplate.getTemplateDataStream(), true,
 							new NullProgressMonitor());
@@ -371,7 +372,7 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 							source);
 				}
 			} catch (Exception e) {
-				log.error("Cannot open file " + fileTobeOpened, e);
+				log.error("Cannot open file " + fileTobeOpened, e); //$NON-NLS-1$
 				return false;
 			}
 			return true;
@@ -383,7 +384,7 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 			try {
 				page.openEditor(new FileEditorInput(file), desc.getId());
 			} catch (PartInitException e) {
-				log.error("Cannot init editor", e);
+				log.error("Cannot init editor", e); //$NON-NLS-1$
 			}
 			return true;
 		}
@@ -398,24 +399,24 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 		/*
 		 * File creations.
 		 */
-		createAndOpenFile(name, "template_" + name + ".esb_diagram", "template_" + name + ".esb", activeProject);
+		createAndOpenFile(name, "template_" + name + ".esb_diagram", "template_" + name + ".esb", activeProject); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		//EditorUtils.updateToolpalette();
 
 	}
 
 	public String calculateDefaultName() {
 		IProject activeProject = EditorUtils.getActiveProject();
-		String finalName = "Sequence_Template_1";
+		String finalName = "Sequence_Template_1"; //$NON-NLS-1$
 		int i = 1;
 
 		try {
 			while (ESBProjectUtils.artifactExists(activeProject, finalName)) {
-				finalName = finalName.replaceAll("\\d+$", "");
+				finalName = finalName.replaceAll("\\d+$", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				i++;
-				finalName = finalName.concat(i + "");
+				finalName = finalName.concat(i + ""); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
-			finalName = finalName.concat("_").concat(RandomStringUtils.randomAlphabetic(5)).concat("_" + i);
+			finalName = finalName.concat("_").concat(RandomStringUtils.randomAlphabetic(5)).concat("_" + i); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return finalName;
 	}
@@ -426,22 +427,22 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 				.getElement();
 
 		// For validation: user should not enter "" value for name.
-		if (((CallTemplateMediator) callTemplate).getTargetTemplate().trim().equals("")) {
+		if (((CallTemplateMediator) callTemplate).getTargetTemplate().trim().equals("")) { //$NON-NLS-1$
 			IInputValidator validator = new IInputValidator() {
 
 				public String isValid(String str) {
 					if (str.trim().isEmpty()) {
-						return "Target Template cannot be empty";
+						return "Target Template cannot be empty"; //$NON-NLS-1$
 					} else if (str.indexOf(0x20) != -1) {
-						return "Target Template cannot contain spaces";
+						return "Target Template cannot contain spaces"; //$NON-NLS-1$
 					}
 					return null;
 				}
 
 			};
 			String defaultName = calculateDefaultName();
-			final InputDialog templateNameInput = new InputDialog(new Shell(), "Enter Target Template",
-					"Target Template", defaultName, validator) {
+			final InputDialog templateNameInput = new InputDialog(new Shell(), "Enter Target Template", //$NON-NLS-1$
+					"Target Template", defaultName, validator) { //$NON-NLS-1$
 				protected Control createDialogArea(Composite parent) {
 					Composite composite = (Composite) super.createDialogArea(parent);
 					return composite;
@@ -506,7 +507,7 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureCallTemplateMediatorPropertyValue = new WrappingLabel();
-			fFigureCallTemplateMediatorPropertyValue.setText("<...>");
+			fFigureCallTemplateMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureCallTemplateMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureCallTemplateMediatorPropertyValue);
 
@@ -525,15 +526,20 @@ public class CallTemplateMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/callTemplate-mediator.gif";
+			return "icons/ico20/callTemplate-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "CallTemplate";
+			return Messages.CallTemplateMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("CallTemplate");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.CallTemplateMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

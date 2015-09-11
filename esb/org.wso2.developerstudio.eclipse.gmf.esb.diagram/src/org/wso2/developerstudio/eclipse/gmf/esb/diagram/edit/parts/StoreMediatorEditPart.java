@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -311,7 +312,7 @@ public class StoreMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureStoreMediatorPropertyValue = new WrappingLabel();
-			fFigureStoreMediatorPropertyValue.setText("<...>");
+			fFigureStoreMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureStoreMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureStoreMediatorPropertyValue);
 
@@ -330,15 +331,19 @@ public class StoreMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/store-mediator.gif";
+			return "icons/ico20/store-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Store";
+			return Messages.StoreMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Create Mediator to Store messages in a Message store");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.StoreMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

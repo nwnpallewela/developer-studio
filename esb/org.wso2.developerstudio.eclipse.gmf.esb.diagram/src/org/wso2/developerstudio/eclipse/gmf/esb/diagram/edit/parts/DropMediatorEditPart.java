@@ -331,6 +331,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
  * }
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -601,7 +602,7 @@ public class DropMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fDropMediatorLabelFigure = new WrappingLabel();
-			fDropMediatorLabelFigure.setText("");
+			fDropMediatorLabelFigure.setText(""); //$NON-NLS-1$
 			fDropMediatorLabelFigure.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fDropMediatorLabelFigure);
 
@@ -620,15 +621,19 @@ public class DropMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/drop-mediator.gif";
+			return "icons/ico20/drop-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Drop";
+			return Messages.DropMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Drops a message");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.DropMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

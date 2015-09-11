@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -342,7 +343,7 @@ public class ConditionalRouterMediatorEditPart extends FixedSizedAbstractMediato
 		private void createContents() {
 
 			fFigureConditionalRouterPropertyValue = new WrappingLabel();
-			fFigureConditionalRouterPropertyValue.setText("<...>");
+			fFigureConditionalRouterPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureConditionalRouterPropertyValue.setAlignment(SWT.CENTER);
 
 			fFigureConditionalRouterDescriptionLabel = getPropertyNameLabel();
@@ -361,15 +362,20 @@ public class ConditionalRouterMediatorEditPart extends FixedSizedAbstractMediato
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/conditionalRouter-mediator.gif";
+			return "icons/ico20/conditionalRouter-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "ConditionalRouter";
+			return Messages.ConditionalRouterMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Route messages based on 'Condition'");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.ConditionalRouterMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -389,7 +390,7 @@ public class EntitlementMediatorEditPart extends MultipleCompartmentComplexFigur
 		private void createContents() {
 
 			fFigureEntitlementMediatorPropertyValue = new WrappingLabel();
-			fFigureEntitlementMediatorPropertyValue.setText("<...>");
+			fFigureEntitlementMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureEntitlementMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureEntitlementMediatorPropertyValue);
 
@@ -408,15 +409,20 @@ public class EntitlementMediatorEditPart extends MultipleCompartmentComplexFigur
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/entitlement-mediator.gif";
+			return "icons/ico20/entitlement-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Entitlement";
+			return Messages.EntitlementMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Fine grain authorization");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.EntitlementMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

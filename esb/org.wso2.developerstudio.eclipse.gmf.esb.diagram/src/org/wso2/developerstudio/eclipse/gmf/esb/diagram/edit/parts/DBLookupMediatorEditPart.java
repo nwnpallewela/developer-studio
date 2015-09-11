@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -327,7 +328,7 @@ public class DBLookupMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureDBLookupMediatorPropertyValue = new WrappingLabel();
-			fFigureDBLookupMediatorPropertyValue.setText("<...>");
+			fFigureDBLookupMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureDBLookupMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureDBLookupMediatorPropertyValue);
 
@@ -346,15 +347,20 @@ public class DBLookupMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/dblookup-mediator.gif";
+			return "icons/ico20/dblookup-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "DBLookup";
+			return Messages.DBLookupMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Retrieve information from a database");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.DBLookupMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

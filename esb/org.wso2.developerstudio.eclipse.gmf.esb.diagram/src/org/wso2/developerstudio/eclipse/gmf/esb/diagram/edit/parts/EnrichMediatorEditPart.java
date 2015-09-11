@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -325,7 +326,7 @@ public class EnrichMediatorEditPart extends FixedSizedAbstractMediator {
 		 */
 		private void createContents() {
 			fFigureEnrichMediatorPropertyValue = new WrappingLabel();
-			fFigureEnrichMediatorPropertyValue.setText("<...>");
+			fFigureEnrichMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureEnrichMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureEnrichMediatorPropertyValue);
 
@@ -344,15 +345,19 @@ public class EnrichMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/enrich-mediator.gif";
+			return "icons/ico20/enrich-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Enrich";
+			return Messages.EnrichMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Enriches a message");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.EnrichMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

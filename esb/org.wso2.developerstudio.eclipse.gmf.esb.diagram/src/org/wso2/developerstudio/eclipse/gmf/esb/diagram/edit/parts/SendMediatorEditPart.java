@@ -2,6 +2,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
@@ -61,6 +62,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.policies.SendMediat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.policies.SendMediatorItemSemanticEditPolicy;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbVisualIDRegistry;
+
 import static org.wso2.developerstudio.eclipse.gmf.esb.EsbPackage.Literals.END_POINT__IN_LINE;
 
 /**
@@ -454,7 +456,7 @@ public class SendMediatorEditPart extends SingleCompartmentComplexFiguredAbstrac
 		private void createContents() {
 
 			fFigureSendMediatorPropertyValue = new WrappingLabel();
-			fFigureSendMediatorPropertyValue.setText("<...>");
+			fFigureSendMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureSendMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureSendMediatorPropertyValue);
 
@@ -473,17 +475,20 @@ public class SendMediatorEditPart extends SingleCompartmentComplexFiguredAbstrac
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/send-mediator.gif";
+			return "icons/ico20/send-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Send";
+			return Messages.SendMediatorEditPart_NodeName;
 		}
-
+		
 		public IFigure getToolTip() {
-			return new Label("Send a message out");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.SendMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
-
 	}
 
 	/**

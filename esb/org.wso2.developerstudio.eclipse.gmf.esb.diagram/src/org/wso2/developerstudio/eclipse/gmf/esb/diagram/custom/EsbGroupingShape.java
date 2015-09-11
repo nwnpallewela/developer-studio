@@ -34,7 +34,12 @@ public class EsbGroupingShape extends RoundedRectangle {
 	static int Image_PreferredWidth = 75;
 	static int Image_PreferredHeight = 42;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
-
+	protected String toolTipMessage;
+	
+	public void setToolTipMessage(String message){
+		toolTipMessage = message;
+	}
+	
 	public EsbGroupingShape() {
 		GridLayout layoutThis = new GridLayout();
 		layoutThis.numColumns = 2;

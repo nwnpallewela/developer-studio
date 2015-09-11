@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -376,7 +377,7 @@ public class SwitchMediatorEditPart extends MultipleCompartmentComplexFiguredAbs
 		private void createContents() {
 
 			fFigureSwitchMediatorPropertyValue = new WrappingLabel();
-			fFigureSwitchMediatorPropertyValue.setText("<...>");
+			fFigureSwitchMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			//this.add(fFigureSwitchMediatorPropertyValue);
 
 		}
@@ -389,15 +390,19 @@ public class SwitchMediatorEditPart extends MultipleCompartmentComplexFiguredAbs
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/switch-mediator.gif";
+			return "icons/ico20/switch-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Switch";
+			return Messages.SwitchMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Filter messages using XPath, Switch logic");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.SwitchMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

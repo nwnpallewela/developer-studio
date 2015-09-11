@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -279,7 +280,7 @@ public class XSLTMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureXSLTMediatorPropertyValueLabel = new WrappingLabel();
-			fFigureXSLTMediatorPropertyValueLabel.setText("<...>");
+			fFigureXSLTMediatorPropertyValueLabel.setText("<...>"); //$NON-NLS-1$
 			fFigureXSLTMediatorPropertyValueLabel.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureXSLTMediatorPropertyValueLabel);
 
@@ -298,15 +299,19 @@ public class XSLTMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/xslt-mediator.gif";
+			return "icons/ico20/xslt-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "XSLT";
+			return Messages.XSLTMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("XSLT transformations");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.XSLTMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

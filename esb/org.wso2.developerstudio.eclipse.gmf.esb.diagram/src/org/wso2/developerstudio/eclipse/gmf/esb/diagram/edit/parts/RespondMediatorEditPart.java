@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -334,16 +335,20 @@ public class RespondMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/respond-mediator.gif";
+			return "icons/ico20/respond-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Respond";
+			return Messages.RespondMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label(
-					"Stops the processing on the current message and sends the message back to the client as a response");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.RespondMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

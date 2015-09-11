@@ -3,6 +3,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -488,7 +489,7 @@ public class CloneMediatorEditPart extends MultipleCompartmentComplexFiguredAbst
 		private void createContents() {
 
 			fFigureCloneMediatorPropertyValue = new WrappingLabel();
-			fFigureCloneMediatorPropertyValue.setText("<...>");
+			fFigureCloneMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			//fFigureCloneMediatorPropertyValue.setAlignment(SWT.CENTER);
 
 			//	this.getPropertyValueRectangle1().add(
@@ -504,15 +505,19 @@ public class CloneMediatorEditPart extends MultipleCompartmentComplexFiguredAbst
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/clone-mediator.gif";
+			return "icons/ico20/clone-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Clone";
+			return Messages.CloneMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Clones a message");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(Messages.CloneMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 	}
 

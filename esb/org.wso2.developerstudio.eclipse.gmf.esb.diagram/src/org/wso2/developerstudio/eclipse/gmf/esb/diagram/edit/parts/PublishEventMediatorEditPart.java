@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.FlowLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -323,7 +324,7 @@ public class PublishEventMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			WrappingLabel publishEventPropertyLabel0 = new WrappingLabel();
-			publishEventPropertyLabel0.setText("<...>");
+			publishEventPropertyLabel0.setText("<...>"); //$NON-NLS-1$
 			publishEventPropertyLabel0.setAlignment(SWT.CENTER);
 
 			fFigurePublishEventMediatorDescriptionFigure = getPropertyNameLabel();
@@ -334,15 +335,20 @@ public class PublishEventMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/publishevent-mediator.gif";
+			return "icons/ico20/publishevent-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "PublishEvent";
+			return Messages.PublishEventMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Publishes events to a stream");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.PublishEventMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

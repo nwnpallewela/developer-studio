@@ -1,5 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -326,7 +327,7 @@ public class CalloutMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigureCalloutMediatorPropertyValue = new WrappingLabel();
-			fFigureCalloutMediatorPropertyValue.setText("<...>");
+			fFigureCalloutMediatorPropertyValue.setText("<...>"); //$NON-NLS-1$
 			fFigureCalloutMediatorPropertyValue.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigureCalloutMediatorPropertyValue);
 
@@ -345,15 +346,20 @@ public class CalloutMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/callout-mediator.gif";
+			return "icons/ico20/callout-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Callout";
+			return Messages.CalloutMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Blocking web services calls");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.CalloutMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}

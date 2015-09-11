@@ -403,6 +403,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts;
  * }
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.PositionConstants;
@@ -729,7 +730,7 @@ public class PropertyMediatorEditPart extends FixedSizedAbstractMediator {
 		private void createContents() {
 
 			fFigurePropertyMediatorPropertyValueLabel = new WrappingLabel();
-			fFigurePropertyMediatorPropertyValueLabel.setText("<...>");
+			fFigurePropertyMediatorPropertyValueLabel.setText("<...>"); //$NON-NLS-1$
 			fFigurePropertyMediatorPropertyValueLabel.setAlignment(SWT.CENTER);
 			//this.getPropertyValueRectangle1().add(fFigurePropertyMediatorPropertyValueLabel);
 
@@ -748,15 +749,20 @@ public class PropertyMediatorEditPart extends FixedSizedAbstractMediator {
 		}
 
 		public String getIconPath() {
-			return "icons/ico20/property-mediator.gif";
+			return "icons/ico20/property-mediator.gif"; //$NON-NLS-1$
 		}
 
 		public String getNodeName() {
-			return "Property";
+			return Messages.PropertyMediatorEditPart_NodeName;
 		}
 
 		public IFigure getToolTip() {
-			return new Label("Set or remove properties associated with the message");
+			if (StringUtils.isEmpty(toolTipMessage)) {
+				return new Label(
+						Messages.PropertyMediatorEditPart_ToolTipMessage);
+			} else {
+				return new Label(toolTipMessage);
+			}
 		}
 
 	}
