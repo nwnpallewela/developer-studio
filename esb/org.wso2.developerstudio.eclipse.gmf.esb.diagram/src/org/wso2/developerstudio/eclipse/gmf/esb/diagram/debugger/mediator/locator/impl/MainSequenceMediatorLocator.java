@@ -36,10 +36,9 @@ public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			SuspendedEvent event) {
+			Map<String, String> info) {
 
 		EditPart editPart = null;
-		Map<String, String> info = event.getDetail();
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
 			String position = info.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 			String[] positionArray = position

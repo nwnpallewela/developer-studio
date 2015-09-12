@@ -31,10 +31,9 @@ public class ProxyMediatorLocator extends AbstractMediatorLocator {
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			SuspendedEvent event) {
+			Map<String, String> info) {
 
 		EditPart editPart = null;
-		Map<String, String> info = event.getDetail();
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
 				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {

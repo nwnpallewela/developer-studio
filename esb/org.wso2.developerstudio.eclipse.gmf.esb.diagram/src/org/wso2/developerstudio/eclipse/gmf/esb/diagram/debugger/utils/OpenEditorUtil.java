@@ -125,7 +125,7 @@ public class OpenEditorUtil {
 										.setSelected(EditPart.SELECTED_NONE);
 							}
 							EditPart editPart = mediatorLocator
-									.getMediatorEditPart(esbServer, event);
+									.getMediatorEditPart(esbServer, event.getDetail());
 							if (editPart instanceof AbstractMediator) {
 								((AbstractMediator) editPart)
 										.setBreakpointHitStatus(true);

@@ -41,6 +41,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -94,6 +96,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.Sequence;
 import org.wso2.developerstudio.eclipse.gmf.esb.Sequences;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.ExceptionMessageMapper;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.cloudconnector.CloudConnectorDirectoryTraverser;
@@ -101,6 +104,10 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Abst
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SequenceEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.persistence.EsbModelTransformer;
 import org.wso2.developerstudio.eclipse.gmf.esb.persistence.SequenceInfo;
@@ -526,8 +533,52 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 						}
 
 						EditorUtils.setLockmode(graphicalEditor, false);
-
+						EsbDiagram diagram = (EsbDiagram) graphicalEditor
+								.getDiagram().getElement();
+						EsbServer server = diagram.getServer();
+						addDesignViewBreakpoints(server);
 					}
+
+					private void addDesignViewBreakpoints(EsbServer server) {
+						IEditorInput editorInput = getEditorInput();
+						if (editorInput instanceof FileEditorInput) {
+							IFile file = ((FileEditorInput) editorInput)
+									.getFile();
+							IMediatorLocator mediatorLocator = MediatorLocatorFactory
+									.getMediatorLocator(server.getType()
+											.getName());
+							if (mediatorLocator != null) {
+								addBreakpointMarkForExistingBreakpoints(server,
+										file, mediatorLocator);
+							}
+						}
+					}
+
+					private void addBreakpointMarkForExistingBreakpoints(
+							EsbServer server, IFile file,
+							IMediatorLocator mediatorLocator) {
+						IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+								.getBreakpointManager()
+								.getBreakpoints(ESBDebugModelPresentation.ID);
+						if (breakpoints != null) {
+							for (IBreakpoint breakpoint : breakpoints) {
+								if (file.equals(breakpoint.getMarker()
+										.getResource())) {
+									EditPart editPart = mediatorLocator
+											.getMediatorEditPart(
+													server,
+													ESBDebugerUtil
+															.getDetailsToMap(breakpoint));
+									if (editPart instanceof AbstractMediator) {
+										ESBDebugerUtil
+												.addBreakpointMark((AbstractMediator) editPart);
+									}
+								}
+
+							}
+						}
+					}
+
 				});
 			} catch (Exception e) {
 				setActivePage(SOURCE_VIEW_PAGE_INDEX);

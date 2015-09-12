@@ -17,6 +17,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
 import java.util.Map;
+
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
@@ -31,9 +32,8 @@ public class TemplateMediatorLocator extends AbstractMediatorLocator {
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			SuspendedEvent event) {
+			Map<String, String> info) {
 		EditPart editPart = null;
-		Map<String, String> info = event.getDetail();
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
 

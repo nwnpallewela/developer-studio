@@ -31,7 +31,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.MessageAt
 public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	public static final String COMMAND_KEY = "command";
-	private static final String CHILD_ATTRIBUTE_SEPERATOR = "\":{\"";
 	private static final String KEY_VALUE_SEPERATOR = ":";
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String MESSAGE_SEPERATOR = "}";
