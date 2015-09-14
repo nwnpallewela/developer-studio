@@ -31,8 +31,15 @@ import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.SingleCompartmentComplexFiguredAbstractMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.CloneMediatorEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.EntitlementMediatorEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.FilterMediatorEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SwitchMediatorEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleMediatorEditPart;
 
 /**
  * This class object holds variable values to be shown in the variables table
@@ -62,11 +69,10 @@ public class ESBValue extends ESBDebugElement implements IValue {
 							variable.setValue(message.get(name));
 							((ESBVariable) variable)
 									.fireChangeEvent(DebugEvent.CONTENT);
-							if(variable.getName().equalsIgnoreCase("envelope")){
-								AbstractMediator mediator = OpenEditorUtil.getPreviousHitEditPart();
-								if(mediator instanceof FixedSizedAbstractMediator){
-									((FixedSizedAbstractMediator) mediator).getPrimaryShape().setToolTipMessage(formatMessage(message.get(name)));
-								}
+							if (variable.getName().equalsIgnoreCase("envelope")) {
+								AbstractMediator mediator = OpenEditorUtil
+										.getPreviousHitEditPart();
+								setToolTipMessage(message, name, mediator);
 							}
 							processed = true;
 							break;
@@ -80,15 +86,46 @@ public class ESBValue extends ESBDebugElement implements IValue {
 					ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
 							name, message.get(name));
 					valueChildren.add(esbVariable);
-					if(name.equalsIgnoreCase("envelope")){
-						AbstractMediator mediator = OpenEditorUtil.getPreviousHitEditPart();
-						if(mediator instanceof FixedSizedAbstractMediator){
-							((FixedSizedAbstractMediator) mediator).getPrimaryShape().setToolTipMessage(formatMessage(message.get(name)));
+					if (name.equalsIgnoreCase("envelope")) {
+						AbstractMediator mediator = OpenEditorUtil
+								.getPreviousHitEditPart();
+						if (mediator instanceof FixedSizedAbstractMediator) {
+							((FixedSizedAbstractMediator) mediator)
+									.getPrimaryShape().setToolTipMessage(
+											formatMessage(message.get(name)));
 						}
 					}
 					esbVariable.fireCreationEvent();
 				}
 			}
+		}
+	}
+
+	private void setToolTipMessage(Map<String, String> message, String name,
+			AbstractMediator mediator) {
+		if (mediator instanceof FixedSizedAbstractMediator) {
+			((FixedSizedAbstractMediator) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
+		} else if (mediator instanceof SingleCompartmentComplexFiguredAbstractMediator) {
+
+			((SingleCompartmentComplexFiguredAbstractMediator) mediator)
+					.getPrimaryShape().setToolTipMessage(
+							formatMessage(message.get(name)));
+		} else if (mediator instanceof CloneMediatorEditPart) {
+			((CloneMediatorEditPart) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
+		} else if (mediator instanceof EntitlementMediatorEditPart) {
+			((EntitlementMediatorEditPart) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
+		} else if (mediator instanceof FilterMediatorEditPart) {
+			((FilterMediatorEditPart) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
+		} else if (mediator instanceof SwitchMediatorEditPart) {
+			((SwitchMediatorEditPart) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
+		} else if (mediator instanceof ThrottleMediatorEditPart) {
+			((ThrottleMediatorEditPart) mediator).getPrimaryShape()
+					.setToolTipMessage(formatMessage(message.get(name)));
 		}
 	}
 

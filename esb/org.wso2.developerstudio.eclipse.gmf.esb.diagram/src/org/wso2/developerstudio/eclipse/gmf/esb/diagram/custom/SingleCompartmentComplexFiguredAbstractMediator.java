@@ -7,5 +7,9 @@ public class SingleCompartmentComplexFiguredAbstractMediator extends complexFigu
 	public SingleCompartmentComplexFiguredAbstractMediator(View view) {
 		super(view);
 	}
+	
+	public EsbGroupingShape getPrimaryShape() {
+		return null;
+	}
 
 }

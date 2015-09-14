@@ -168,8 +168,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		System.out.println(file.toString());
 		try{
 		if (file.exists()) {
-			
-			
 			OpenEditorUtil.openSeparateEditor(file,event);
 		}
 		}catch(NullPointerException e){
