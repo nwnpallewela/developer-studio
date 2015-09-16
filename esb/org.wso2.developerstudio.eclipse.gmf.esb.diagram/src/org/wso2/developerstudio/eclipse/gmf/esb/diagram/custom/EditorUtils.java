@@ -18,8 +18,10 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.synapse.Mediator;
 import org.apache.synapse.mediators.base.SequenceMediator;
@@ -36,6 +38,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeCompartmentEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditDomain;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -101,6 +104,44 @@ public class EditorUtils {
 	public static final String TASK_RESOURCE_DIR = "src/main/graphical-synapse-config/tasks";
 	public static final String API_RESOURCE_DIR = "src/main/graphical-synapse-config/api";
 	public static final String COMPLEX_ENDPOINT_RESOURCE_DIR = "src/main/graphical-synapse-config/complex_endpoints";
+	
+	/**
+	 * This method return relevant EditPart of a node object in the current active editor.
+	 * @param node
+	 * @param editPartMap
+	 * @return
+	 */
+	public static EditPart getEditpart(EObject node) {
+		 Map<EObject,ShapeNodeEditPart> editPartMap =getEditPartMap();
+		if(editPartMap.containsKey(node)){
+			return editPartMap.get(node);
+		}
+		return null;
+	}
+	
+	/**
+	 * This method returns EditPart map of the current active editor
+	 * @param editPartMap
+	 */
+	private static Map<EObject,ShapeNodeEditPart> getEditPartMap(){
+
+		Map<EObject,ShapeNodeEditPart> editPartMap = new HashMap<>();
+		
+		EsbMultiPageEditor e =(EsbMultiPageEditor)getActiveEditor();
+	
+		@SuppressWarnings("rawtypes")
+		Map editPartRegistry = e.getDiagramEditPart().getViewer().getEditPartRegistry();
+		for (Object object : editPartRegistry.keySet()) {
+			if(object instanceof Node){
+				Node nodeImpl = (Node) object;
+					Object ep = editPartRegistry.get(nodeImpl);
+					if(ep instanceof ShapeNodeEditPart){
+						editPartMap.put(nodeImpl.getElement(), (ShapeNodeEditPart)ep);
+					}
+			}
+		}
+		return editPartMap;
+	}
 	
 	public static AbstractInputConnectorEditPart getInputConnector(ShapeNodeEditPart parent){
 		for(int i=0;i<parent.getChildren().size();++i){					

@@ -22,7 +22,7 @@ import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.Mediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.OutputConnector;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.AbstractEsbNodeDeserializer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.AbstractESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 
@@ -37,9 +37,7 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 			EObject mediator = tempConnector.getOutgoingLink().getTarget()
 					.eContainer();
 			if (count == mediatorPosition) {
-				AbstractEsbNodeDeserializer.refreshEditPartMap();
-				EditPart editpart = AbstractEsbNodeDeserializer
-						.getEditpart(mediator);
+				EditPart editpart = EditorUtils.getEditpart(mediator);
 				return editpart;
 			} else {
 				count++;
@@ -49,16 +47,14 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 		}
 		return null;
 	}
-
+	
 	protected EditPart getMediatorInFaultSeq(EList<EsbElement> children,
 			String[] positionArray) {
 		int count = 0;
 		int position = Integer.parseInt(positionArray[0]);
 		for (EsbElement mediator : children) {
 			if (count == position) {
-				AbstractEsbNodeDeserializer.refreshEditPartMap();
-				EditPart editpart = AbstractEsbNodeDeserializer
-						.getEditpart(mediator);
+				EditPart editpart = EditorUtils.getEditpart(mediator);
 				return editpart;
 			} else {
 				count++;

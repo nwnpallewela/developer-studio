@@ -138,9 +138,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			} else {
 				message = message + "<" + attribute + ">" + "\n";
 			}
-			System.out.println(message);
 		}
-		System.out.println(message);
 		return message;
 	}
 
