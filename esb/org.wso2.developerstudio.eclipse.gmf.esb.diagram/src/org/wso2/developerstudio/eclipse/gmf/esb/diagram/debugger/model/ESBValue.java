@@ -32,7 +32,6 @@ import org.eclipse.debug.core.model.IVariable;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.SingleCompartmentComplexFiguredAbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.CloneMediatorEditPart;
@@ -89,11 +88,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 					if (name.equalsIgnoreCase("envelope")) {
 						AbstractMediator mediator = OpenEditorUtil
 								.getPreviousHitEditPart();
-						if (mediator instanceof FixedSizedAbstractMediator) {
-							((FixedSizedAbstractMediator) mediator)
-									.getPrimaryShape().setToolTipMessage(
-											formatMessage(message.get(name)));
-						}
+						setToolTipMessage(message, name, mediator);
 					}
 					esbVariable.fireCreationEvent();
 				}
@@ -111,6 +106,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			((SingleCompartmentComplexFiguredAbstractMediator) mediator)
 					.getPrimaryShape().setToolTipMessage(
 							formatMessage(message.get(name)));
+			
 		} else if (mediator instanceof CloneMediatorEditPart) {
 			((CloneMediatorEditPart) mediator).getPrimaryShape()
 					.setToolTipMessage(formatMessage(message.get(name)));

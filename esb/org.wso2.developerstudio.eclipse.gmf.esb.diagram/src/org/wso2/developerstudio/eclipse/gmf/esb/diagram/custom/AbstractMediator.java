@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.Figure;
@@ -58,6 +59,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.connections.ConnectionCalculator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.layout.XYRepossition;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.MediatorFigureReverser;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceInputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceOutSequenceOutputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceOutputConnectorEditPart;
@@ -136,6 +138,7 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	private AbstractOutputConnectorEditPart connectedOutputConnector;
 	private AbstractMediator instance=null;
 	private boolean breakpointHitStatus = false;
+	private boolean isBreakpoint = false;
 	public int x=0;
 	public int y=0;
 	
@@ -157,7 +160,22 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 		setIsForward(!((Mediator) view.getElement()).isReverse());
 		instance=this;
 	}
-
+	/**
+	 * 
+	 * @return the isBreakpoint
+	 */
+	public boolean isBreakpoint(){
+		return isBreakpoint;
+	}
+	
+	/**
+	 * 
+	 * @param breakpointStatus
+	 */
+	public void setBreakpointStatus(boolean breakpointStatus){
+		this.isBreakpoint=breakpointStatus;
+	}
+	
 	/**
 	 * 
 	 * @return the breakpointHitStatus
@@ -213,6 +231,21 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 		 * child figures has not been initialized. So that we should call
 		 * MediatorFigureReverser.reverse(EditPart, boolean) at the second time.
 		 */
+		if (i == 0) {
+			if (ESBDebugerUtil.getRecentlyAddedMediator() == null) {
+				ESBDebugerUtil.setRecentlyAddedMediator(this);
+			} else {
+				System.out.println("Added mediator : "+ESBDebugerUtil.getRecentlyAddedMediator().toString());
+				//try {
+					/*ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
+							.getRecentlyAddedMediator());*/
+					ESBDebugerUtil.setRecentlyAddedMediator(this);
+			//	} /*catch (CoreException e) {
+			//		e.printStackTrace();
+			//	}*/
+			}
+
+		}
 		if ((i == 1)&& this.reversed) {
 			MediatorFigureReverser.reverse(this, true);
 		}
@@ -750,6 +783,7 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 
 			}
 		}
+		
 	}
 	
 	

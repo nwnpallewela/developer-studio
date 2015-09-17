@@ -25,6 +25,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.OutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.AbstractESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 
 public abstract class AbstractMediatorLocator implements IMediatorLocator {
 
@@ -41,8 +42,13 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 				return editpart;
 			} else {
 				count++;
+				if(mediator instanceof Mediator){
 				tempConnector = AbstractESBBreakpointBuilder
 						.getOutputConnector((Mediator) mediator);
+				}
+				else if(mediator instanceof SequencesImpl){
+					
+				}
 			}
 		}
 		return null;

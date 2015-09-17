@@ -564,6 +564,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 							for (IBreakpoint breakpoint : breakpoints) {
 								if (file.equals(breakpoint.getMarker()
 										.getResource())) {
+									System.out.println("ESBMultipage editor :-Breakpoints in this file : "+breakpoint.toString());
 									EditPart editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
@@ -595,6 +596,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 			try {
 				updateSequenceDetails();
 				handleSourceViewActivatedEvent();
+				updateModifiedBreakpoints();
 			} catch (Exception e) {
 				log.error("Cannot update source view", e);
 				String simpleMessage = ExceptionMessageMapper.getNonTechnicalMessage(e.getMessage());
@@ -611,7 +613,8 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 		}
 		}
 	}
-	
+
+
 	/**
 	 * Performs necessary house-keeping tasks whenever the design view is
 	 * activated.
@@ -1022,6 +1025,17 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
     
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
+	}
+	
+	private void updateModifiedBreakpoints() {
+		try {
+			if (ESBDebugerUtil.getRecentlyAddedMediator() != null) {
+				ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
+						.getRecentlyAddedMediator());
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

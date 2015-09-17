@@ -16,8 +16,17 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.AggregateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.BAMMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.BeanMediator;
@@ -60,6 +69,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.RuleMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ScriptMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.SendMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.Sequence;
+import org.wso2.developerstudio.eclipse.gmf.esb.SequencesOutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.SmooksMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.SpringMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.StoreMediator;
@@ -71,7 +81,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.ValidateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XQueryMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -87,10 +101,99 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
-	
+
 	protected String type;
 
-	protected String addMediatorPositionAttribute(String message, String position) {
+	protected void incrementBreakpointPosition(List<ESBBreakpoint> breakpontList)
+			throws CoreException {
+		for (ESBBreakpoint esbBreakpoint : breakpontList) {
+
+			String message = incrementPositionOfTheMessage(esbBreakpoint
+					.getMessage());
+			ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
+					esbBreakpoint.getResource(), esbBreakpoint.getLineNumber(),
+					message);
+			DebugPlugin.getDefault().getBreakpointManager()
+					.addBreakpoint(modifiedBreakpoint);
+			DebugPlugin.getDefault().getBreakpointManager()
+					.removeBreakpoint(esbBreakpoint, true);
+
+		}
+	}
+
+	private String incrementPositionOfTheMessage(String message) {
+		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
+		String modifiedMessage = EMPTY_STRING;
+		for (String string : attributes) {
+			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
+			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
+				String[] positionArray = keyValuePair[1].split(" ");
+				String lastPosition = positionArray[positionArray.length - 1];
+				positionArray[positionArray.length - 1] = EMPTY_STRING
+						+ (Integer.parseInt(lastPosition) + 1);
+				String newPosition = EMPTY_STRING;
+				for (String pos : positionArray) {
+					newPosition = newPosition + pos + " ";
+				}
+
+				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
+						+ ESBDebuggerConstants.MEDIATOR_POSITION
+						+ KEY_VALUE_SEPERATOR + newPosition;
+			} else {
+				if (StringUtils.isEmpty(modifiedMessage)) {
+					modifiedMessage = string;
+				} else {
+					modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
+							+ string;
+				}
+
+			}
+		}
+		return modifiedMessage;
+	}
+
+	/**
+	 * Only breakpoints which contains a higher mediator position than added
+	 * mediator position are selected
+	 * 
+	 * @param resource
+	 * @param position
+	 * @return
+	 */
+	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
+			IResource resource, int position) {
+		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+				.getBreakpointManager()
+				.getBreakpoints(ESBDebugModelPresentation.ID);
+		List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
+		for (IBreakpoint breakpoint : breakpoints) {
+			IResource file = ((ESBBreakpoint) breakpoint).getResource();
+			String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
+			String[] positionArray = positionValue.split(" ");
+			String lastPosition = positionArray[positionArray.length - 1];
+			if (file.equals(resource)
+					&& (position <= Integer.parseInt(lastPosition))) {
+				breakpointList.add((ESBBreakpoint) breakpoint);
+			}
+		}
+		return breakpointList;
+	}
+
+	private static String getMediatorPositionOfBreakpoint(IBreakpoint breakpoint) {
+		String message = ((ESBBreakpoint) breakpoint).getMessage();
+		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
+		for (String string : attributes) {
+			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
+			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
+				return keyValuePair[1];
+			}
+		}
+
+		return null;
+	}
+
+	protected String addMediatorPositionAttribute(String message,
+			String position) {
 
 		return message + ATTRIBUTE_SEPERATOR
 				+ ESBDebuggerConstants.MEDIATOR_POSITION + KEY_VALUE_SEPERATOR
@@ -123,6 +226,33 @@ public abstract class AbstractESBBreakpointBuilder implements
 				instance.indexOf(INSTANCE_ID_POSTFIX, indexOfAt));
 	}
 
+	/**
+	 * 
+	 * @param outputConnector
+	 * @param abstractMediator
+	 * @return
+	 */
+	protected int getMediatorPosition(SequencesOutputConnector outputConnector,
+			AbstractMediator abstractMediator) {
+		OutputConnector tempConnector = outputConnector;
+		int count = 0;
+		try {
+			while (tempConnector != null) {
+				EObject mediator = tempConnector.getOutgoingLink().getTarget()
+						.eContainer();
+				EditPart editpart = EditorUtils.getEditpart(mediator);
+				if (editpart.equals(abstractMediator)) {
+					break;
+				} else {
+					count++;
+					tempConnector = getOutputConnector((Mediator) mediator);
+				}
+			}
+		} catch (NullPointerException e) {
+			log.error("Diagram links are not properly connected", e);
+		}
+		return count;
+	}
 
 	/**
 	 * This method returns mediator position in sequence specified by the
@@ -132,24 +262,25 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param selection
 	 * @return
 	 */
-	protected String getMediatorPosition(OutputConnector outConnector, EObject selection) {
+	protected String getMediatorPosition(OutputConnector outConnector,
+			EObject selection) {
 		OutputConnector tempConnector = outConnector;
 		int count = 0;
 		String position = "";
-		try{
-		while (tempConnector != null) {
-			EObject mediator = tempConnector.getOutgoingLink().getTarget()
-					.eContainer();
-			if (getInstanceId(mediator.toString()).equals(
-					getInstanceId(selection.toString()))) {
-				position = position + count;
-				break;
-			} else {
-				count++;
-				tempConnector = getOutputConnector((Mediator) mediator);
+		try {
+			while (tempConnector != null) {
+				EObject mediator = tempConnector.getOutgoingLink().getTarget()
+						.eContainer();
+				if (getInstanceId(mediator.toString()).equals(
+						getInstanceId(selection.toString()))) {
+					position = position + count;
+					break;
+				} else {
+					count++;
+					tempConnector = getOutputConnector((Mediator) mediator);
+				}
 			}
-		}
-		}catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			log.error("Diagram links are not properly connected", e);
 		}
 		return position;

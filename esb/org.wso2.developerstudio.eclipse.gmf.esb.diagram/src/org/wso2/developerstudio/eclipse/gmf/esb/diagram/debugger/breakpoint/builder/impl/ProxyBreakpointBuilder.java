@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
@@ -98,6 +98,14 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		return message + ATTRIBUTE_SEPERATOR + ESBDebuggerConstants.PROXY_KEY
 				+ KEY_VALUE_SEPERATOR + proxy.getName();
+	}
+
+	@Override
+	public void updateExistingBreakpoints(IResource resource,
+			AbstractMediator abstractMediator, EsbServer esbServer)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
