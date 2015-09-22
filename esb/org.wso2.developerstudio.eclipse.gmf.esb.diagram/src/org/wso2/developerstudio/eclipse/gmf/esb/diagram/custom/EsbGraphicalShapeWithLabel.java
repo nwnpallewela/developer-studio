@@ -108,22 +108,22 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 //							"icons/ico20debug/breakpoint_16.gif", 10,
 //							10);
 
-			RoundedRectangle mainImageRectangle = new RoundedRectangle();
-			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
-			mainImageRectangle.setOutline(false);
-			mainImageRectangle.setPreferredSize(new Dimension(10, 10));
-			mainImageRectangle.setAlpha(0);
-			mainImageRectangle.add(iconImageFigure);
+			RoundedRectangle breakpointImageRectangle = new RoundedRectangle();
+			breakpointImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			breakpointImageRectangle.setOutline(false);
+			breakpointImageRectangle.setPreferredSize(new Dimension(10, 10));
+			breakpointImageRectangle.setAlpha(0);
+			breakpointImageRectangle.add(iconImageFigure);
 			iconImageFigure.translate(10, 3);
-			breakpointLayer.add(mainImageRectangle,
+			breakpointLayer.add(breakpointImageRectangle,
 					constraintBreakpointImageRectangle);
-			try {
-				this.remove(pane);
+			/*try {
+			//	this.remove(pane);
 			} catch (NullPointerException e) {
 				log.error("Mediator icon figure does not have a layer pane", e);
-			}
+			}*/
 			pane.add(breakpointLayer);
-			this.add(pane);
+			//this.add(pane);
 		} else {
 			log.warn("Mediator Figure layers misplaced");
 			initializeShape();
@@ -132,20 +132,20 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	}
 
 	public void removeBreakpointMark() {
-		try {
-			this.remove(pane);
+		/*try {
+		//	this.remove(pane);
 		} catch (NullPointerException e) {
 			log.error("Mediator icon figure does not have a layer pane", e);
-		}
+		}*/
 
 		try {
 			pane.remove(breakpointLayer);
 		} catch (NullPointerException e) {
 			log.error(
 					"Mediator icon layer pane does not have a breakpoint layer",
-					e);
+			e);
 		}
-		this.add(pane);
+		//this.add(pane);
 
 	}
 	
