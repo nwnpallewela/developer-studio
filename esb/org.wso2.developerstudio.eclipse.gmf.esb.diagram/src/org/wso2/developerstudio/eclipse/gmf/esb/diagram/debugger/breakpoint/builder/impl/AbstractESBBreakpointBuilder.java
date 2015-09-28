@@ -106,18 +106,20 @@ public abstract class AbstractESBBreakpointBuilder implements
 
 	protected void incrementBreakpointPosition(List<ESBBreakpoint> breakpontList)
 			throws CoreException {
-		for (ESBBreakpoint esbBreakpoint : breakpontList) {
+		if (breakpontList != null) {
+			for (ESBBreakpoint esbBreakpoint : breakpontList) {
 
-			String message = incrementPositionOfTheMessage(esbBreakpoint
-					.getMessage());
-			ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
-					esbBreakpoint.getResource(), esbBreakpoint.getLineNumber(),
-					message);
-			DebugPlugin.getDefault().getBreakpointManager()
-					.addBreakpoint(modifiedBreakpoint);
-			DebugPlugin.getDefault().getBreakpointManager()
-					.removeBreakpoint(esbBreakpoint, true);
+				String message = incrementPositionOfTheMessage(esbBreakpoint
+						.getMessage());
+				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
+						esbBreakpoint.getResource(),
+						esbBreakpoint.getLineNumber(), message);
+				DebugPlugin.getDefault().getBreakpointManager()
+						.addBreakpoint(modifiedBreakpoint);
+				DebugPlugin.getDefault().getBreakpointManager()
+						.removeBreakpoint(esbBreakpoint, true);
 
+			}
 		}
 	}
 
@@ -161,22 +163,32 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @return
 	 */
 	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
-			IResource resource, int position) {
-		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-				.getBreakpointManager()
-				.getBreakpoints(ESBDebugModelPresentation.ID);
-		List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
-		for (IBreakpoint breakpoint : breakpoints) {
-			IResource file = ((ESBBreakpoint) breakpoint).getResource();
-			String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
-			String[] positionArray = positionValue.split(" ");
-			String lastPosition = positionArray[positionArray.length - 1];
-			if (file.equals(resource)
-					&& (position <= Integer.parseInt(lastPosition))) {
-				breakpointList.add((ESBBreakpoint) breakpoint);
+			IResource resource, int position, String listSequenceNumber) {
+		if (position >= 0) {
+			String listSequencePosition="";
+			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+					.getBreakpointManager()
+					.getBreakpoints(ESBDebugModelPresentation.ID);
+			List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
+			for (IBreakpoint breakpoint : breakpoints) {
+				IResource file = ((ESBBreakpoint) breakpoint).getResource();
+				String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
+				String[] positionArray = positionValue.split(" ");
+				String lastPosition = positionArray[positionArray.length - 1];
+				if (positionArray.length > 1) {
+					listSequencePosition = positionArray[positionArray.length - 2];
+				}
+				System.out.println("Breakpoint position list mediator position :"+listSequencePosition+":");
+				if (file.equals(resource)
+						&& (position <= Integer.parseInt(lastPosition))
+						&& listSequenceNumber
+								.equalsIgnoreCase(listSequencePosition)) {
+					breakpointList.add((ESBBreakpoint) breakpoint);
+				}
 			}
+			return breakpointList;
 		}
-		return breakpointList;
+		return null;
 	}
 
 	private static String getMediatorPositionOfBreakpoint(IBreakpoint breakpoint) {
@@ -232,26 +244,30 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param abstractMediator
 	 * @return
 	 */
-	protected int getMediatorPosition(SequencesOutputConnector outputConnector,
+	protected int getMediatorPosition(OutputConnector outputConnector,
 			AbstractMediator abstractMediator) {
-		OutputConnector tempConnector = outputConnector;
-		int count = 0;
-		try {
-			while (tempConnector != null) {
-				EObject mediator = tempConnector.getOutgoingLink().getTarget()
-						.eContainer();
-				EditPart editpart = EditorUtils.getEditpart(mediator);
-				if (editpart.equals(abstractMediator)) {
-					break;
-				} else {
-					count++;
-					tempConnector = getOutputConnector((Mediator) mediator);
+		if (abstractMediator == null) {
+			return -1;
+		} else {
+			OutputConnector tempConnector = outputConnector;
+			int count = 0;
+			try {
+				while (tempConnector != null) {
+					EObject mediator = tempConnector.getOutgoingLink()
+							.getTarget().eContainer();
+					EditPart editpart = EditorUtils.getEditpart(mediator);
+					if (editpart.equals(abstractMediator)) {
+						break;
+					} else {
+						count++;
+						tempConnector = getOutputConnector((Mediator) mediator);
+					}
 				}
+			} catch (NullPointerException e) {
+				log.error("Diagram links are not properly connected", e);
 			}
-		} catch (NullPointerException e) {
-			log.error("Diagram links are not properly connected", e);
+			return count;
 		}
-		return count;
 	}
 
 	/**

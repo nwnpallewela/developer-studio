@@ -84,7 +84,7 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		SequencesImpl sequence = (SequencesImpl) treeIterator.next();
 		int position = getMediatorPosition(sequence.getOutputConnector(),
 				abstractMediator);
-		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(resource,position);
+		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(resource,position,"");
 		incrementBreakpointPosition(breakpontList);
 	}
 

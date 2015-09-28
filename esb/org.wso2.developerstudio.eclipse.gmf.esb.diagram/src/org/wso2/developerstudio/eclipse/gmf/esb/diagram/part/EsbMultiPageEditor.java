@@ -104,6 +104,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Abst
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -206,17 +207,25 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 					final String source = new Scanner(inputStream).useDelimiter("\\A").next();					
 					ArtifactType artifactType = deserializer.getArtifactType(source);
 	            	editorInput = new EsbEditorInput(null,file,artifactType.getLiteral());
-	            	Display.getDefault().asyncExec(new Runnable() {	            						
-	            						@Override
-	            						public void run() {
-	            							try {	            								
-	            								deserializer.updateDesign(source, graphicalEditor);
-	            								doSave(new NullProgressMonitor());
-	            							} catch (Exception e) {
-	            								log.error("Error while generating diagram from source", e);
-	            							}
-	            						}
-	            					});
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							ESBDebugerUtil
+									.setPageCreateOperationActivated(true);
+							try {
+								deserializer.updateDesign(source,
+										graphicalEditor);
+								doSave(new NullProgressMonitor());
+							} catch (Exception e) {
+								log.error(
+										"Error while generating diagram from source",
+										e);
+							} finally {
+								ESBDebugerUtil
+										.setPageCreateOperationActivated(false);
+							}
+						}
+					});
 	            	inputStream.close();
 				} catch (CoreException e1) {
 					log.error("Error while generating diagram from source", e1);
@@ -504,6 +513,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 		// Invoke the appropriate handler method.
 		switch (pageIndex) {
 		case DESIGN_VIEW_PAGE_INDEX: {
+			ESBDebugerUtil.setPageChangeOperationActivated(true);
 			String source = sourceEditor.getDocument().get();
 			MediatorFactoryUtils.registerFactories();
 			try {
@@ -562,9 +572,10 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								.getBreakpoints(ESBDebugModelPresentation.ID);
 						if (breakpoints != null) {
 							for (IBreakpoint breakpoint : breakpoints) {
+								System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getResource().toString()+" "+((ESBBreakpoint)breakpoint).getMessage());
 								if (file.equals(breakpoint.getMarker()
 										.getResource())) {
-									System.out.println("ESBMultipage editor :-Breakpoints in this file : "+breakpoint.toString());
+									//System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getMessage());
 									EditPart editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
@@ -588,8 +599,9 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 			} finally {
 				AbstractEsbNodeDeserializer.cleanupData();
 				firePropertyChange(PROP_DIRTY);
+				ESBDebugerUtil.setPageChangeOperationActivated(false);
 			}
-		
+			
 			break;
 		}
 		case SOURCE_VIEW_PAGE_INDEX: {			
@@ -750,6 +762,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
      * Saves the multi-page editor's document.
      */
     public void doSave(IProgressMonitor monitor) {
+    	updateModifiedBreakpoints();
     	//Fixing TOOLS-2958
     	setContextClassLoader();
 		sourceDirty = false;

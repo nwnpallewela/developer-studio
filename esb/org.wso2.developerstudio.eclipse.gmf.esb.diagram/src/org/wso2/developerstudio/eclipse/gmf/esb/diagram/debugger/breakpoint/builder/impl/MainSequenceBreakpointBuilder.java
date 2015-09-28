@@ -15,6 +15,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -24,6 +26,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 
 /**
  * This class builds ESB breakpoints related to Main Sequence.
@@ -88,8 +91,29 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer)
 			throws CoreException {
-		// TODO Auto-generated method stub
 
+		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
+
+		ProxyServiceImpl mainSequence = (ProxyServiceImpl) treeIterator.next();
+		if (abstractMediator != null) {
+			String listSequenceNumber ="1";
+			System.out.println("Mediator direction reversed : "+abstractMediator.reversed);
+			if (abstractMediator.reversed) {
+				int position = getMediatorPosition(
+						mainSequence.getOutSequenceOutputConnector(),
+						abstractMediator);
+				List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+						resource, position,listSequenceNumber);
+				incrementBreakpointPosition(breakpontList);
+			} else {
+				listSequenceNumber ="0";
+				int position = getMediatorPosition(
+						mainSequence.getOutputConnector(), abstractMediator);
+				List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+						resource, position,listSequenceNumber);
+				incrementBreakpointPosition(breakpontList);
+			}
+		}
 	}
 
 }

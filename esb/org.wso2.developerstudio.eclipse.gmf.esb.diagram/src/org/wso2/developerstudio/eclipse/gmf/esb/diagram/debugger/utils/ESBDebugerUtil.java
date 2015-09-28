@@ -41,14 +41,32 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
 public class ESBDebugerUtil {
-	
-	public static AbstractMediator recentlyAddedMediator;
-	
-	public static void setRecentlyAddedMediator(AbstractMediator addedMediator){
-		recentlyAddedMediator = addedMediator;
+
+	private static AbstractMediator recentlyAddedMediator;
+	private static boolean pageChangeOperationActivated;
+	private static boolean pageCreateOperationActivated;
+
+	public static void setPageCreateOperationActivated(boolean status) {
+		pageCreateOperationActivated = status;
+	}
+
+	public static boolean isPageCreateOperationActivated() {
+		return pageCreateOperationActivated;
 	}
 	
-	public static AbstractMediator getRecentlyAddedMediator(){
+	public static void setPageChangeOperationActivated(boolean status) {
+		pageChangeOperationActivated = status;
+	}
+
+	public static boolean isPageChangeOperationActivated() {
+		return pageChangeOperationActivated;
+	}
+
+	public static void setRecentlyAddedMediator(AbstractMediator addedMediator) {
+		recentlyAddedMediator = addedMediator;
+	}
+
+	public static AbstractMediator getRecentlyAddedMediator() {
 		return recentlyAddedMediator;
 	}
 
@@ -97,7 +115,8 @@ public class ESBDebugerUtil {
 		return detailsMap;
 	}
 
-	public static void modifyBreakpoints(AbstractMediator abstractMediator) throws CoreException {
+	public static void modifyBreakpoints(AbstractMediator abstractMediator)
+			throws CoreException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 

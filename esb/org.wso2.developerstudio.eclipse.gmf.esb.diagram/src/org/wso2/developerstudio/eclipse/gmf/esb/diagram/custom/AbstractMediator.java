@@ -232,17 +232,27 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 		 * MediatorFigureReverser.reverse(EditPart, boolean) at the second time.
 		 */
 		if (i == 0) {
-			if (ESBDebugerUtil.getRecentlyAddedMediator() == null) {
+			if (ESBDebugerUtil.getRecentlyAddedMediator() == null
+					&& (!ESBDebugerUtil.isPageChangeOperationActivated() && !ESBDebugerUtil
+							.isPageCreateOperationActivated())) {
 				ESBDebugerUtil.setRecentlyAddedMediator(this);
+				System.out.println("Added mediator : "
+						+ ESBDebugerUtil.getRecentlyAddedMediator().toString());
 			} else {
-				System.out.println("Added mediator : "+ESBDebugerUtil.getRecentlyAddedMediator().toString());
-				//try {
-					/*ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
-							.getRecentlyAddedMediator());*/
-					ESBDebugerUtil.setRecentlyAddedMediator(this);
-			//	} /*catch (CoreException e) {
-			//		e.printStackTrace();
-			//	}*/
+
+				try {
+					ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
+							.getRecentlyAddedMediator());
+					if (!ESBDebugerUtil.isPageChangeOperationActivated()
+							&& !ESBDebugerUtil.isPageCreateOperationActivated()) {
+						ESBDebugerUtil.setRecentlyAddedMediator(this);
+						System.out.println("Added mediator : "
+								+ ESBDebugerUtil.getRecentlyAddedMediator()
+										.toString());
+					}
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}
