@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
@@ -38,6 +39,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -224,12 +226,20 @@ public class ESBDebugger implements IESBDebugger {
 		} else if (ESBDebuggerConstants.TERMINATED_EVENT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
 			mediationFlowCompleted();
+		} else if (ESBDebuggerConstants.DEBUG_INFO_LOST_EVENT.equals(event
+				.get(ESBDebuggerConstants.EVENT))) {
+			try {
+				ESBDebugerUtil.repopulateESBServerBreakpoints();
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private void mediationFlowCompleted() {
 		fireEvent(new MediationFlowCompleteEvent());
-		
+
 	}
 
 	private void getPropertiesFromESB() {
