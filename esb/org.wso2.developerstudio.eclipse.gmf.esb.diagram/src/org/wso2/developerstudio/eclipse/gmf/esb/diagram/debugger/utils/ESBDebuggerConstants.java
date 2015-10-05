@@ -18,6 +18,9 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 	//synapse(default)|axis2|transport|axis2-client|operation
+	public static final String MEDIATOR_DELETE_ACTION = "mediatordelete";
+	public static final String MEDIATOR_INSERT_ACTION = "mediatorinsert";
+	
 	public static final String AXIS2 = "axis2";
 	public static final String OPERATION = "operation";
 	public static final String AXIS2_CLIENT = "axis2-client";

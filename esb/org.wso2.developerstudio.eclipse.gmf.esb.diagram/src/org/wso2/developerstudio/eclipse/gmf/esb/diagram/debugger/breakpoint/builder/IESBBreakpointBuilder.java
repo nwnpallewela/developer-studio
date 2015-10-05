@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
@@ -31,6 +32,7 @@ public interface IESBBreakpointBuilder {
 			EObject selection, boolean partReversed) throws CoreException;
 
 	void updateExistingBreakpoints(IResource resource,
-			AbstractMediator abstractMediator, EsbServer esbServer) throws CoreException;
+			AbstractMediator abstractMediator, EsbServer esbServer,
+			String action) throws CoreException;
 
 }

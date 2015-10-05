@@ -236,12 +236,10 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 					&& (!ESBDebugerUtil.isPageChangeOperationActivated() && !ESBDebugerUtil
 							.isPageCreateOperationActivated())) {
 				ESBDebugerUtil.setRecentlyAddedMediator(this);
-				System.out.println("Added mediator : "
-						+ ESBDebugerUtil.getRecentlyAddedMediator().toString());
 			} else {
 
 				try {
-					ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
+					ESBDebugerUtil.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
 							.getRecentlyAddedMediator());
 					if (!ESBDebugerUtil.isPageChangeOperationActivated()
 							&& !ESBDebugerUtil.isPageCreateOperationActivated()) {

@@ -1043,7 +1043,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 	private void updateModifiedBreakpoints() {
 		try {
 			if (ESBDebugerUtil.getRecentlyAddedMediator() != null) {
-				ESBDebugerUtil.modifyBreakpoints(ESBDebugerUtil
+				ESBDebugerUtil.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
 						.getRecentlyAddedMediator());
 			}
 		} catch (CoreException e) {

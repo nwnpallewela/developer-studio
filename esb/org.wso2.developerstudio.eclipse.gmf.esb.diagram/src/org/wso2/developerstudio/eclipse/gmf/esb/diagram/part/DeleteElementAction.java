@@ -3,6 +3,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.part;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
@@ -36,6 +37,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractOutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractOutputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.EsbLinkEditPart;
 
 /**
@@ -80,6 +82,16 @@ public class DeleteElementAction extends DefaultDeleteElementAction {
 
 	private void updateConnectedConnectors(EditPart editPart) {
 		if (editPart instanceof AbstractMediator) {
+			if (ESBDebugerUtil.isDeleteOperationPerformed()) {
+				ESBDebugerUtil.setDeletedMediator((AbstractMediator) editPart);
+				System.out.println("Element Deleted : " + editPart.toString());
+				try {
+					ESBDebugerUtil.modifyBreakpointsAfterMediatorDeletion();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			AbstractInputConnectorEditPart currentInputConnector = EditorUtils
 					.getInputConnector((ShapeNodeEditPart) editPart);
 			AbstractOutputConnectorEditPart currentOutputConnector = EditorUtils

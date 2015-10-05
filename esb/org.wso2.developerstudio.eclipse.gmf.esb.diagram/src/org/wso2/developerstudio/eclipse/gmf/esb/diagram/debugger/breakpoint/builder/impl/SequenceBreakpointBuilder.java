@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.SequencesOutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
@@ -77,15 +76,23 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	}
 
 	@Override
-	public void updateExistingBreakpoints(IResource resource,AbstractMediator abstractMediator,
-			EsbServer esbServer) throws CoreException {
+	public void updateExistingBreakpoints(IResource resource,
+			AbstractMediator abstractMediator, EsbServer esbServer,
+			String action) throws CoreException {
 		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
 
 		SequencesImpl sequence = (SequencesImpl) treeIterator.next();
 		int position = getMediatorPosition(sequence.getOutputConnector(),
 				abstractMediator);
-		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(resource,position,"");
-		incrementBreakpointPosition(breakpontList);
+		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+				resource, position, "", action);
+		if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+				.equalsIgnoreCase(action)) {
+			incrementBreakpointPosition(breakpontList);
+		} else {
+			decreaseBreakpointPosition(breakpontList);
+		}
+
 	}
 
 }

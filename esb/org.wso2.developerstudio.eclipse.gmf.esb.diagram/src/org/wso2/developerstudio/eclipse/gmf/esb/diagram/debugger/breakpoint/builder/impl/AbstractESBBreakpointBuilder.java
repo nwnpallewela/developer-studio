@@ -69,7 +69,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.RuleMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ScriptMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.SendMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.Sequence;
-import org.wso2.developerstudio.eclipse.gmf.esb.SequencesOutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.SmooksMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.SpringMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.StoreMediator;
@@ -123,6 +122,25 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
+	protected void decreaseBreakpointPosition(List<ESBBreakpoint> breakpontList)
+			throws CoreException {
+		if (breakpontList != null) {
+			for (ESBBreakpoint esbBreakpoint : breakpontList) {
+
+				String message = decreasePositionOfTheMessage(esbBreakpoint
+						.getMessage());
+				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
+						esbBreakpoint.getResource(),
+						esbBreakpoint.getLineNumber(), message);
+				DebugPlugin.getDefault().getBreakpointManager()
+						.addBreakpoint(modifiedBreakpoint);
+				DebugPlugin.getDefault().getBreakpointManager()
+						.removeBreakpoint(esbBreakpoint, true);
+
+			}
+		}
+	}
+
 	private String incrementPositionOfTheMessage(String message) {
 		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
 		String modifiedMessage = EMPTY_STRING;
@@ -154,6 +172,37 @@ public abstract class AbstractESBBreakpointBuilder implements
 		return modifiedMessage;
 	}
 
+	private String decreasePositionOfTheMessage(String message) {
+		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
+		String modifiedMessage = EMPTY_STRING;
+		for (String string : attributes) {
+			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
+			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
+				String[] positionArray = keyValuePair[1].split(" ");
+				String lastPosition = positionArray[positionArray.length - 1];
+				positionArray[positionArray.length - 1] = EMPTY_STRING
+						+ (Integer.parseInt(lastPosition) - 1);
+				String newPosition = EMPTY_STRING;
+				for (String pos : positionArray) {
+					newPosition = newPosition + pos + " ";
+				}
+
+				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
+						+ ESBDebuggerConstants.MEDIATOR_POSITION
+						+ KEY_VALUE_SEPERATOR + newPosition;
+			} else {
+				if (StringUtils.isEmpty(modifiedMessage)) {
+					modifiedMessage = string;
+				} else {
+					modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
+							+ string;
+				}
+
+			}
+		}
+		return modifiedMessage;
+	}
+
 	/**
 	 * Only breakpoints which contains a higher mediator position than added
 	 * mediator position are selected
@@ -161,11 +210,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param resource
 	 * @param position
 	 * @return
+	 * @throws CoreException
 	 */
 	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
-			IResource resource, int position, String listSequenceNumber) {
+			IResource resource, int position, String listSequenceNumber,
+			String action) throws CoreException {
 		if (position >= 0) {
-			String listSequencePosition="";
+			String listSequencePosition = "";
 			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 					.getBreakpointManager()
 					.getBreakpoints(ESBDebugModelPresentation.ID);
@@ -178,12 +229,25 @@ public abstract class AbstractESBBreakpointBuilder implements
 				if (positionArray.length > 1) {
 					listSequencePosition = positionArray[positionArray.length - 2];
 				}
-				System.out.println("Breakpoint position list mediator position :"+listSequencePosition+":");
+				System.out
+						.println("Breakpoint position list mediator position :"
+								+ listSequencePosition + ":");
 				if (file.equals(resource)
-						&& (position <= Integer.parseInt(lastPosition))
 						&& listSequenceNumber
 								.equalsIgnoreCase(listSequencePosition)) {
-					breakpointList.add((ESBBreakpoint) breakpoint);
+					if ((ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+							.equals(action) && (position <= Integer
+							.parseInt(lastPosition)))
+							|| (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
+									.equals(action) && position < Integer
+									.parseInt(lastPosition))) {
+						breakpointList.add((ESBBreakpoint) breakpoint);
+					} else if (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
+							.equals(action)
+							&& position == Integer.parseInt(lastPosition)) {
+						DebugPlugin.getDefault().getBreakpointManager()
+								.removeBreakpoint(breakpoint, true);
+					}
 				}
 			}
 			return breakpointList;
