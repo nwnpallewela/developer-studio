@@ -26,61 +26,67 @@ import org.eclipse.core.resources.IMarker;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
-public class ESBBreakpoint extends Breakpoint{
+/**
+ * This class represents the ESBBreakpoints.
+ * @author nuwan
+ *
+ */
+public class ESBBreakpoint extends Breakpoint {
 
 	public ESBBreakpoint() {
 	}
 
-
-	public ESBBreakpoint(final IResource resource, final int lineNumber , final String message) throws CoreException {
-		this(resource, lineNumber,message, true);
+	public ESBBreakpoint(final IResource resource, final int lineNumber,
+			final String message) throws CoreException {
+		this(resource, lineNumber, message, true);
 	}
 
-	protected ESBBreakpoint(final IResource resource, final int lineNumber,final String message, final boolean persistent) throws CoreException {
+	protected ESBBreakpoint(final IResource resource, final int lineNumber,
+			final String message, final boolean persistent)
+			throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
-				IMarker marker = resource.createMarker(ESBDebuggerConstants.ESB_BREAKPOINT_MARKER);
+				IMarker marker = resource
+						.createMarker(ESBDebuggerConstants.ESB_BREAKPOINT_MARKER);
 				setMarker(marker);
 				marker.setAttribute(IBreakpoint.ENABLED, true);
 				marker.setAttribute(IBreakpoint.PERSISTED, persistent);
 				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
-				marker.setAttribute(IMarker.MESSAGE,message );
+				marker.setAttribute(IMarker.MESSAGE, message);
 			}
 		};
 		run(getMarkerRule(resource), runnable);
 	}
+
 	@Override
 	public String getModelIdentifier() {
 		return ESBDebugModelPresentation.ID;
 	}
 
-
 	public int getLineNumber() throws CoreException {
-		IMarker m = getMarker();
-		if (m != null) {
-			return m.getAttribute(IMarker.LINE_NUMBER, -1);
+		IMarker marker = getMarker();
+		if (marker != null) {
+			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
 		}
 		return -1;
 	}
 
-
 	public String getMessage() {
-		IMarker m = getMarker();
-		if (m != null) {
-			return m.getAttribute(IMarker.MESSAGE, null);
+		IMarker marker = getMarker();
+		if (marker != null) {
+			return marker.getAttribute(IMarker.MESSAGE, null);
 		}
 		return null;
 	}
-	
-	public IResource getResource(){
-		IMarker m = getMarker();
-		if (m != null) {
-			return m.getResource();
+
+	public IResource getResource() {
+		IMarker marker = getMarker();
+		if (marker != null) {
+			return marker.getResource();
 		}
 		return null;
 	}
 
 }
-

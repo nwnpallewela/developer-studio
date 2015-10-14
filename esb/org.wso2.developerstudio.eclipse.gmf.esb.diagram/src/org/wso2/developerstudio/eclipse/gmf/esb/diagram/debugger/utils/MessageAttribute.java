@@ -23,51 +23,50 @@ import java.util.Set;
 
 public class MessageAttribute {
 
-	private Map<String,MessageAttribute> childAttributes;
+	private Map<String, MessageAttribute> childAttributes;
 
 	public MessageAttribute(Map<String, MessageAttribute> childAttributes) {
 		super();
 		this.childAttributes = childAttributes;
 	}
-	
-	public void put(String key,MessageAttribute attribute){
+
+	public void put(String key, MessageAttribute attribute) {
 		childAttributes.put(key, attribute);
 	}
-	
-	public MessageAttribute getAttribute(String key){
+
+	public MessageAttribute getAttribute(String key) {
 		return childAttributes.get(key);
 	}
-	
-	public Set<String> getAttributes(){
+
+	public Set<String> getAttributes() {
 		return childAttributes.keySet();
 	}
-	
-	public ArrayList<String> getAttributeKeys(){
+
+	public ArrayList<String> getAttributeKeys() {
 		Set<String> firstkeys = childAttributes.keySet();
 		List<String> allKeys = new ArrayList<>();
 		for (String key : firstkeys) {
 			allKeys.add(key);
-			if(childAttributes.get(key)!=null){
-				ArrayList<String> temp = childAttributes.get(key).getAttributeKeys();
+			if (childAttributes.get(key) != null) {
+				ArrayList<String> temp = childAttributes.get(key)
+						.getAttributeKeys();
 				allKeys.addAll(temp);
 			}
 		}
-		
+
 		return (ArrayList<String>) allKeys;
 	}
-	
-	public void print(){
+
+	public void print() {
 		Set<String> keySet = childAttributes.keySet();
 		for (String key : keySet) {
-			System.out.println(" ---> "+key);
-			if(childAttributes.get(key) != null){
+			System.out.println(" ---> " + key);
+			if (childAttributes.get(key) != null) {
 				System.out.println("{");
 				childAttributes.get(key).print();
 				System.out.println("}");
 			}
 		}
 	}
-	
-	
-	
+
 }

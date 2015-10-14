@@ -32,7 +32,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.AbstractEsbNodeDeserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
@@ -94,11 +93,8 @@ public class OpenEditorUtil {
 							Display.getCurrent().syncExec(new Runnable() {
 								public void run() {
 									try {
-										/*deserializer.updateDesign(source,
-												graphicalEditor);*/
 										graphicalEditor
 												.doSave(new NullProgressMonitor());
-										
 
 									} catch (Exception e) {
 										log.error(
@@ -114,7 +110,9 @@ public class OpenEditorUtil {
 						EsbDiagram esbDiagram = (EsbDiagram) diagram
 								.getElement();
 						EsbServer esbServer = esbDiagram.getServer();
-						AbstractEsbNodeDeserializer.setRootCompartment(multipageEitor.getDiagramEditPart());
+						AbstractEsbNodeDeserializer
+								.setRootCompartment(multipageEitor
+										.getDiagramEditPart());
 						IMediatorLocator mediatorLocator = MediatorLocatorFactory
 								.getMediatorLocator(esbServer.getType()
 										.getName());

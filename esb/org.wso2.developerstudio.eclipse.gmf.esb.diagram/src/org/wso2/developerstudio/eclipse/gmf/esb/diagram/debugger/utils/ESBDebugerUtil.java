@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
@@ -51,6 +50,10 @@ public class ESBDebugerUtil {
 
 	private static AbstractMediator deletedMediator;
 	private static boolean deleteOperationPerformed;
+	private static final String ATTRIBUTE_SEPERATOR = ",";
+	private static final CharSequence SEQUENCE_MEDIATION_COMPONENT = "mediation-component:sequence";
+	private static final CharSequence PROXY_MEDIATION_COMPONENT = "mediation-component:proxy";
+	private static final CharSequence API_MEDIATION_COMPONENT = "mediation-component:api";
 
 	public static void setDeletedMediator(AbstractMediator editPart) {
 		deletedMediator = editPart;
@@ -209,10 +212,32 @@ public class ESBDebugerUtil {
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint breakpoint : breakpoints) {
 			DebugPlugin.getDefault().getBreakpointManager()
-					.removeBreakpoint(breakpoint, true);
+					.removeBreakpoint(breakpoint, false);
 			DebugPlugin.getDefault().getBreakpointManager()
 					.addBreakpoint(breakpoint);
 		}
+	}
+
+	public static boolean isBreakpointMatches(String message,
+			String breakpointMessage) {
+		String[] attributes = breakpointMessage.split(ATTRIBUTE_SEPERATOR);
+		for (String string : attributes) {
+			if (!(mediationComponentMatches(message, string) || message
+					.contains(string))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean mediationComponentMatches(String message,
+			String string) {
+		if (message.contains(SEQUENCE_MEDIATION_COMPONENT)
+				&& (string.contains(PROXY_MEDIATION_COMPONENT) || string
+						.contains(API_MEDIATION_COMPONENT))) {
+			return true;
+		}
+		return false;
 	}
 
 }

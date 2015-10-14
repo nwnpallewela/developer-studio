@@ -27,7 +27,6 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	private final int mType;
 	private final int mLine;
 	private final String mMessage;
-	
 
 	public BreakpointRequest(IBreakpoint breakpoint, int type) {
 		mType = type;
@@ -42,13 +41,15 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	public int getLine() {
 		return mLine;
 	}
-	
+
 	public String getMessage() {
 		return mMessage;
 	}
 
 	@Override
 	public String toString() {
-		return "BreakpointEvent: " + ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line : " + getLine()+" , message : "+getMessage();
+		return "BreakpointEvent: "
+				+ ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line : "
+				+ getLine() + " , message : " + getMessage();
 	}
 }

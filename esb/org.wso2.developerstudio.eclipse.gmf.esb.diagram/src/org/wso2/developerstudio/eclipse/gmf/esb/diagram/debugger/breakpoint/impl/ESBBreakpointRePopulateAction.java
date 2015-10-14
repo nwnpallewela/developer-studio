@@ -87,16 +87,16 @@ public class ESBBreakpointRePopulateAction extends ConfigureEsbNodeAction {
 	}
 
 	/**
-	 * This method performs the action when click the menu item Toggle
-	 * Breakpoint
+	 * This method performs the action when click the menu item Resend ESB
+	 * Breakpoints
+	 * 
 	 */
 	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
 		try {
 			ESBDebugerUtil.repopulateESBServerBreakpoints();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("ESB Breakpoint Resend Operation failed", e);
 		}
 	}
 

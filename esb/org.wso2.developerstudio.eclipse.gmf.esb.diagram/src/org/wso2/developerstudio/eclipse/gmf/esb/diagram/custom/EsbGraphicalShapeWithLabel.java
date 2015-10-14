@@ -114,7 +114,8 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 			breakpointImageRectangle.setPreferredSize(new Dimension(10, 10));
 			breakpointImageRectangle.setAlpha(0);
 			breakpointImageRectangle.add(iconImageFigure);
-			iconImageFigure.translate(10, 3);
+			iconImageFigure.translate((this.getSize().width / 2
+					- mainImageRectangle.getSize().width / 2 + 3), 3);
 			breakpointLayer.add(breakpointImageRectangle,
 					constraintBreakpointImageRectangle);
 			/*try {

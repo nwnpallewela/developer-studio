@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarkerDelta;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
@@ -33,10 +32,6 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.OpenEditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
@@ -49,6 +44,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Variable
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 
@@ -67,7 +63,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		super(null);
 		mLaunch = launch;
 		fireCreationEvent();
-		// create a process
 		mProcess = new ESBProcess(this);
 		mProcess.fireCreationEvent();
 	}
@@ -93,21 +88,17 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		if (!isDisconnected()) {
 
 			if (event instanceof DebuggerStartedEvent) {
-				// create debug thread
 				ESBThread thread = new ESBThread(this);
 				mThreads.add(thread);
 				thread.fireCreationEvent();
 
-				// create stack frame
 				ESBStackFrame stackFrame = new ESBStackFrame(this, thread);
 				thread.addStackFrame(stackFrame);
 				stackFrame.fireCreationEvent();
 
-				// add breakpoint listener
 				DebugPlugin.getDefault().getBreakpointManager()
 						.addBreakpointListener(this);
 
-				// attach deferred breakpoints to debugger
 				IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 						.getBreakpointManager()
 						.getBreakpoints(getModelIdentifier());
@@ -115,7 +106,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					breakpointAdded(breakpoint);
 				}
 
-				// resume execution after setting breakpoints
 				resume();
 
 			} else if (event instanceof SuspendedEvent) {
@@ -123,7 +113,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				setState(State.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
-				showSource((SuspendedEvent)event);
+				showSource((SuspendedEvent) event);
 
 			} else if (event instanceof ResumedEvent) {
 				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
@@ -131,29 +121,25 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
 
 				}
-				//else should be implemented for stepping option
 
 			} else if (event instanceof VariablesEvent) {
-				
+
 				try {
 					getThreads()[0].getTopStackFrame().setVariables(
 							((VariablesEvent) event).getVariables());
 				} catch (DebugException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			} else if (event instanceof TerminatedEvent) {
-				// debugger is terminated
 				setState(State.TERMINATED);
 
-				// unregister breakpoint listener
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpointListener(this);
 
 				mDispatcher.terminate();
 				fireTerminateEvent();
-			}else if (event instanceof MediationFlowCompleteEvent) {
+			} else if (event instanceof MediationFlowCompleteEvent) {
 				setState(State.RESUMED);
 				OpenEditorUtil.removeBreakpointHitStatus();
 			}
@@ -163,17 +149,17 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	private void showSource(SuspendedEvent event) {
 		Map<String, String> info = event.getDetail();
 		ESBBreakpoint breakpoint = getBreakpoint(info);
-		if(breakpoint!=null){
-		IFile file = (IFile) breakpoint.getResource();
-		System.out.println(file.toString());
-		try{
-		if (file.exists()) {
-			OpenEditorUtil.openSeparateEditor(file,event);
-		}
-		}catch(NullPointerException e){
-			e.printStackTrace();
-		}
-		
+		if (breakpoint != null) {
+			IFile file = (IFile) breakpoint.getResource();
+			System.out.println(file.toString());
+			try {
+				if (file.exists()) {
+					OpenEditorUtil.openSeparateEditor(file, event);
+				}
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 
@@ -181,16 +167,18 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		String message = "";
 		Set<String> keys = info.keySet();
 		for (String key : keys) {
-			if(!(ESBDebuggerConstants.EVENT.equals(key) || info.get(key).contains("{"))){
-			message = message+addAttribute(key,info.get(key))+ATTRIBUTE_SEPERATOR;
+			if (!(ESBDebuggerConstants.EVENT.equals(key) || info.get(key)
+					.contains("{"))) {
+				message = message + addAttribute(key, info.get(key))
+						+ ATTRIBUTE_SEPERATOR;
 			}
 		}
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-				.getBreakpointManager()
-				.getBreakpoints(getModelIdentifier());
+				.getBreakpointManager().getBreakpoints(getModelIdentifier());
 		for (IBreakpoint breakpoint : breakpoints) {
-			if(breakpoint instanceof ESBBreakpoint){
-				if(isBreakpointMatched(message,((ESBBreakpoint)breakpoint).getMessage())){
+			if (breakpoint instanceof ESBBreakpoint) {
+				if (ESBDebugerUtil.isBreakpointMatches(message,
+						((ESBBreakpoint) breakpoint).getMessage())) {
 					return (ESBBreakpoint) breakpoint;
 				}
 			}
@@ -199,19 +187,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		return null;
 	}
 
-	private boolean isBreakpointMatched(String message, String breakpointMessage) {
-		String[] attributes = breakpointMessage.split(ATTRIBUTE_SEPERATOR);
-		for (String string : attributes) {
-			if(!message.contains(string)){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private String addAttribute(String key,String value) {
-		return key + KEY_VALUE_SEPERATOR
-				+ value;
+	private String addAttribute(String key, String value) {
+		return key + KEY_VALUE_SEPERATOR + value;
 	}
 
 	@Override
@@ -254,16 +231,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		return this;
 	}
 
-	/*
-	 * public IFile getFile() { return mFile; }
-	 */
-
 	private boolean isEnabledBreakpoint(IBreakpoint breakpoint) {
 		try {
 			return breakpoint.isEnabled()
 					&& (DebugPlugin.getDefault().getBreakpointManager()
-							.isEnabled());// || (breakpoint instanceof
-											// ESBRunToLineBreakpoint)
+							.isEnabled());
 		} catch (CoreException e) {
 			// ignore invalid breakpoint
 		}
@@ -289,7 +261,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	}
 
 	/**
-	 * This method get called when any breakpoint is removed from the Breakpoint Manager.
+	 * This method get called when any breakpoint is removed from the Breakpoint
+	 * Manager.
 	 */
 	@Override
 	public void breakpointRemoved(final IBreakpoint breakpoint,
@@ -322,7 +295,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	@Override
 	public IMemoryBlock getMemoryBlock(long arg0, long arg1)
 			throws DebugException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
