@@ -32,6 +32,7 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
@@ -47,6 +48,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchV
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		IEventProcessor {
@@ -58,6 +61,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	private final List<ESBThread> mThreads = new ArrayList<ESBThread>();
 	private final ILaunch mLaunch;
 
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+	
 	public ESBDebugTarget(final ILaunch launch, int requestPortInternal,
 			int eventPortInternal) {
 		super(null);
@@ -109,11 +114,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				resume();
 
 			} else if (event instanceof SuspendedEvent) {
-				fireModelEvent(new FetchVariablesRequest());
 				setState(State.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
 				showSource((SuspendedEvent) event);
+				fireModelEvent(new FetchVariablesRequest());
 
 			} else if (event instanceof ResumedEvent) {
 				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
@@ -128,7 +133,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					getThreads()[0].getTopStackFrame().setVariables(
 							((VariablesEvent) event).getVariables());
 				} catch (DebugException e) {
-					e.printStackTrace();
+					log.error("Error while seting variable values", e);
 				}
 
 			} else if (event instanceof TerminatedEvent) {

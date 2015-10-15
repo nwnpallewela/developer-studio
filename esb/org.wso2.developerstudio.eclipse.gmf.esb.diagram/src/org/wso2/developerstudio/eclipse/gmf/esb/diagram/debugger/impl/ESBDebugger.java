@@ -52,8 +52,9 @@ public class ESBDebugger implements IESBDebugger {
 	private boolean mIsStepping = false;
 	private IESBDebuggerInterface mDebuggerInterface;
 	private final Set<Integer> mBreakpoints = new HashSet<Integer>();
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 	private Map<String, String> mVariables;
+	
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ESBDebugger(IESBDebuggerInterface debuggerInterface) {
 		mDebuggerInterface = debuggerInterface;

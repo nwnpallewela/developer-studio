@@ -48,6 +48,8 @@ public class ESBValue extends ESBDebugElement implements IValue {
 
 	private static final CharSequence JASON_OBJECT_IDENTIFING_KEY = "{";
 	private static final String EMPTY_STRING = "";
+	private static final String KEY_ENVELOPE = "envelope";
+
 	private final String variableValue;
 	private List<IVariable> valueChildren;
 
@@ -68,7 +70,8 @@ public class ESBValue extends ESBDebugElement implements IValue {
 							variable.setValue(message.get(name));
 							((ESBVariable) variable)
 									.fireChangeEvent(DebugEvent.CONTENT);
-							if (variable.getName().equalsIgnoreCase("envelope")) {
+							if (variable.getName().equalsIgnoreCase(
+									KEY_ENVELOPE)) {
 								AbstractMediator mediator = OpenEditorUtil
 										.getPreviousHitEditPart();
 								setToolTipMessage(message, name, mediator);
@@ -85,7 +88,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 					ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
 							name, message.get(name));
 					valueChildren.add(esbVariable);
-					if (name.equalsIgnoreCase("envelope")) {
+					if (name.equalsIgnoreCase(KEY_ENVELOPE)) {
 						AbstractMediator mediator = OpenEditorUtil
 								.getPreviousHitEditPart();
 						setToolTipMessage(message, name, mediator);
@@ -106,7 +109,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			((SingleCompartmentComplexFiguredAbstractMediator) mediator)
 					.getPrimaryShape().setToolTipMessage(
 							formatMessage(message.get(name)));
-			
+
 		} else if (mediator instanceof CloneMediatorEditPart) {
 			((CloneMediatorEditPart) mediator).getPrimaryShape()
 					.setToolTipMessage(formatMessage(message.get(name)));
