@@ -213,8 +213,8 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @throws CoreException
 	 */
 	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
-			IResource resource, int position, String listSequenceNumber,
-			String action) throws CoreException {
+			IResource resource, int position, String listSequence, String action)
+			throws CoreException {
 		if (position >= 0) {
 			String listSequencePosition = "";
 			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
@@ -223,34 +223,48 @@ public abstract class AbstractESBBreakpointBuilder implements
 			List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
 			for (IBreakpoint breakpoint : breakpoints) {
 				IResource file = ((ESBBreakpoint) breakpoint).getResource();
-				String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
-				String[] positionArray = positionValue.split(" ");
-				String lastPosition = positionArray[positionArray.length - 1];
-				if (positionArray.length > 1) {
-					listSequencePosition = positionArray[positionArray.length - 2];
-				}
-				System.out
-						.println("Breakpoint position list mediator position :"
-								+ listSequencePosition + ":");
-				if (file.equals(resource)
-						&& listSequenceNumber
-								.equalsIgnoreCase(listSequencePosition)) {
-					if ((ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-							.equals(action) && (position <= Integer
-							.parseInt(lastPosition)))
-							|| (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
-									.equals(action) && position < Integer
-									.parseInt(lastPosition))) {
-						breakpointList.add((ESBBreakpoint) breakpoint);
-					} else if (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
-							.equals(action)
-							&& position == Integer.parseInt(lastPosition)) {
-						DebugPlugin.getDefault().getBreakpointManager()
-								.removeBreakpoint(breakpoint, true);
+				if (file.equals(resource)) {
+					String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
+					String[] positionArray = positionValue.split(" ");
+					String lastPosition = positionArray[positionArray.length - 1];
+					String sequnceType = "";
+					if (positionArray.length > 1) {
+						listSequencePosition = positionArray[positionArray.length - 2];
+					} else {
+						sequnceType = getSequenceTypeOfBreakpoint(breakpoint);
+					}
+					if (listSequence.equalsIgnoreCase(listSequencePosition)
+							|| listSequence.equalsIgnoreCase(sequnceType)) {
+						if ((ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+								.equals(action) && (position <= Integer
+								.parseInt(lastPosition)))
+								|| (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
+										.equals(action) && position < Integer
+										.parseInt(lastPosition))) {
+							breakpointList.add((ESBBreakpoint) breakpoint);
+						} else if (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
+								.equals(action)
+								&& position == Integer.parseInt(lastPosition)) {
+							DebugPlugin.getDefault().getBreakpointManager()
+									.removeBreakpoint(breakpoint, true);
+						}
 					}
 				}
+
 			}
 			return breakpointList;
+		}
+		return null;
+	}
+
+	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint) {
+		String message = ((ESBBreakpoint) breakpoint).getMessage();
+		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
+		for (String string : attributes) {
+			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
+			if (ESBDebuggerConstants.SEQUENCE_TYPE.equals(keyValuePair[0])) {
+				return keyValuePair[1];
+			}
 		}
 		return null;
 	}
@@ -264,7 +278,6 @@ public abstract class AbstractESBBreakpointBuilder implements
 				return keyValuePair[1];
 			}
 		}
-
 		return null;
 	}
 

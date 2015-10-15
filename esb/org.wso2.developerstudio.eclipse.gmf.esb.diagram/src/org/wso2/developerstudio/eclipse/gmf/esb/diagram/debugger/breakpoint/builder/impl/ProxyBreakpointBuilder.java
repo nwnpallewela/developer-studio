@@ -15,6 +15,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -102,11 +104,39 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
-			AbstractMediator abstractMediator, EsbServer esbServer,String action)
-			throws CoreException {
-		// TODO Auto-generated method stub
-		
-	}
+			AbstractMediator abstractMediator, EsbServer esbServer,
+			String action) throws CoreException {
+		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
 
+		ProxyServiceImpl proxy = (ProxyServiceImpl) treeIterator.next();
+		if (abstractMediator != null) {
+			if (abstractMediator.reversed) {
+				int position = getMediatorPosition(
+						proxy.getOutSequenceOutputConnector(), abstractMediator);
+				List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+						resource, position, ESBDebuggerConstants.PROXY_OUTSEQ,
+						action);
+				if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+						.equalsIgnoreCase(action)) {
+					incrementBreakpointPosition(breakpontList);
+				} else {
+					decreaseBreakpointPosition(breakpontList);
+				}
+			} else {
+				int position = getMediatorPosition(proxy.getOutputConnector(),
+						abstractMediator);
+				List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+						resource, position, ESBDebuggerConstants.PROXY_INSEQ,
+						action);
+				if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+						.equalsIgnoreCase(action)) {
+					incrementBreakpointPosition(breakpontList);
+				} else {
+					decreaseBreakpointPosition(breakpontList);
+				}
+			}
+		}
+
+	}
 
 }

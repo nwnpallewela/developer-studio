@@ -118,7 +118,6 @@ public class ESBDebugger implements IESBDebugger {
 	public void handleEvent(final IDebugEvent event) {
 
 		if (event instanceof ResumeRequest) {
-			System.out.println("Debugger Resume execution");
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
 			mDebuggerInterface.sendCommand(ESBDebuggerConstants.RESUME);
 
@@ -181,7 +180,7 @@ public class ESBDebugger implements IESBDebugger {
 		if (responce.containsKey(ESBDebuggerConstants.COMMAND_RESPONSE)) {
 			if (ESBDebuggerConstants.FAILED.equals(responce
 					.get(ESBDebuggerConstants.COMMAND_RESPONSE))) {
-				log.error(responce.get(ESBDebuggerConstants.FAILED_REASON));
+				log.warn(responce.get(ESBDebuggerConstants.FAILED_REASON));
 			}
 		} else {
 			if (responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
@@ -231,8 +230,9 @@ public class ESBDebugger implements IESBDebugger {
 			try {
 				ESBDebugerUtil.repopulateESBServerBreakpoints();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(
+						"Error while Re-Sending the breakpoints for ESB Server",
+						e);
 			}
 		}
 	}

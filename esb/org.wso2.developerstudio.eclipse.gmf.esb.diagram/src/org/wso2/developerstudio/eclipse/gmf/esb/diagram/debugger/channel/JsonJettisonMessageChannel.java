@@ -24,9 +24,12 @@ import java.util.Set;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.DebuggerCommunicationMessageModel;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.MessageAttribute;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class JsonJettisonMessageChannel implements IChannelCommunication {
 
@@ -35,14 +38,16 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String MESSAGE_SEPERATOR = "}";
 
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+
 	@Override
 	public String createCommand(String command) {
 		try {
 			JSONObject jsonCommand = new JSONObject();
 			jsonCommand.put(COMMAND_KEY, command);
 			return jsonCommand.toString();
-		} catch (Exception ex) {
-			// TODO Handle Exception
+		} catch (JSONException ex) {
+			log.error("Error while creating Command JSON message", ex);
 		}
 		return null;
 
@@ -61,7 +66,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		try {
 			return buildMessage(messageModel, attributeValues).toString();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.error("Error while creating Breakpoint Command JSON message", e);
 		}
 		return null;
 	}
@@ -105,7 +110,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 			JSONObject responceMessage = new JSONObject(responce);
 			message = convertJsonToMap(responceMessage);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.error("Error while creating Responce JSON message", e);
 		}
 		return message;
 	}
@@ -120,7 +125,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 				value = responceMessage.getString(key);
 				message.put(key, value);
 			} catch (JSONException e) {
-				e.printStackTrace();
+				log.error("Error while converting JSONToMap", e);
 			}
 		}
 		return message;
@@ -134,18 +139,17 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 			message = convertJsonToMap(responceMessage);
 			if (ESBDebuggerConstants.BREAKPOINT.equals(message
 					.get(ESBDebuggerConstants.EVENT))) {
-
 				String mediationComponent = message
 						.get(ESBDebuggerConstants.MEDIATION_COMPONENT);
-				 Map<String, String> attributes = (getAttributeValuesFromEvent(
+				Map<String, String> attributes = (getAttributeValuesFromEvent(
 						message.get(mediationComponent), mediationComponent));
-				 Set<String> keys = attributes.keySet();
-				 for (String key : keys) {
+				Set<String> keys = attributes.keySet();
+				for (String key : keys) {
 					message.put(key, attributes.get(key));
 				}
 			}
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.error("Error while creating Event Map", e);
 		}
 		return message;
 	}
@@ -156,11 +160,11 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		MessageAttribute messageModel = DebuggerCommunicationMessageModel
 				.getMessageModel(ESBDebuggerConstants.BREAKPOINT,
 						getBreakpointType(string, mediationComponent));
-		 ArrayList<String> keys = messageModel.getAttributeKeys();
+		ArrayList<String> keys = messageModel.getAttributeKeys();
 		for (String key : keys) {
-			if(messageModel.getAttribute(key)==null && hasValueForKey(key,string)){
-				
-				attributes.put(key, getValueForKey(key,string));
+			if (messageModel.getAttribute(key) == null
+					&& hasValueForKey(key, string)) {
+				attributes.put(key, getValueForKey(key, string));
 			}
 		}
 		return attributes;
@@ -179,14 +183,17 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 				indexOfValueBegining);
 		int indexOfMessageObjectEnd = string.indexOf(MESSAGE_SEPERATOR,
 				indexOfValueBegining);
-		String value="";
+		String value = "";
 		if (indexOfValueEnd < 0) {
-			value=string.substring(indexOfValueBegining + 2, indexOfMessageObjectEnd - 2);
+			value = string.substring(indexOfValueBegining + 2,
+					indexOfMessageObjectEnd - 2);
 		} else {
-			if(indexOfValueEnd<indexOfMessageObjectEnd){
-				value=string.substring(indexOfValueBegining + 2, indexOfValueEnd - 1);
-			}else{
-				value=string.substring(indexOfValueBegining + 2, indexOfMessageObjectEnd - 2);
+			if (indexOfValueEnd < indexOfMessageObjectEnd) {
+				value = string.substring(indexOfValueBegining + 2,
+						indexOfValueEnd - 1);
+			} else {
+				value = string.substring(indexOfValueBegining + 2,
+						indexOfMessageObjectEnd - 2);
 			}
 		}
 		return value;
@@ -217,7 +224,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		try {
 			return buildMessage(messageModel, attributeValues).toString();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.error("Error while building get properties command message", e);
 		}
 		return null;
 	}
