@@ -64,7 +64,7 @@ public class OpenEditorUtil {
 	 * 
 	 * @param fileTobeOpened
 	 */
-	public static IEditorPart openSeparateEditor(final IFile fileTobeOpened,
+	public static void openSeparateEditor(final IFile fileTobeOpened,
 			final SuspendedEvent event) {
 		try {
 			final String source = FileUtils.readFileToString(fileTobeOpened
@@ -151,7 +151,6 @@ public class OpenEditorUtil {
 		} catch (IOException e) {
 			log.error("Error occured while opening a separate editor", e);
 		}
-		return null;
 	}
 
 }

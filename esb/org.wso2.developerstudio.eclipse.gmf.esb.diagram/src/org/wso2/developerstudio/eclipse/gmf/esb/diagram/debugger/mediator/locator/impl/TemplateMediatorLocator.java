@@ -23,13 +23,20 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 
+/**
+ * This class contains methods related locate and get mediators in a Template
+ * Sequence
+ */
 public class TemplateMediatorLocator extends AbstractMediatorLocator {
 
+	/**
+	 * This method returns EditPart of a Template Sequence according to given
+	 * information Map
+	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
 			Map<String, String> info) {
@@ -52,7 +59,6 @@ public class TemplateMediatorLocator extends AbstractMediatorLocator {
 					Integer.parseInt(positionArray[0]));
 
 		}
-
 		return editPart;
 	}
 

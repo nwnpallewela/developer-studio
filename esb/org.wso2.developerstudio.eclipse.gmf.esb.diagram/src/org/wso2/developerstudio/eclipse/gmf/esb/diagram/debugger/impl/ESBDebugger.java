@@ -69,17 +69,22 @@ public class ESBDebugger implements IESBDebugger {
 		try {
 			mDebuggerInterface.setfEventReader();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while seting Event Reader for DebuggerInterface",
+					e);
 		}
 		try {
 			mDebuggerInterface.setfRequestReader();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(
+					"Error while seting Request Reader for DebuggerInterface",
+					e);
 		}
 		try {
 			mDebuggerInterface.setfRequestWriter();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(
+					"Error while seting Request Writer for DebuggerInterface",
+					e);
 		}
 		mDebuggerInterface.intializeDispatchers();
 

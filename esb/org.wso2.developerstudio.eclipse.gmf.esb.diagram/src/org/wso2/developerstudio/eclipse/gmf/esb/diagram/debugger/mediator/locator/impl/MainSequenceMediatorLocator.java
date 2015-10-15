@@ -26,13 +26,18 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
 /**
- *
+ * This class contains methods related locate and get mediators in a Main
+ * Sequence
  */
 public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 
 	private static final String IN_SEQUENCE_VALUE = "0";
 	private static final int NO_OF_LIST_MEDIATORS = 2;
 
+	/**
+	 * This method returns EditPart of a Main Sequence according to given
+	 * information Map
+	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
 			Map<String, String> info) {
@@ -62,7 +67,6 @@ public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 			}
 
 		}
-
 		return editPart;
 	}
 

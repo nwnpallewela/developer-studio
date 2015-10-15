@@ -30,6 +30,4 @@ public class APIMediatorLocator extends AbstractMediatorLocator {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
 }

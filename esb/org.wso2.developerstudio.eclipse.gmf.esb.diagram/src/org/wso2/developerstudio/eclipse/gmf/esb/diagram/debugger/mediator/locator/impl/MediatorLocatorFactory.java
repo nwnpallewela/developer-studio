@@ -19,7 +19,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
-
+/**
+ * 
+ * @author nuwan
+ *
+ */
 public class MediatorLocatorFactory {
 
 public static IMediatorLocator getMediatorLocator(String type) {
