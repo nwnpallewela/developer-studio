@@ -32,7 +32,6 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
@@ -48,8 +47,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchV
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
-import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
-import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		IEventProcessor {
@@ -60,8 +57,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	private final ESBProcess mProcess;
 	private final List<ESBThread> mThreads = new ArrayList<ESBThread>();
 	private final ILaunch mLaunch;
-
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ESBDebugTarget(final ILaunch launch, int requestPortInternal,
 			int eventPortInternal) {
@@ -156,14 +151,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		ESBBreakpoint breakpoint = getBreakpoint(info);
 		if (breakpoint != null) {
 			IFile file = (IFile) breakpoint.getResource();
-			try {
-				if (file != null && file.exists()) {
-					OpenEditorUtil.openSeparateEditor(file, event);
-				}
-			} catch (NullPointerException e) {
-				log.error("File to be open in breakpoint no found", e);
+			if (file != null && file.exists()) {
+				OpenEditorUtil.openSeparateEditor(file, event);
 			}
-
 		}
 	}
 
@@ -226,7 +216,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		 * if (mFile.equals(breakpoint.getMarker().getResource())) { //
 		 * breakpoint on our source file return true; }
 		 */
-
 		return true;
 	}
 
@@ -260,7 +249,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		if (supportsBreakpoint(breakpoint) && isEnabledBreakpoint(breakpoint)) {
 			fireModelEvent(new BreakpointRequest(breakpoint,
 					BreakpointRequest.ADDED));
-			System.out.println("Breakpoint Added");
 		}
 	}
 
@@ -275,8 +263,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 			fireModelEvent(new BreakpointRequest(breakpoint,
 					BreakpointRequest.REMOVED));
-			System.out.println("Breakpoint Removed");
-
 		}
 	}
 
