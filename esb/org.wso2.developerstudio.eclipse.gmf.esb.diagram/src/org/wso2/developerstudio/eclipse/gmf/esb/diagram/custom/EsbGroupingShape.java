@@ -69,10 +69,6 @@ public class EsbGroupingShape extends RoundedRectangle {
 					.getIconImageFigure(
 							"icons/ico20debug/toggle_breakpoint_red.gif", 10,
 							10);
-//			ImageFigure iconImageFigure = EditPartDrawingHelper
-//					.getIconImageFigure(
-//							"icons/ico20debug/breakpoint_16.gif", 10,
-//							10);
 
 			RoundedRectangle mainImageRectangle = new RoundedRectangle();
 			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
@@ -144,7 +140,6 @@ public class EsbGroupingShape extends RoundedRectangle {
 		this.add(leftRectangle, constraintGraphicalNodeContainer);
 
 		// Create inner rectangle inside the left side rectangle.
-		
 		container = createInnerRectangle(leftRectangle);
 
 		ImageDescriptor imgDesc = EsbDiagramEditorPlugin.getBundledImageDescriptor(getIconPath());
@@ -185,7 +180,7 @@ public class EsbGroupingShape extends RoundedRectangle {
 		constraintEsbNodeTypeNameRectangle.verticalSpan = 1;
 		constraintEsbNodeTypeNameRectangle.grabExcessHorizontalSpace = true;
 		constraintEsbNodeTypeNameRectangle.grabExcessVerticalSpace = true;
-
+		
 		esbNodeTypeNameRectangle.setLayoutManager(new StackLayout());
 
 		// Actual label to display which type this is.
@@ -197,7 +192,15 @@ public class EsbGroupingShape extends RoundedRectangle {
 		esbNodeTypeNameLabel.setPreferredSize(new Dimension(64, 20));
 		figureLayer.add(esbNodeTypeNameLabel, constraintEsbNodeTypeNameRectangle);
 		pane.add(figureLayer);
-		container.add(pane);
+		GridData constraintPaneRectangle = new GridData();
+		constraintPaneRectangle.verticalAlignment = GridData.FILL;
+		constraintPaneRectangle.horizontalAlignment = GridData.FILL;
+		constraintPaneRectangle.horizontalIndent = 0;
+		constraintPaneRectangle.horizontalSpan = 1;
+		constraintPaneRectangle.verticalSpan = 1;
+		constraintPaneRectangle.grabExcessHorizontalSpace = true;
+		constraintPaneRectangle.grabExcessVerticalSpace = true;
+		container.add(pane,constraintPaneRectangle);
 	}
 
 	private RoundedRectangle createInnerRectangle(RoundedRectangle leftRectangle) {
