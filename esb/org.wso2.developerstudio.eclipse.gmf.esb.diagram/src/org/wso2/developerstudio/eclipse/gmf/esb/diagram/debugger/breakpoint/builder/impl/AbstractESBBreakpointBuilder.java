@@ -86,6 +86,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.buil
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
@@ -335,7 +337,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 					EditPart editpart = EditorUtils.getEditpart(mediator);
 					if (editpart.equals(abstractMediator)) {
 						break;
-					} else {
+					} if(isEndOfChain(editpart)){
+						return -1;
+					}else {
 						count++;
 						tempConnector = getOutputConnector((Mediator) mediator);
 					}
@@ -345,6 +349,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 			}
 			return count;
 		}
+	}
+
+	private boolean isEndOfChain(EditPart editpart) {
+		if(editpart instanceof ProxyServiceEditPart || editpart instanceof SequencesImpl){
+			return true;
+		}
+		return false;
 	}
 
 	/**
