@@ -27,12 +27,18 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugM
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
- * This class represents the ESBBreakpoints.
+ * This class represents the Custom Breakpoint type for ESB Breakpoints. Both
+ * design view and source view ESB breakpoints is map to this type.
+ * 
  * @author nuwan
  *
  */
 public class ESBBreakpoint extends Breakpoint {
 
+	/**
+	 * Default constructor is needed by the debug framework to restore
+	 * breakpoints
+	 */
 	public ESBBreakpoint() {
 	}
 
@@ -60,11 +66,20 @@ public class ESBBreakpoint extends Breakpoint {
 		run(getMarkerRule(resource), runnable);
 	}
 
+	/**
+	 * Returns ESB breakpoint model identifier to identify this as a ESB
+	 * Breakpoint
+	 */
 	@Override
 	public String getModelIdentifier() {
 		return ESBDebugModelPresentation.ID;
 	}
 
+	/**
+	 * returns source view line number of the breakpoint
+	 * @return breakpoint line number
+	 * @throws CoreException
+	 */
 	public int getLineNumber() throws CoreException {
 		IMarker marker = getMarker();
 		if (marker != null) {
@@ -73,6 +88,10 @@ public class ESBBreakpoint extends Breakpoint {
 		return -1;
 	}
 
+	/**
+	 * Returns the message contains in ESBbreakpoint
+	 * @return
+	 */
 	public String getMessage() {
 		IMarker marker = getMarker();
 		if (marker != null) {
@@ -81,6 +100,10 @@ public class ESBBreakpoint extends Breakpoint {
 		return null;
 	}
 
+	/**
+	 * Returns resource file of the marker set to breakpoint
+	 * @return
+	 */
 	public IResource getResource() {
 		IMarker marker = getMarker();
 		if (marker != null) {
