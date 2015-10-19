@@ -70,7 +70,7 @@
    
    <extension
             point="org.eclipse.debug.core.sourceLocators">
-      </extension>
+   </extension>
  <extension
        point="org.eclipse.debug.ui.debugModelPresentations">
         <debugModelPresentation

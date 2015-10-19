@@ -20,9 +20,9 @@ public class ESBDebuggerConstants {
 	public static final String MEDIATOR_DELETE_ACTION = "mediatordelete";
 	public static final String MEDIATOR_INSERT_ACTION = "mediatorinsert";
 
-	public static final String AXIS2 = "axis2";
-	public static final String OPERATION = "operation";
-	public static final String AXIS2_CLIENT = "axis2-client";
+	public static final String AXIS2_PROPERTY_TAG = "axis2";
+	public static final String OPERATION_PROPERTY_TAG = "operation";
+	public static final String AXIS2_CLIENT_PROPERTY_TAG = "axis2-client";
 	public static final String TRANSPORT = "transport";
 	public static final String SYANPSE = "synapse";
 	public static final String COMMAND_GET = "get";

@@ -206,6 +206,11 @@ public class ESBDebugerUtil {
 		return resource;
 	}
 
+	/**
+	 * This method publish registered ESB Breakpoints to connected Server
+	 * 
+	 * @throws CoreException
+	 */
 	public static void repopulateESBServerBreakpoints() throws CoreException {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()

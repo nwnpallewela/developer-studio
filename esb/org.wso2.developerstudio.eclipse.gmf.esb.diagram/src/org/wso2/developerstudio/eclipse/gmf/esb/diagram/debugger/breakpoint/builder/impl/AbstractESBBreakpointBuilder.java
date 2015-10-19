@@ -91,6 +91,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * 
+ * @author nuwan
+ *
+ */
 public abstract class AbstractESBBreakpointBuilder implements
 		IESBBreakpointBuilder {
 
@@ -217,12 +222,12 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
 			IResource resource, int position, String listSequence, String action)
 			throws CoreException {
+		List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
 		if (position >= 0) {
-			String listSequencePosition = "";
+			String listSequencePosition = EMPTY_STRING;
 			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 					.getBreakpointManager()
 					.getBreakpoints(ESBDebugModelPresentation.ID);
-			List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
 			for (IBreakpoint breakpoint : breakpoints) {
 				IResource file = ((ESBBreakpoint) breakpoint).getResource();
 				if (file.equals(resource)) {
@@ -254,9 +259,8 @@ public abstract class AbstractESBBreakpointBuilder implements
 				}
 
 			}
-			return breakpointList;
 		}
-		return null;
+		return breakpointList;
 	}
 
 	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint) {
@@ -337,9 +341,10 @@ public abstract class AbstractESBBreakpointBuilder implements
 					EditPart editpart = EditorUtils.getEditpart(mediator);
 					if (editpart.equals(abstractMediator)) {
 						break;
-					} if(isEndOfChain(editpart)){
+					}
+					if (isMediatorChainEnds(editpart)) {
 						return -1;
-					}else {
+					} else {
 						count++;
 						tempConnector = getOutputConnector((Mediator) mediator);
 					}
@@ -351,8 +356,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
-	private boolean isEndOfChain(EditPart editpart) {
-		if(editpart instanceof ProxyServiceEditPart || editpart instanceof SequencesImpl){
+	private boolean isMediatorChainEnds(EditPart editpart) {
+		if (editpart instanceof ProxyServiceEditPart
+				|| editpart instanceof SequencesImpl) {
 			return true;
 		}
 		return false;
@@ -370,7 +376,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 			EObject selection) {
 		OutputConnector tempConnector = outConnector;
 		int count = 0;
-		String position = "";
+		String position = EMPTY_STRING;
 		try {
 			while (tempConnector != null) {
 				EObject mediator = tempConnector.getOutgoingLink().getTarget()
@@ -400,7 +406,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected String getMediatorPositionInFaultSeq(EList<EsbElement> eList,
 			EObject selection) {
 		int count = 0;
-		String position = "";
+		String position = EMPTY_STRING;
 		for (EsbElement mediator : eList) {
 			if (getInstanceId(mediator.toString()).equals(
 					getInstanceId(selection.toString()))) {

@@ -9,15 +9,17 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
-import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
-import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * This class extends the {@link ConfigureEsbNodeAction} to execute the
+ * operation of enable/disable ESbBreakpoints
+ * 
+ * @author nuwan
+ *
+ */
 public class ESBBreakpointDisableEnableAction extends ConfigureEsbNodeAction {
-
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	/**
 	 * Creates a new {@link ESBBreakpointDisableEnableAction} instance.
@@ -85,10 +87,12 @@ public class ESBBreakpointDisableEnableAction extends ConfigureEsbNodeAction {
 	}
 
 	/**
-	 *
+	 * This method performs the action when click the menu item Enable/Disable
+	 * ESB Breakpoints
 	 */
 	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
+		// TODO This action should implement
 	}
 
 }

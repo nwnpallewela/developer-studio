@@ -33,9 +33,9 @@ public class BreakpointBuilderFactory {
 	 * @return BreakpointBuilder
 	 */
 	public static IESBBreakpointBuilder getBreakpointBuilder(String type) {
-		
+
 		String lowerCaseType = type.toLowerCase();
-		
+
 		switch (lowerCaseType) {
 		case ESBDebuggerConstants.PROXY:
 			return new ProxyBreakpointBuilder();

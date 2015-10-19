@@ -47,6 +47,8 @@ public class ESBBreakpointTarget {
 	 */
 	public static boolean canToggleLineBreakpoints(IWorkbenchPart part,
 			ISelection selection) {
+		// TODO This function should implement when source view breakpoints are
+		// adding to debugger
 		return false;
 	}
 
@@ -105,12 +107,8 @@ public class ESBBreakpointTarget {
 					DebugPlugin.getDefault().getBreakpointManager()
 							.removeBreakpoint(existingBreakpoint, true);
 					ESBDebugerUtil.removeBreakpointMark(part);
-
 				}
-
 			}
-			// ((FixedSizedAbstractMediator)part).getPrimaryShape().changeBreakpointMediatorIcon("BreakpointAdded");
-
 		}
 	}
 
@@ -127,24 +125,20 @@ public class ESBBreakpointTarget {
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		if (breakpoints != null) {
 			for (IBreakpoint breakpoint : breakpoints) {
-				/*
-				 * System.out.println("all breakpoints: " +
-				 * breakpoint.getModelIdentifier());
-				 */
+				ESBBreakpoint esbBreakpoint = (ESBBreakpoint) breakpoint;
 				if ((targetBreakpoint.getMarker().getResource())
 						.equals(breakpoint.getMarker().getResource())) {
-					if ((((ESBBreakpoint) breakpoint).getMessage())
-							.equals(targetBreakpoint.getMessage())) {
-						return (ESBBreakpoint) breakpoint;
-					} else if (((ESBBreakpoint) breakpoint).getLineNumber() == (targetBreakpoint
+					if ((esbBreakpoint.getMessage()).equals(targetBreakpoint
+							.getMessage())) {
+						return esbBreakpoint;
+					} else if ((esbBreakpoint).getLineNumber() == (targetBreakpoint
 							.getLineNumber() + 1)
 							&& targetBreakpoint.getLineNumber() != -1) {
-						return (ESBBreakpoint) breakpoint;
+						return esbBreakpoint;
 					}
 				}
 			}
 		}
 		return null;
 	}
-
 }

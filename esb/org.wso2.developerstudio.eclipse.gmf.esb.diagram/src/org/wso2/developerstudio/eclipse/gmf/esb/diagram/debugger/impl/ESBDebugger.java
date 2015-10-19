@@ -255,16 +255,16 @@ public class ESBDebugger implements IESBDebugger {
 		attributeValues.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
 				ESBDebuggerConstants.PROPERTIES);
 		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.AXIS2);
+				ESBDebuggerConstants.AXIS2_PROPERTY_TAG);
 		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
 		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.AXIS2_CLIENT);
+				ESBDebuggerConstants.AXIS2_CLIENT_PROPERTY_TAG);
 		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
 		attributeValues.put(ESBDebuggerConstants.CONTEXT,
 				ESBDebuggerConstants.TRANSPORT);
 		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
 		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.OPERATION);
+				ESBDebuggerConstants.OPERATION_PROPERTY_TAG);
 		mDebuggerInterface.sendGetPropertiesCommand(attributeValues);
 		attributeValues.put(ESBDebuggerConstants.CONTEXT,
 				ESBDebuggerConstants.SYANPSE);

@@ -23,6 +23,10 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 
+/**
+ * ESB Breakpoint Builders should implement this interface
+ * 
+ */
 public interface IESBBreakpointBuilder {
 
 	ESBBreakpoint getESBBreakpoint(EsbServer esbServer, IResource resource,

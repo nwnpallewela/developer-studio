@@ -105,7 +105,6 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 				}
 			}
 		}
-
 		return null;
 	}
 
@@ -117,7 +116,8 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 	protected void doRun(IProgressMonitor progressMonitor) {
 
 		EditPart selectedEP = getSelectedEditPart();
-		if (selectedEP != null && selectedEP instanceof AbstractMediator) {
+		if (selectedEP instanceof AbstractMediator
+				&& selectedEP.getModel() instanceof View) {
 			EObject selectedObj = ((View) selectedEP.getModel()).getElement();
 			if (ESBBreakpointTarget.canToggleDiagramBreakpoints(selectedEP,
 					selectedObj)) {
