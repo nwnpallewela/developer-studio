@@ -33,10 +33,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
  */
 public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public SequenceBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.SEQUENCE;
-	}
-
+	/**
+	 * This method returns the ESBBreakpoint object for the selection
+	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection,
@@ -48,33 +47,26 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		SequencesImpl sequence = (SequencesImpl) next;
 
-		String message = getInitialMessage();
-		message = addSequenceTypeAttribute(message);
+		String message = getInitialMessage(ESBDebuggerConstants.SEQUENCE);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.SEQUENCE_TYPE, ESBDebuggerConstants.NAMED);
 
-		message = addSequenceKeyAttribute(message, sequence);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
 
 		String position = getMediatorPosition(sequence.getOutputConnector(),
 				selection);
-		message = addMediatorPositionAttribute(message, position);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
 		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addSequenceKeyAttribute(String message,
-			SequencesImpl sequence) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
-				+ sequence.getName();
-	}
-
-	private String addSequenceTypeAttribute(String message) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
-				+ ESBDebuggerConstants.NAMED;
-	}
-
+	/**
+	 * This method update all breakpoints affected by the mediator insertion or
+	 * deletion action specified by action parameter and mediator object
+	 * specified by abstractMediator parameter.
+	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
@@ -85,7 +77,7 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		int position = getMediatorPosition(sequence.getOutputConnector(),
 				abstractMediator);
 		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
-				resource, position, "", action);
+				resource, position, EMPTY_STRING, action);
 		if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
 				.equalsIgnoreCase(action)) {
 			incrementBreakpointPosition(breakpontList);

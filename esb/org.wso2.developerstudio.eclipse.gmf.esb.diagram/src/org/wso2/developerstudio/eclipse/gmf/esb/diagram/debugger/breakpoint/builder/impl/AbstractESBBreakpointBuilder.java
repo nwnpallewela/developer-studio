@@ -86,14 +86,20 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.buil
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SequencesEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.TemplateEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.APIResourceImpl;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
+import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
- * 
- * @author nuwan
+ * All ESBBreakpoint builders should extend AbstractESBBreakpointBuilder class.
+ * This class contains common methods related to ESBBreakpointBuilders
  *
  */
 public abstract class AbstractESBBreakpointBuilder implements
@@ -106,10 +112,16 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String KEY_VALUE_SEPERATOR = ":";
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
+	protected static final String SPACE_CHARACTOR = " ";
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	protected String type;
-
+	/**
+	 * This method increment position of the breakpoints by one. It deletes the
+	 * older breakpoint and add the modified breakpoint.
+	 * 
+	 * @param breakpontList
+	 * @throws CoreException
+	 */
 	protected void incrementBreakpointPosition(List<ESBBreakpoint> breakpontList)
 			throws CoreException {
 		if (breakpontList != null) {
@@ -129,6 +141,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
+	/**
+	 * This method decrement position of the breakpoints by one. It deletes the
+	 * older breakpoint and add the modified breakpoint.
+	 * 
+	 * @param breakpontList
+	 * @throws CoreException
+	 */
 	protected void decreaseBreakpointPosition(List<ESBBreakpoint> breakpontList)
 			throws CoreException {
 		if (breakpontList != null) {
@@ -154,13 +173,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 		for (String string : attributes) {
 			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
 			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
-				String[] positionArray = keyValuePair[1].split(" ");
+				String[] positionArray = keyValuePair[1].split(SPACE_CHARACTOR);
 				String lastPosition = positionArray[positionArray.length - 1];
 				positionArray[positionArray.length - 1] = EMPTY_STRING
 						+ (Integer.parseInt(lastPosition) + 1);
 				String newPosition = EMPTY_STRING;
 				for (String pos : positionArray) {
-					newPosition = newPosition + pos + " ";
+					newPosition = newPosition + pos + SPACE_CHARACTOR;
 				}
 
 				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
@@ -185,13 +204,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 		for (String string : attributes) {
 			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
 			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
-				String[] positionArray = keyValuePair[1].split(" ");
+				String[] positionArray = keyValuePair[1].split(SPACE_CHARACTOR);
 				String lastPosition = positionArray[positionArray.length - 1];
 				positionArray[positionArray.length - 1] = EMPTY_STRING
 						+ (Integer.parseInt(lastPosition) - 1);
 				String newPosition = EMPTY_STRING;
 				for (String pos : positionArray) {
-					newPosition = newPosition + pos + " ";
+					newPosition = newPosition + pos + SPACE_CHARACTOR;
 				}
 
 				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
@@ -232,9 +251,10 @@ public abstract class AbstractESBBreakpointBuilder implements
 				IResource file = ((ESBBreakpoint) breakpoint).getResource();
 				if (file.equals(resource)) {
 					String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
-					String[] positionArray = positionValue.split(" ");
+					String[] positionArray = positionValue
+							.split(SPACE_CHARACTOR);
 					String lastPosition = positionArray[positionArray.length - 1];
-					String sequnceType = "";
+					String sequnceType = EMPTY_STRING;
 					if (positionArray.length > 1) {
 						listSequencePosition = positionArray[positionArray.length - 2];
 					} else {
@@ -287,26 +307,16 @@ public abstract class AbstractESBBreakpointBuilder implements
 		return null;
 	}
 
-	protected String addMediatorPositionAttribute(String message,
-			String position) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.MEDIATOR_POSITION + KEY_VALUE_SEPERATOR
-				+ position;
-	}
-
-	protected String addBreakpointOperationAttribute(String message,
-			boolean breakpointExists) {
-		if (breakpointExists) {
-			return CLEAR_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR + message;
-		} else {
-			return SET_BREAKPOINT_ATTRIBUTE + ATTRIBUTE_SEPERATOR + message;
-		}
-	}
-
-	protected String getInitialMessage() {
+	protected String getInitialMessage(String type) {
 		return ESBDebuggerConstants.MEDIATION_COMPONENT + KEY_VALUE_SEPERATOR
 				+ type;
+	}
+
+	protected String addAttributeToMessage(String message, String attributeKey,
+			String attributeValue) {
+
+		return message + ATTRIBUTE_SEPERATOR + attributeKey
+				+ KEY_VALUE_SEPERATOR + attributeValue;
 	}
 
 	/**
@@ -356,9 +366,17 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
+	/**
+	 * This method checks whether the mediation flow came to an end
+	 * 
+	 * @param editpart
+	 * @return
+	 */
 	private boolean isMediatorChainEnds(EditPart editpart) {
 		if (editpart instanceof ProxyServiceEditPart
-				|| editpart instanceof SequencesImpl) {
+				|| editpart instanceof SequencesEditPart
+				|| editpart instanceof APIResourceEditPart
+				|| editpart instanceof TemplateEditPart) {
 			return true;
 		}
 		return false;
@@ -385,6 +403,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 						getInstanceId(selection.toString()))) {
 					position = position + count;
 					break;
+				}
+				else if(isMediatorChainEnds(mediator)) {
+					break;
 				} else {
 					count++;
 					tempConnector = getOutputConnector((Mediator) mediator);
@@ -394,6 +415,22 @@ public abstract class AbstractESBBreakpointBuilder implements
 			log.error("Diagram links are not properly connected", e);
 		}
 		return position;
+	}
+
+	/**
+	 * This method checks whether the mediation flow came to an end
+	 * 
+	 * @param mediator
+	 * @return
+	 */
+	private boolean isMediatorChainEnds(EObject mediator) {
+		if (mediator instanceof SequencesImpl
+				|| mediator instanceof ProxyServiceImpl
+				|| mediator instanceof APIResourceImpl
+				|| mediator instanceof TemplateImpl) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

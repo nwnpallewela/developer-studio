@@ -87,17 +87,23 @@ public class ESBDebuggerConstants {
 	public static final String PROXY_KEY = "proxy-key";
 	public static final String API_KEY = "api-key";
 	public static final String METHOD = "method";
-	public static final String GET = "GET";
 	public static final String CONTEXT = "context";
 	public static final String PROPERTY = "property";
 	public static final String GET_PROPERTY = "get-property";
 	public static final String CHANGE_PROPERTY = "change-property";
 	public static final String PROPERTY_NAME = "property-name";
 	public static final String PROPERTY_VALUE = "property-value";
-	public static final String POST = "POST";
 	public static final String URL_TEMPLATE = "uri-template";
 	public static final String URI_MAPPING = "url-mapping";
 	public static final String API_INSEQ = "api_inseq";
 	public static final String API_OUTSEQ = "api_outseq";
+
+	public static final String API_METHOD_POST = "POST";
+	public static final String API_METHOD_GET = "GET";
+	public static final String API_METHOD_PUT = "PUT";
+	public static final String API_METHOD_DELETE = "DELETE";
+	public static final String API_METHOD_OPTIONS = "OPTIONS";
+	public static final String API_METHOD_HEAD = "HEAD";
+	public static final String API_METHOD_PATCH = "PATCH";
 
 }

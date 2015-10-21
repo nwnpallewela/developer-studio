@@ -26,6 +26,30 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  */
 public class BreakpointBuilderFactory {
 
+	public enum ProjectType {
+		PROXY, SEQUENCE, TEMPLATE_SEQUENCE, API, MAIN_SEQUENCE, CONNECTOR;
+
+		public static ProjectType getEnumProjectType(String lowerCaseType) {
+
+			switch (lowerCaseType) {
+			case ESBDebuggerConstants.PROXY:
+				return ProjectType.PROXY;
+			case ESBDebuggerConstants.SEQUENCE:
+				return ProjectType.SEQUENCE;
+			case ESBDebuggerConstants.TEMPLATE_SEQUENCE:
+				return ProjectType.TEMPLATE_SEQUENCE;
+			case ESBDebuggerConstants.API:
+				return ProjectType.API;
+			case ESBDebuggerConstants.CONNECTOR:
+				return ProjectType.CONNECTOR;
+			case ESBDebuggerConstants.MAIN_SEQUENCE:
+				return ProjectType.MAIN_SEQUENCE;
+			default:
+				return null;
+			}
+		}
+	}
+
 	/**
 	 * This method takes type as a input and returns specific BreakpointBuilder
 	 * 
@@ -34,20 +58,21 @@ public class BreakpointBuilderFactory {
 	 */
 	public static IESBBreakpointBuilder getBreakpointBuilder(String type) {
 
-		String lowerCaseType = type.toLowerCase();
+		ProjectType projectType = ProjectType.getEnumProjectType(type
+				.toLowerCase());
 
-		switch (lowerCaseType) {
-		case ESBDebuggerConstants.PROXY:
+		switch (projectType) {
+		case PROXY:
 			return new ProxyBreakpointBuilder();
-		case ESBDebuggerConstants.SEQUENCE:
+		case SEQUENCE:
 			return new SequenceBreakpointBuilder();
-		case ESBDebuggerConstants.TEMPLATE_SEQUENCE:
+		case TEMPLATE_SEQUENCE:
 			return new TemplateBreakpointBuilder();
-		case ESBDebuggerConstants.API:
+		case API:
 			return new APIBreakpointBuilder();
-		case ESBDebuggerConstants.CONNECTOR:
+		case CONNECTOR:
 			return new ConnectorBreakpointBuilder();
-		case ESBDebuggerConstants.MAIN_SEQUENCE:
+		case MAIN_SEQUENCE:
 			return new MainSequenceBreakpointBuilder();
 		default:
 			return null;

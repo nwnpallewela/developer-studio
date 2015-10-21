@@ -33,10 +33,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
  */
 public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public ProxyBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.PROXY;
-	}
-
+	/**
+	 * This method returns the ESBBreakpoint object for the selection
+	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection,
@@ -47,61 +46,43 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		EObject next = treeIterator.next();
 		ProxyServiceImpl proxy = (ProxyServiceImpl) next;
 
-		String message = getInitialMessage();
-		message = addProxyKeyAttribute(message, proxy);
-
+		String message = getInitialMessage(ESBDebuggerConstants.PROXY);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.PROXY_KEY, proxy.getName());
+		String position = EMPTY_STRING;
 		if (selectedMediatorReversed) {
-			String position = getMediatorPositionInFaultSeq(proxy
-					.getContainer().getFaultContainer().getMediatorFlow()
-					.getChildren(), selection);
+			position = getMediatorPositionInFaultSeq(proxy.getContainer()
+					.getFaultContainer().getMediatorFlow().getChildren(),
+					selection);
 
 			if (StringUtils.isEmpty(position)) {
 				position = getMediatorPosition(
 						proxy.getOutSequenceOutputConnector(), selection);
 
-				message = addProxyOutSequenceTypeAttribute(message);
+				message = addAttributeToMessage(message,
+						ESBDebuggerConstants.SEQUENCE_TYPE,
+						ESBDebuggerConstants.PROXY_OUTSEQ);
 			} else {
-				message = addFaultSequenceTypeAttribute(message, proxy);
+				message = addAttributeToMessage(message,
+						ESBDebuggerConstants.SEQUENCE_TYPE,
+						proxy.getFaultSequenceName());
 			}
-			message = addMediatorPositionAttribute(message, position);
 		} else {
-			message = addProxyInSequenceTypeAttribute(message);
-			String position = getMediatorPosition(proxy.getOutputConnector(),
-					selection);
-			message = addMediatorPositionAttribute(message, position);
+			message = addAttributeToMessage(message,
+					ESBDebuggerConstants.SEQUENCE_TYPE,
+					ESBDebuggerConstants.PROXY_INSEQ);
 		}
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
 		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addProxyInSequenceTypeAttribute(String message) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
-				+ ESBDebuggerConstants.PROXY_INSEQ;
-	}
-
-	private String addFaultSequenceTypeAttribute(String message,
-			ProxyServiceImpl proxy) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
-				+ proxy.getFaultSequenceName();
-	}
-
-	private String addProxyOutSequenceTypeAttribute(String message) {
-
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
-				+ ESBDebuggerConstants.PROXY_OUTSEQ;
-	}
-
-	private String addProxyKeyAttribute(String message, ProxyServiceImpl proxy) {
-
-		return message + ATTRIBUTE_SEPERATOR + ESBDebuggerConstants.PROXY_KEY
-				+ KEY_VALUE_SEPERATOR + proxy.getName();
-	}
-
+	/**
+	 * This method update all breakpoints affected by the mediator insertion or
+	 * deletion action specified by action parameter and mediator object
+	 * specified by abstractMediator parameter.
+	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,

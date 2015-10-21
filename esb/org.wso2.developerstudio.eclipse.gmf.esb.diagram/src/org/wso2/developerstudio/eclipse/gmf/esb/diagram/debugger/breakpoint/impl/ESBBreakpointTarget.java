@@ -39,10 +39,14 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuge
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
+/**
+ * This is a utility class which contains methods related to breakpoints
+ *
+ */
 public class ESBBreakpointTarget {
 
 	/**
-	 * This method checks whether selected part can be assign as a line
+	 * This method checks whether selected line can be assign as a line
 	 * breakpoint.
 	 */
 	public static boolean canToggleLineBreakpoints(IWorkbenchPart part,
@@ -55,6 +59,10 @@ public class ESBBreakpointTarget {
 	/**
 	 * This method checks whether selected part can be assign as a diagram
 	 * breakpoint.
+	 * 
+	 * @param part
+	 * @param selection
+	 * @return
 	 */
 	public static boolean canToggleDiagramBreakpoints(EditPart part,
 			EObject selection) {
@@ -68,11 +76,15 @@ public class ESBBreakpointTarget {
 			ISelection selection) {
 		// This method should be implement to support source view breakpoints
 		throw new UnsupportedOperationException(
-				ESBDebuggerConstants.LINE_BREAKPOINT_NOT_SUPPORTED);
+				"Line breakpoint are not supported");
 	}
 
 	/**
 	 * This method performs the graphical view breakpoint insertion action
+	 * 
+	 * @param part
+	 * @param selection
+	 * @throws CoreException
 	 */
 	public static void toggleDiagramBreakpoints(AbstractMediator part,
 			EObject selection) throws CoreException {

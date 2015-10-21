@@ -6,13 +6,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
-
-	public ConnectorBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.CONNECTOR;
-	}
 
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,

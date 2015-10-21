@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * This class builds ESB breakpoints related to Template Sequences.
+ */
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import org.eclipse.core.resources.IResource;
@@ -29,10 +33,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 
 public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
-	public TemplateBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.TEMPLATE;
-	}
-
+	/**
+	 * This method returns the ESBBreakpoint object for the selection
+	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection, boolean reversed)
@@ -44,31 +47,31 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		TemplateImpl template = (TemplateImpl) next;
 		EsbElement sequnce = template.getChild();
-		String message = getInitialMessage();
+		String message = getInitialMessage(ESBDebuggerConstants.TEMPLATE);
 
-		message = addTemplateKeyAttribute(message, template);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.TEMPLATE_KEY, template.getName());
 
 		String position = getMediatorPosition(
 				((SequencesImpl) sequnce).getOutputConnector(), selection);
 
-		message = addMediatorPositionAttribute(message, position);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
 		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addTemplateKeyAttribute(String message, TemplateImpl template) {
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.TEMPLATE_KEY + KEY_VALUE_SEPERATOR
-				+ template.getName();
-	}
-
+	/**
+	 * This method update all breakpoints affected by the mediator insertion or
+	 * deletion action specified by action parameter and mediator object
+	 * specified by abstractMediator parameter.
+	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
-			AbstractMediator abstractMediator, EsbServer esbServer,String action)
-			throws CoreException {
+			AbstractMediator abstractMediator, EsbServer esbServer,
+			String action) throws CoreException {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

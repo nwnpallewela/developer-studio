@@ -35,10 +35,9 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	private static final String OUT_SEQ_POSITION = "1 ";
 	private static final String IN_SEQ_POSITION = "0 ";
 
-	public MainSequenceBreakpointBuilder() {
-		this.type = ESBDebuggerConstants.SEQUENCE;
-	}
-
+	/**
+	 * This method returns the ESBBreakpoint object for the selection
+	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection, boolean reversed)
@@ -50,11 +49,13 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) next;
 
-		String message = getInitialMessage();
+		String message = getInitialMessage(ESBDebuggerConstants.SEQUENCE);
 
-		message = addSequenceTypeAttribute(message);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.SEQUENCE_TYPE, ESBDebuggerConstants.NAMED);
 
-		message = addSequenceKeyAttribute(message);
+		message = addAttributeToMessage(message,
+				ESBDebuggerConstants.SEQUENCE_KEY, ESBDebuggerConstants.MAIN);
 
 		if (reversed) {
 			String position = OUT_SEQ_POSITION
@@ -62,30 +63,25 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 							mainSequence.getOutSequenceOutputConnector(),
 							selection);
 
-			message = addMediatorPositionAttribute(message, position);
+			message = addAttributeToMessage(message,
+					ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		} else {
 
 			String position = IN_SEQ_POSITION
 					+ getMediatorPosition(mainSequence.getOutputConnector(),
 							selection);
-			message = addMediatorPositionAttribute(message, position);
+			message = addAttributeToMessage(message,
+					ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		}
 
 		return new ESBBreakpoint(resource, lineNumber, message);
 	}
 
-	private String addSequenceKeyAttribute(String message) {
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_KEY + KEY_VALUE_SEPERATOR
-				+ ESBDebuggerConstants.MAIN;
-	}
-
-	private String addSequenceTypeAttribute(String message) {
-		return message + ATTRIBUTE_SEPERATOR
-				+ ESBDebuggerConstants.SEQUENCE_TYPE + KEY_VALUE_SEPERATOR
-				+ ESBDebuggerConstants.NAMED;
-	}
-
+	/**
+	 * This method update all breakpoints affected by the mediator insertion or
+	 * deletion action specified by action parameter and mediator object
+	 * specified by abstractMediator parameter.
+	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
@@ -95,9 +91,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) treeIterator.next();
 		if (abstractMediator != null) {
-			String listSequenceNumber = "1";
-			System.out.println("Mediator direction reversed : "
-					+ abstractMediator.reversed);
+			String listSequenceNumber = OUT_SEQ_POSITION.trim();
 			if (abstractMediator.reversed) {
 				int position = getMediatorPosition(
 						mainSequence.getOutSequenceOutputConnector(),
@@ -111,7 +105,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 					decreaseBreakpointPosition(breakpontList);
 				}
 			} else {
-				listSequenceNumber = "0";
+				listSequenceNumber = IN_SEQ_POSITION.trim();
 				int position = getMediatorPosition(
 						mainSequence.getOutputConnector(), abstractMediator);
 				List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
