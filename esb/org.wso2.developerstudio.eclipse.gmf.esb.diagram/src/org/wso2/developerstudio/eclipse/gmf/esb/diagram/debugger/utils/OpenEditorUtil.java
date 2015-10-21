@@ -114,8 +114,7 @@ public class OpenEditorUtil {
 								.setRootCompartment(multipageEitor
 										.getDiagramEditPart());
 						IMediatorLocator mediatorLocator = MediatorLocatorFactory
-								.getMediatorLocator(esbServer.getType()
-										.getName());
+								.getMediatorLocator(esbServer.getType());
 						if (mediatorLocator != null) {
 							if (previousHitPoint != null) {
 								previousHitPoint.setBreakpointHitStatus(false);

@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +29,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.ApiResourceUrlStyle;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
 
@@ -100,7 +103,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 				ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		modifiedMessage = addAttributeToMessage(modifiedMessage,
 				ESBDebuggerConstants.METHOD,
-				getMethodValuesFromResource(apiResource));
+				ESBDebugerUtil.getMethodValuesFromResource(apiResource));
 		modifiedMessage = addURLStyleToMessage(modifiedMessage, apiResource);
 		return modifiedMessage;
 	}
@@ -124,34 +127,6 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		return modifiedMessage;
 	}
 
-	private String getMethodValuesFromResource(APIResource apiResource) {
-		String method = EMPTY_STRING;
-		if (apiResource.isAllowGet()) {
-			method += ESBDebuggerConstants.API_METHOD_GET + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowPost()) {
-			method += ESBDebuggerConstants.API_METHOD_POST + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowPut()) {
-			method += ESBDebuggerConstants.API_METHOD_PUT + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowDelete()) {
-			method += ESBDebuggerConstants.API_METHOD_DELETE + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowOptions()) {
-			method += ESBDebuggerConstants.API_METHOD_OPTIONS + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowHead()) {
-			method += ESBDebuggerConstants.API_METHOD_HEAD + SPACE_CHARACTOR;
-		}
-		if (apiResource.isAllowPatch()) {
-			method += ESBDebuggerConstants.API_METHOD_PATCH + SPACE_CHARACTOR;
-		}
-		method = method.trim();
-		method.replace(SPACE_CHARACTOR, ATTRIBUTE_SEPERATOR);
-		return method;
-	}
-
 	/**
 	 * This method update all breakpoints affected by the mediator insertion or
 	 * deletion action specified by action parameter and mediator object
@@ -161,8 +136,38 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws CoreException {
-		// TODO Auto-generated method stub
+		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
 
+		SynapseAPIImpl api = (SynapseAPIImpl) treeIterator.next();
+		EList<APIResource> apiResources = api.getResources();
+		for (APIResource apiResource : apiResources) {
+			if (abstractMediator != null) {
+				if (abstractMediator.reversed) {
+					int position = getMediatorPosition(
+							apiResource.getOutSequenceOutputConnector(), abstractMediator);
+					List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+							resource, position, ESBDebuggerConstants.API_OUTSEQ,
+							action);
+					if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+							.equalsIgnoreCase(action)) {
+						incrementBreakpointPosition(breakpontList);
+					} else {
+						decreaseBreakpointPosition(breakpontList);
+					}
+				} else {
+					int position = getMediatorPosition(apiResource.getOutputConnector(),
+							abstractMediator);
+					List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+							resource, position, ESBDebuggerConstants.API_INSEQ,
+							action);
+					if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
+							.equalsIgnoreCase(action)) {
+						incrementBreakpointPosition(breakpontList);
+					} else {
+						decreaseBreakpointPosition(breakpontList);
+					}
+				}
+			}
+		}
 	}
-
 }

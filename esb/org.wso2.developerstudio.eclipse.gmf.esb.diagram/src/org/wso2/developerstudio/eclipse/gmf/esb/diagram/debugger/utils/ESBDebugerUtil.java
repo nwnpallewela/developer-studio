@@ -28,6 +28,7 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
+import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
@@ -54,6 +55,8 @@ public class ESBDebugerUtil {
 	private static final CharSequence SEQUENCE_MEDIATION_COMPONENT = "mediation-component:sequence";
 	private static final CharSequence PROXY_MEDIATION_COMPONENT = "mediation-component:proxy";
 	private static final CharSequence API_MEDIATION_COMPONENT = "mediation-component:api";
+	private static final String EMPTY_STRING = "";
+	private static final String SPACE_CHARACTOR = " ";
 
 	public static void setDeletedMediator(AbstractMediator editPart) {
 		deletedMediator = editPart;
@@ -152,7 +155,7 @@ public class ESBDebugerUtil {
 			EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
 			IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
-					.getBreakpointBuilder(esbServer.getType().getName());
+					.getBreakpointBuilder(esbServer.getType());
 
 			if (breakpointBuilder != null) {
 				breakpointBuilder.updateExistingBreakpoints(resource,
@@ -177,7 +180,7 @@ public class ESBDebugerUtil {
 				EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
 				IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
-						.getBreakpointBuilder(esbServer.getType().getName());
+						.getBreakpointBuilder(esbServer.getType());
 
 				if (breakpointBuilder != null) {
 					breakpointBuilder.updateExistingBreakpoints(resource,
@@ -243,6 +246,34 @@ public class ESBDebugerUtil {
 			return true;
 		}
 		return false;
+	}
+	
+	public static String getMethodValuesFromResource(APIResource apiResource) {
+		String method = EMPTY_STRING;
+		if (apiResource.isAllowGet()) {
+			method += ESBDebuggerConstants.API_METHOD_GET + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowPost()) {
+			method += ESBDebuggerConstants.API_METHOD_POST + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowPut()) {
+			method += ESBDebuggerConstants.API_METHOD_PUT + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowDelete()) {
+			method += ESBDebuggerConstants.API_METHOD_DELETE + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowOptions()) {
+			method += ESBDebuggerConstants.API_METHOD_OPTIONS + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowHead()) {
+			method += ESBDebuggerConstants.API_METHOD_HEAD + SPACE_CHARACTOR;
+		}
+		if (apiResource.isAllowPatch()) {
+			method += ESBDebuggerConstants.API_METHOD_PATCH + SPACE_CHARACTOR;
+		}
+		method = method.trim();
+		method.replace(SPACE_CHARACTOR, ATTRIBUTE_SEPERATOR);
+		return method;
 	}
 
 }

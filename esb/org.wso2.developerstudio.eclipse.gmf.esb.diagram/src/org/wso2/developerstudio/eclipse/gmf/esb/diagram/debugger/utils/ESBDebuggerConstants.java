@@ -51,7 +51,6 @@ public class ESBDebuggerConstants {
 	public static final String EMPTY_SELECTION = "Empty selection.";
 	public static final String ESB_BREAKPOINT_MARKER = "org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ESBBreakpointMarker";
 	public static final String TEMPLATE_SEQUENCE = "template_sequence";
-	public static final String LINE_BREAKPOINT_NOT_SUPPORTED = "Line breakpoint are not supported";
 
 	public static final String MAIN = "main";
 	public static final String MAIN_SEQUENCE = "main_sequence";

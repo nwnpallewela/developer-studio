@@ -556,8 +556,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 							IFile file = ((FileEditorInput) editorInput)
 									.getFile();
 							IMediatorLocator mediatorLocator = MediatorLocatorFactory
-									.getMediatorLocator(server.getType()
-											.getName());
+									.getMediatorLocator(server.getType());
 							if (mediatorLocator != null) {
 								addBreakpointMarkForExistingBreakpoints(server,
 										file, mediatorLocator);

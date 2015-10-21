@@ -16,8 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
  * Factory design pattern implementation to get BreakpointBuilder's according to
@@ -26,42 +26,15 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  */
 public class BreakpointBuilderFactory {
 
-	public enum ProjectType {
-		PROXY, SEQUENCE, TEMPLATE_SEQUENCE, API, MAIN_SEQUENCE, CONNECTOR;
-
-		public static ProjectType getEnumProjectType(String lowerCaseType) {
-
-			switch (lowerCaseType) {
-			case ESBDebuggerConstants.PROXY:
-				return ProjectType.PROXY;
-			case ESBDebuggerConstants.SEQUENCE:
-				return ProjectType.SEQUENCE;
-			case ESBDebuggerConstants.TEMPLATE_SEQUENCE:
-				return ProjectType.TEMPLATE_SEQUENCE;
-			case ESBDebuggerConstants.API:
-				return ProjectType.API;
-			case ESBDebuggerConstants.CONNECTOR:
-				return ProjectType.CONNECTOR;
-			case ESBDebuggerConstants.MAIN_SEQUENCE:
-				return ProjectType.MAIN_SEQUENCE;
-			default:
-				return null;
-			}
-		}
-	}
-
 	/**
 	 * This method takes type as a input and returns specific BreakpointBuilder
 	 * 
 	 * @param type
 	 * @return BreakpointBuilder
 	 */
-	public static IESBBreakpointBuilder getBreakpointBuilder(String type) {
+	public static IESBBreakpointBuilder getBreakpointBuilder(ArtifactType type) {
 
-		ProjectType projectType = ProjectType.getEnumProjectType(type
-				.toLowerCase());
-
-		switch (projectType) {
+		switch (type) {
 		case PROXY:
 			return new ProxyBreakpointBuilder();
 		case SEQUENCE:
@@ -70,8 +43,6 @@ public class BreakpointBuilderFactory {
 			return new TemplateBreakpointBuilder();
 		case API:
 			return new APIBreakpointBuilder();
-		case CONNECTOR:
-			return new ConnectorBreakpointBuilder();
 		case MAIN_SEQUENCE:
 			return new MainSequenceBreakpointBuilder();
 		default:

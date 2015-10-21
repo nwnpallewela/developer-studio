@@ -71,6 +71,8 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			message = addAttributeToMessage(message,
 					ESBDebuggerConstants.SEQUENCE_TYPE,
 					ESBDebuggerConstants.PROXY_INSEQ);
+			position = getMediatorPosition(
+					proxy.getOutputConnector(), selection);
 		}
 		message = addAttributeToMessage(message,
 				ESBDebuggerConstants.MEDIATOR_POSITION, position);

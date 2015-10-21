@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -26,22 +27,19 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  */
 public class MediatorLocatorFactory {
 
-public static IMediatorLocator getMediatorLocator(String type) {
+public static IMediatorLocator getMediatorLocator(ArtifactType type) {
 		
-		String lowerCaseType = type.toLowerCase();
 		
-		switch (lowerCaseType) {
-		case ESBDebuggerConstants.PROXY:
+		switch (type) {
+		case PROXY:
 			return new ProxyMediatorLocator();
-		case ESBDebuggerConstants.SEQUENCE:
+		case SEQUENCE:
 			return new SequenceMediatorLocator();
-		case ESBDebuggerConstants.TEMPLATE_SEQUENCE:
+		case TEMPLATE_SEQUENCE:
 			return new TemplateMediatorLocator();
-		case ESBDebuggerConstants.API:
+		case API:
 			return new APIMediatorLocator();
-		case ESBDebuggerConstants.CONNECTOR:
-			return new ConnectorMediatorLocator();
-		case ESBDebuggerConstants.MAIN_SEQUENCE:
+		case MAIN_SEQUENCE:
 			return new MainSequenceMediatorLocator();
 		default:
 			return null;
