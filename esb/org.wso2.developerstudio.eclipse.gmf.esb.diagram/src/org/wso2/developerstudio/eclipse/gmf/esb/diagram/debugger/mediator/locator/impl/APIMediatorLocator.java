@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,64 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
 
 public class APIMediatorLocator extends AbstractMediatorLocator {
+
+	private APIResource getMatchingAPIResource(SynapseAPIImpl api,
+			Map<String, String> info) {
+		EList<APIResource> apiResources = api.getResources();
+		for (APIResource apiResource : apiResources) {
+			String urlValue = "";
+			String urlStyle = "";
+			switch (apiResource.getUrlStyle().getValue()) {
+			case ApiResourceUrlStyle.URI_TEMPLATE_VALUE:
+				urlValue = apiResource.getUriTemplate();
+				urlStyle = ESBDebuggerConstants.URL_TEMPLATE;
+				break;
+			case ApiResourceUrlStyle.URL_MAPPING_VALUE:
+				urlValue = apiResource.getUrlMapping();
+				urlStyle = ESBDebuggerConstants.URI_MAPPING;
+				break;
+			default:
+				break;
+			}
+			if (isMethodEqual(apiResource,
+					info.get(ESBDebuggerConstants.METHOD))) {
+				if ((info.containsKey(urlStyle) && urlValue.equals(info
+						.get(urlStyle)))
+						|| (StringUtils.isEmpty(urlStyle) && !(info
+								.containsKey(ESBDebuggerConstants.URI_MAPPING) || info
+								.containsKey(ESBDebuggerConstants.URL_TEMPLATE)))
+						|| isMappingEqualWithBreakpointEvent(info, urlStyle,
+								urlValue)) {
+					return apiResource;
+				}
+			}
+		}
+		return null;
+	}
+
+	private boolean isMappingEqualWithBreakpointEvent(Map<String, String> info,
+			String urlStyle, String urlValue) {
+		if (((info.containsKey("mapping") && urlValue.equals(info
+				.get("mapping"))) || (StringUtils.isEmpty(urlStyle) && !(info
+				.containsKey("mapping"))))) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isMethodEqual(APIResource apiResource, String methodValue) {
+
+		if (methodValue == null) {
+			if (StringUtils.isEmpty(ESBDebugerUtil
+					.getMethodValuesFromResource(apiResource))) {
+				return true;
+			}
+		} else if (methodValue.equalsIgnoreCase(ESBDebugerUtil
+				.getMethodValuesFromResource(apiResource))) {
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
@@ -66,51 +125,5 @@ public class APIMediatorLocator extends AbstractMediatorLocator {
 			}
 		}
 		return editPart;
-	}
-
-	private APIResource getMatchingAPIResource(SynapseAPIImpl api,
-			Map<String, String> info) {
-		EList<APIResource> apiResources = api.getResources();
-		for (APIResource apiResource : apiResources) {
-			String urlValue = "";
-			String urlStyle = "";
-			switch (apiResource.getUrlStyle().getValue()) {
-			case ApiResourceUrlStyle.URI_TEMPLATE_VALUE:
-				urlValue = apiResource.getUriTemplate();
-				urlStyle = ESBDebuggerConstants.URL_TEMPLATE;
-				break;
-			case ApiResourceUrlStyle.URL_MAPPING_VALUE:
-				urlValue = apiResource.getUrlMapping();
-				urlStyle = ESBDebuggerConstants.URI_MAPPING;
-				break;
-			default:
-				break;
-			}
-			if (isMethodEqual(apiResource,
-					info.get(ESBDebuggerConstants.METHOD))) {
-				if ((info.containsKey(urlStyle) && urlValue.equals(info
-						.get(urlStyle)))
-						|| (StringUtils.isEmpty(urlStyle) && !(info
-								.containsKey(ESBDebuggerConstants.URI_MAPPING) || info
-								.containsKey(ESBDebuggerConstants.URL_TEMPLATE)))) {
-					return apiResource;
-				}
-			}
-		}
-		return null;
-	}
-
-	private boolean isMethodEqual(APIResource apiResource, String methodValue) {
-
-		if (methodValue == null) {
-			if (StringUtils.isEmpty(ESBDebugerUtil
-					.getMethodValuesFromResource(apiResource))) {
-				return true;
-			}
-		} else if (methodValue.equalsIgnoreCase(ESBDebugerUtil
-				.getMethodValuesFromResource(apiResource))) {
-			return true;
-		}
-		return false;
 	}
 }

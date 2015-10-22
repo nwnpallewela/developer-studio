@@ -19,8 +19,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
@@ -46,7 +44,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -54,15 +51,13 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		IEventProcessor {
 
-	private static final String KEY_VALUE_SEPERATOR = ":";
-	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private EventDispatchJob mDispatcher;
 	private final ESBProcess mProcess;
 	private final List<ESBThread> mThreads = new ArrayList<ESBThread>();
 	private final ILaunch mLaunch;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
-	
+
 	public ESBDebugTarget(final ILaunch launch, int requestPortInternal,
 			int eventPortInternal) {
 		super(null);
@@ -124,7 +119,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
 					setState(State.RESUMED);
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
-
 				}
 
 			} else if (event instanceof VariablesEvent) {
@@ -153,6 +147,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	private void showSource(SuspendedEvent event) {
 		Map<String, String> info = event.getDetail();
+		
 		ESBBreakpoint breakpoint = getBreakpoint(info);
 		if (breakpoint != null) {
 			IFile file = (IFile) breakpoint.getResource();
@@ -163,31 +158,19 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	}
 
 	private ESBBreakpoint getBreakpoint(Map<String, String> info) {
-		String message = "";
-		Set<String> keys = info.keySet();
-		for (String key : keys) {
-			if (!(ESBDebuggerConstants.EVENT.equals(key) || info.get(key)
-					.contains("{"))) {
-				message = message + addAttribute(key, info.get(key))
-						+ ATTRIBUTE_SEPERATOR;
-			}
-		}
+
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager().getBreakpoints(getModelIdentifier());
 		for (IBreakpoint breakpoint : breakpoints) {
 			if (breakpoint instanceof ESBBreakpoint) {
-				if (ESBDebugerUtil.isBreakpointMatches(message,
-						((ESBBreakpoint) breakpoint).getMessage())) {
+				if (ESBDebugerUtil.isBreakpointMatches(info,
+						((ESBBreakpoint) breakpoint).getLocation())) {
 					return (ESBBreakpoint) breakpoint;
 				}
 			}
 		}
 
 		return null;
-	}
-
-	private String addAttribute(String key, String value) {
-		return key + KEY_VALUE_SEPERATOR + value;
 	}
 
 	@Override
@@ -251,8 +234,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	@Override
 	public void breakpointAdded(final IBreakpoint breakpoint) {
 
-		if (supportsBreakpoint(breakpoint) && isEnabledBreakpoint(breakpoint)) {
-			fireModelEvent(new BreakpointRequest(breakpoint,
+		if (breakpoint instanceof ESBBreakpoint
+				&& supportsBreakpoint(breakpoint)
+				&& isEnabledBreakpoint(breakpoint)) {
+			fireModelEvent(new BreakpointRequest((ESBBreakpoint) breakpoint,
 					BreakpointRequest.ADDED));
 		}
 	}
@@ -264,9 +249,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	@Override
 	public void breakpointRemoved(final IBreakpoint breakpoint,
 			final IMarkerDelta delta) {
-		if (supportsBreakpoint(breakpoint) && isEnabledBreakpoint(breakpoint)) {
+		if (breakpoint instanceof ESBBreakpoint
+				&& supportsBreakpoint(breakpoint)
+				&& isEnabledBreakpoint(breakpoint)) {
 
-			fireModelEvent(new BreakpointRequest(breakpoint,
+			fireModelEvent(new BreakpointRequest((ESBBreakpoint) breakpoint,
 					BreakpointRequest.REMOVED));
 		}
 	}

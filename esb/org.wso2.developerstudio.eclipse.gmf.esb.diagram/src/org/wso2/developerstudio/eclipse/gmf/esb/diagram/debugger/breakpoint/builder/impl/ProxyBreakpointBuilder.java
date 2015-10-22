@@ -16,6 +16,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
@@ -46,9 +47,8 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		EObject next = treeIterator.next();
 		ProxyServiceImpl proxy = (ProxyServiceImpl) next;
 
-		String message = getInitialMessage(ESBDebuggerConstants.PROXY);
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.PROXY_KEY, proxy.getName());
+		Map<String, String> attributeMap = setInitialAttributes(ESBDebuggerConstants.PROXY);
+		attributeMap.put(ESBDebuggerConstants.PROXY_KEY, proxy.getName());
 		String position = EMPTY_STRING;
 		if (selectedMediatorReversed) {
 			position = getMediatorPositionInFaultSeq(proxy.getContainer()
@@ -59,25 +59,21 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 				position = getMediatorPosition(
 						proxy.getOutSequenceOutputConnector(), selection);
 
-				message = addAttributeToMessage(message,
-						ESBDebuggerConstants.SEQUENCE_TYPE,
+				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 						ESBDebuggerConstants.PROXY_OUTSEQ);
 			} else {
-				message = addAttributeToMessage(message,
-						ESBDebuggerConstants.SEQUENCE_TYPE,
+				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 						proxy.getFaultSequenceName());
 			}
 		} else {
-			message = addAttributeToMessage(message,
-					ESBDebuggerConstants.SEQUENCE_TYPE,
+			attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 					ESBDebuggerConstants.PROXY_INSEQ);
-			position = getMediatorPosition(
-					proxy.getOutputConnector(), selection);
+			position = getMediatorPosition(proxy.getOutputConnector(),
+					selection);
 		}
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.MEDIATOR_POSITION, position);
+		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
-		return new ESBBreakpoint(resource, lineNumber, message);
+		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
 	/**

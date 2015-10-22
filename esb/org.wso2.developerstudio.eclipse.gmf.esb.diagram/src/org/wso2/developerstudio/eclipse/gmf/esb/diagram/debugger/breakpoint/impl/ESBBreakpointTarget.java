@@ -16,6 +16,10 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -139,8 +143,9 @@ public class ESBBreakpointTarget {
 				ESBBreakpoint esbBreakpoint = (ESBBreakpoint) breakpoint;
 				if ((targetBreakpoint.getMarker().getResource())
 						.equals(breakpoint.getMarker().getResource())) {
-					if ((esbBreakpoint.getMessage()).equals(targetBreakpoint
-							.getMessage())) {
+					if (ESBDebugerUtil.isBreakpointMatches(
+							targetBreakpoint.getLocation(),
+							esbBreakpoint.getLocation())) {
 						return esbBreakpoint;
 					} else if ((esbBreakpoint).getLineNumber() == (targetBreakpoint
 							.getLineNumber() + 1)

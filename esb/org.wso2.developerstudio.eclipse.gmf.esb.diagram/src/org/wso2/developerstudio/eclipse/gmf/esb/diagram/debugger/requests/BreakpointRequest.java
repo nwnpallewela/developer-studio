@@ -16,8 +16,9 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.debug.core.model.IBreakpoint;
+import java.util.Map;
+
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 
 public class BreakpointRequest extends AbstractEvent implements IModelRequest {
@@ -26,12 +27,12 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	public static final int REMOVED = 2;
 	private final int mType;
 	private final int mLine;
-	private final String mMessage;
+	private final Map<String, String> breakpointAttributes;
 
-	public BreakpointRequest(IBreakpoint breakpoint, int type) {
+	public BreakpointRequest(ESBBreakpoint breakpoint, int type) {
 		mType = type;
-		mLine = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
-		mMessage = breakpoint.getMarker().getAttribute(IMarker.MESSAGE, "");
+		mLine = breakpoint.getLineNumber();
+		breakpointAttributes = breakpoint.getLocation();
 	}
 
 	public int getType() {
@@ -42,14 +43,14 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 		return mLine;
 	}
 
-	public String getMessage() {
-		return mMessage;
+	public Map<String, String> getBreakpointAttributes() {
+		return breakpointAttributes;
 	}
 
 	@Override
 	public String toString() {
 		return "BreakpointEvent: "
 				+ ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line : "
-				+ getLine() + " , message : " + getMessage();
+				+ getLine() + " , message : " + getBreakpointAttributes();
 	}
 }

@@ -45,22 +45,23 @@ public interface IESBDebuggerInterface {
 
 	public BufferedReader getfEventReader();
 
-	void setResponceDispatcher(ResponceDispatcher responceDispatcher);
+	public void setResponceDispatcher(ResponceDispatcher responceDispatcher);
 
-	EventDispatcher getEventDispatcher();
+	public EventDispatcher getEventDispatcher();
 
-	void setEventDispatcher(EventDispatcher eventDispatcher);
+	public void setEventDispatcher(EventDispatcher eventDispatcher);
 
-	ResponceDispatcher getResponceDispatcher();
+	public ResponceDispatcher getResponceDispatcher();
 
-	void intializeDispatchers();
+	public void intializeDispatchers();
 
-	void sendCommand(String command);
+	public void sendCommand(String command);
 
-	void sendBreakpointCommand(String operation, String type,
+	public void sendBreakpointCommand(String operation, String type,
 			Map<String, String> attributeValues);
 
-	void attachDebugger(IESBDebugger esbDebugger);
+	public void attachDebugger(IESBDebugger esbDebugger);
 
 	public void sendGetPropertiesCommand(Map<String, String> attributeValues);
+
 }

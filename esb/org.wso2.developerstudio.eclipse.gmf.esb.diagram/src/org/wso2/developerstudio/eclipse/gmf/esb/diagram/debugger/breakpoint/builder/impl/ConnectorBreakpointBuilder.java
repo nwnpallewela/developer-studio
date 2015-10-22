@@ -16,8 +16,8 @@ public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		String message = "";
 		
 
-		ESBBreakpoint esbBreakpoint = new ESBBreakpoint(resource, lineNumber,
-				message);
+		
+		ESBBreakpoint esbBreakpoint = null;
 		return esbBreakpoint;
 	}
 

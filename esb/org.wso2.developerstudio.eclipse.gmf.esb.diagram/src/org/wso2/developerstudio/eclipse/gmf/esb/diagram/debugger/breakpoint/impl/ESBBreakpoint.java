@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -40,12 +42,12 @@ public class ESBBreakpoint extends Breakpoint {
 	}
 
 	public ESBBreakpoint(final IResource resource, final int lineNumber,
-			final String message) throws CoreException {
-		this(resource, lineNumber, message, true);
+			final Map<String,String> attributes) throws CoreException {
+		this(resource, lineNumber, attributes, true);
 	}
 
 	protected ESBBreakpoint(final IResource resource, final int lineNumber,
-			final String message, final boolean persistent)
+			final Map<String,String> attributes, final boolean persistent)
 			throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
@@ -57,7 +59,7 @@ public class ESBBreakpoint extends Breakpoint {
 				marker.setAttribute(IBreakpoint.PERSISTED, persistent);
 				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
-				marker.setAttribute(IMarker.MESSAGE, message);
+				marker.setAttribute(IMarker.LOCATION, attributes);
 			}
 		};
 		run(getMarkerRule(resource), runnable);
@@ -86,14 +88,21 @@ public class ESBBreakpoint extends Breakpoint {
 	}
 
 	/**
-	 * Returns the message contains in ESBbreakpoint
+	 * Returns the map contains in ESBbreakpoint
 	 * 
 	 * @return
 	 */
-	public String getMessage() {
+	@SuppressWarnings("unchecked")
+	public Map<String, String> getLocation() {
 		IMarker marker = getMarker();
 		if (marker != null) {
-			return marker.getAttribute(IMarker.MESSAGE, null);
+			try {
+				if(marker.getAttributes().get(IMarker.LOCATION) instanceof Map<?, ?>){
+				return (Map<String, String>) marker.getAttributes().get(IMarker.LOCATION);
+				}
+			} catch (CoreException e) {
+				//log this exception
+			}
 		}
 		return null;
 	}

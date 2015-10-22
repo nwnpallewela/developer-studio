@@ -17,6 +17,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -47,19 +48,17 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		SequencesImpl sequence = (SequencesImpl) next;
 
-		String message = getInitialMessage(ESBDebuggerConstants.SEQUENCE);
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.SEQUENCE_TYPE, ESBDebuggerConstants.NAMED);
+		Map<String, String> attributeMap = setInitialAttributes(ESBDebuggerConstants.SEQUENCE);
+		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
+				ESBDebuggerConstants.NAMED);
 
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
+		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
 
 		String position = getMediatorPosition(sequence.getOutputConnector(),
 				selection);
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.MEDIATOR_POSITION, position);
+		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
-		return new ESBBreakpoint(resource, lineNumber, message);
+		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
 	/**

@@ -16,8 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -39,7 +39,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstrac
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 
@@ -130,19 +129,6 @@ public class ESBDebugerUtil {
 		part.setBreakpointStatus(false);
 	}
 
-	public static Map<String, String> getDetailsToMap(IBreakpoint breakpoint) {
-		String message = ((ESBBreakpoint) breakpoint).getMessage();
-		Map<String, String> detailsMap = new LinkedHashMap<>();
-		String[] attributes = message.split(",");
-		for (String string : attributes) {
-			String[] keyValuePair = string.split(":");
-			if (keyValuePair.length == 2) {
-				detailsMap.put(keyValuePair[0], keyValuePair[1]);
-			}
-		}
-		return detailsMap;
-	}
-
 	public static void modifyBreakpointsAfterMediatorAddition(
 			AbstractMediator abstractMediator) throws CoreException {
 
@@ -226,28 +212,31 @@ public class ESBDebugerUtil {
 		}
 	}
 
-	public static boolean isBreakpointMatches(String message,
-			String breakpointMessage) {
-		String[] attributes = breakpointMessage.split(ATTRIBUTE_SEPERATOR);
-		for (String string : attributes) {
-			if (!(mediationComponentMatches(message, string) || message
-					.contains(string))) {
-				return false;
+	/**
+	 * This method returns true if all attributes contain in @param message is
+	 * in @param breakpointMessage
+	 * 
+	 * @param message
+	 * @param breakpointMessage
+	 * @return
+	 */
+	public static boolean isBreakpointMatches(Map<String, String> message,
+			Map<String, String> breakpointMessage) {
+		Set<String> attributeKeys = message.keySet();
+		for (String key : attributeKeys) {
+			if (!((breakpointMessage.containsKey(key) && breakpointMessage.get(
+					key).trim().equals(message.get(key).trim()))
+					|| ESBDebuggerConstants.EVENT.equalsIgnoreCase(key) || ESBDebuggerConstants.MEDIATION_COMPONENT
+						.equalsIgnoreCase(key))) {
+				if(!("mapping".equalsIgnoreCase(key)&&breakpointMessage.containsValue(message.get("mapping")))){
+					return false;
+				}
+				
 			}
 		}
 		return true;
 	}
 
-	private static boolean mediationComponentMatches(String message,
-			String string) {
-		if (message.contains(SEQUENCE_MEDIATION_COMPONENT)
-				&& (string.contains(PROXY_MEDIATION_COMPONENT) || string
-						.contains(API_MEDIATION_COMPONENT))) {
-			return true;
-		}
-		return false;
-	}
-	
 	public static String getMethodValuesFromResource(APIResource apiResource) {
 		String method = EMPTY_STRING;
 		if (apiResource.isAllowGet()) {

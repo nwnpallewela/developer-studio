@@ -53,24 +53,6 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	}
 
-	/**
-	 * 
-	 * 
-	 */
-	@Override
-	public String createBreakpointCommand(String operation, String type,
-			Map<String, String> attributeValues) {
-
-		MessageAttribute messageModel = DebuggerCommunicationMessageModel
-				.getMessageModel(ESBDebuggerConstants.BREAKPOINT, type);
-		try {
-			return buildMessage(messageModel, attributeValues).toString();
-		} catch (JSONException e) {
-			log.error("Error while creating Breakpoint Command JSON message", e);
-		}
-		return null;
-	}
-
 	private JSONObject buildMessage(MessageAttribute messageModel,
 			Map<String, String> attributeValues) throws JSONException {
 		JSONObject jsonCommand = new JSONObject();
@@ -123,7 +105,30 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 			String key = (String) keys.next();
 			try {
 				value = responceMessage.getString(key);
-				message.put(key, value);
+			} catch (JSONException e) {
+				log.error("Error while converting JSONToMap", e);
+			}
+			message.put(key, value);
+		}
+
+		return message;
+	}
+
+	private Map<String, String> convertJsonToMapFlat(JSONObject responceMessage) {
+		Iterator<?> keys = responceMessage.keys();
+		Map<String, String> message = new LinkedHashMap<>();
+		String value = "";
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			try {
+				value = responceMessage.getString(key);
+				if (value.contains(MESSAGE_SEPERATOR) && value.startsWith("{")) {
+					JSONObject insideMessage = new JSONObject(value);
+					message.putAll(convertJsonToMapFlat(insideMessage));
+				} else {
+					message.put(key, value);
+				}
+
 			} catch (JSONException e) {
 				log.error("Error while converting JSONToMap", e);
 			}
@@ -136,67 +141,11 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		Map<String, String> message = new LinkedHashMap<>();
 		try {
 			JSONObject responceMessage = new JSONObject(event);
-			message = convertJsonToMap(responceMessage);
-			if (ESBDebuggerConstants.BREAKPOINT.equals(message
-					.get(ESBDebuggerConstants.EVENT))) {
-				String mediationComponent = message
-						.get(ESBDebuggerConstants.MEDIATION_COMPONENT);
-				Map<String, String> attributes = (getAttributeValuesFromEvent(
-						message.get(mediationComponent), mediationComponent));
-				Set<String> keys = attributes.keySet();
-				for (String key : keys) {
-					message.put(key, attributes.get(key));
-				}
-			}
+			message = convertJsonToMapFlat(responceMessage);
 		} catch (JSONException e) {
 			log.error("Error while creating Event Map", e);
 		}
 		return message;
-	}
-
-	private Map<String, String> getAttributeValuesFromEvent(String string,
-			String mediationComponent) {
-		Map<String, String> attributes = new LinkedHashMap<>();
-		MessageAttribute messageModel = DebuggerCommunicationMessageModel
-				.getMessageModel(ESBDebuggerConstants.BREAKPOINT,
-						getBreakpointType(string, mediationComponent));
-		ArrayList<String> keys = messageModel.getAttributeKeys();
-		for (String key : keys) {
-			if (messageModel.getAttribute(key) == null
-					&& hasValueForKey(key, string)) {
-				attributes.put(key, getValueForKey(key, string));
-			}
-		}
-		return attributes;
-
-	}
-
-	private boolean hasValueForKey(String key, String string) {
-		return string.contains(key);
-	}
-
-	private String getValueForKey(String key, String string) {
-		int indexOfKey = string.indexOf(key);
-		int indexOfValueBegining = string.indexOf(KEY_VALUE_SEPERATOR,
-				indexOfKey);
-		int indexOfValueEnd = string.indexOf(ATTRIBUTE_SEPERATOR,
-				indexOfValueBegining);
-		int indexOfMessageObjectEnd = string.indexOf(MESSAGE_SEPERATOR,
-				indexOfValueBegining);
-		String value = "";
-		if (indexOfValueEnd < 0) {
-			value = string.substring(indexOfValueBegining + 2,
-					indexOfMessageObjectEnd - 2);
-		} else {
-			if (indexOfValueEnd < indexOfMessageObjectEnd) {
-				value = string.substring(indexOfValueBegining + 2,
-						indexOfValueEnd - 1);
-			} else {
-				value = string.substring(indexOfValueBegining + 2,
-						indexOfMessageObjectEnd - 2);
-			}
-		}
-		return value;
 	}
 
 	private String getBreakpointType(String string, String mediationComponent) {
@@ -228,4 +177,18 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		}
 		return null;
 	}
+
+	@Override
+	public String createBreakpointCommand(String operation, String type,
+			Map<String, String> attributeValues) {
+		MessageAttribute messageModel = DebuggerCommunicationMessageModel
+				.getMessageModel(ESBDebuggerConstants.BREAKPOINT, type);
+		try {
+			return buildMessage(messageModel, attributeValues).toString();
+		} catch (JSONException e) {
+			log.error("Error while creating Breakpoint Command JSON message", e);
+		}
+		return null;
+	}
+
 }

@@ -142,19 +142,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	}
 
-	@Override
-	public void sendBreakpointCommand(String operation, String type,
-			Map<String, String> attributeValues) {
-		try {
-			fRequestWriter.println(messageChannel.createBreakpointCommand(
-					operation, type, attributeValues));
-			fRequestWriter.flush();
-		} catch (Exception ex) {
-			log.error("Error while sending breakpoint message for ESB Server",
-					ex);
-		}
-
-	}
 
 	public void notifyEvent(String buffer) {
 		esbDebugger.notifyEvent(messageChannel.getEvent(buffer));
@@ -183,6 +170,22 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 					ex);
 		}
 
+	}
+
+	@Override
+	public void sendBreakpointCommand(String operation, String type,
+			Map<String, String> attributeValues) {
+		try {
+			System.out.println(messageChannel.createBreakpointCommand(
+					operation, type, attributeValues));
+			fRequestWriter.println(messageChannel.createBreakpointCommand(
+					operation, type, attributeValues));
+			fRequestWriter.flush();
+		} catch (Exception ex) {
+			log.error("Error while sending breakpoint message for ESB Server",
+					ex);
+		}
+		
 	}
 
 }

@@ -41,6 +41,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchV
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
@@ -53,7 +54,7 @@ public class ESBDebugger implements IESBDebugger {
 	private IESBDebuggerInterface mDebuggerInterface;
 	private final Set<Integer> mBreakpoints = new HashSet<Integer>();
 	private Map<String, String> mVariables;
-	
+
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ESBDebugger(IESBDebuggerInterface debuggerInterface) {
@@ -126,7 +127,7 @@ public class ESBDebugger implements IESBDebugger {
 		if (event instanceof ResumeRequest) {
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
 			mDebuggerInterface.sendCommand(ESBDebuggerConstants.RESUME);
-
+			OpenEditorUtil.removeBreakpointHitStatus();
 		} else if (event instanceof BreakpointRequest) {
 
 			sendBreakpointForServer((BreakpointRequest) event);
@@ -140,22 +141,22 @@ public class ESBDebugger implements IESBDebugger {
 
 	private void sendBreakpointForServer(BreakpointRequest event) {
 
-		Map<String, String> attributeValues = new HashMap<>();
-		String breakpointMessage = event.getMessage();
-		String[] attributeList = breakpointMessage.split(",");
-		for (String attribute : attributeList) {
-			String[] keyValuePair = attribute.split(":");
-			attributeValues.put(keyValuePair[0], keyValuePair[1]);
-		}
-		attributeValues.put("command-argument", "breakpoint");
+		Map<String, String> breakpointAttributes = event
+				.getBreakpointAttributes();
+		breakpointAttributes.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
+				ESBDebuggerConstants.BREAKPOINT);
+
 		if (event.getType() == BREAKPOINT_ADDED) {
-			attributeValues.put("command", "set");
+			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
+					ESBDebuggerConstants.SET);
 		} else {
-			attributeValues.put("command", "clear");
+			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
+					ESBDebuggerConstants.CLEAR);
 		}
-		mDebuggerInterface.sendBreakpointCommand(
-				attributeValues.get("command"),
-				attributeValues.get("mediation-component"), attributeValues);
+		mDebuggerInterface.sendBreakpointCommand(breakpointAttributes
+				.get(ESBDebuggerConstants.COMMAND), breakpointAttributes
+				.get(ESBDebuggerConstants.MEDIATION_COMPONENT),
+				breakpointAttributes);
 
 	}
 

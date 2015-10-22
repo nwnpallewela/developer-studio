@@ -23,6 +23,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 
 public interface IMediatorLocator {
 
-	EditPart getMediatorEditPart(EsbServer esbServer, Map<String, String> info);
+	EditPart getMediatorEditPart(EsbServer esbServer,
+			Map<String, String> info);
 
 }

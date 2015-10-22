@@ -572,15 +572,14 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								.getBreakpoints(ESBDebugModelPresentation.ID);
 						if (breakpoints != null) {
 							for (IBreakpoint breakpoint : breakpoints) {
-								System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getResource().toString()+" "+((ESBBreakpoint)breakpoint).getMessage());
+								System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getResource().toString()+" "+((ESBBreakpoint)breakpoint).getLocation());
 								if (file.equals(breakpoint.getMarker()
 										.getResource())) {
 									//System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getMessage());
 									EditPart editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
-													ESBDebugerUtil
-															.getDetailsToMap(breakpoint));
+													((ESBBreakpoint)breakpoint).getLocation());
 									if (editPart instanceof AbstractMediator) {
 										ESBDebugerUtil
 												.addBreakpointMark((AbstractMediator) editPart);

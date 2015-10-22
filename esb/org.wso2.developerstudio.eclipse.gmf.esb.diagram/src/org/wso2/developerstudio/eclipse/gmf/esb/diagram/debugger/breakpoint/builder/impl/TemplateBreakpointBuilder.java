@@ -19,6 +19,8 @@
  */
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import java.util.Map;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.TreeIterator;
@@ -47,18 +49,18 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		TemplateImpl template = (TemplateImpl) next;
 		EsbElement sequnce = template.getChild();
-		String message = getInitialMessage(ESBDebuggerConstants.TEMPLATE);
+		Map<String,String> attributeMap = setInitialAttributes(ESBDebuggerConstants.TEMPLATE);
 
-		message = addAttributeToMessage(message,
+		attributeMap.put(
 				ESBDebuggerConstants.TEMPLATE_KEY, template.getName());
 
 		String position = getMediatorPosition(
 				((SequencesImpl) sequnce).getOutputConnector(), selection);
 
-		message = addAttributeToMessage(message,
+		attributeMap.put(
 				ESBDebuggerConstants.MEDIATOR_POSITION, position);
 
-		return new ESBBreakpoint(resource, lineNumber, message);
+		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
 	/**

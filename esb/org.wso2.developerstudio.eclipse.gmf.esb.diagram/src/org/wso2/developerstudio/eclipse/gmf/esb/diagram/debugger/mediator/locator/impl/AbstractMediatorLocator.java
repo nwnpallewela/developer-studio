@@ -30,7 +30,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 public abstract class AbstractMediatorLocator implements IMediatorLocator {
 
 	protected static final String MEDIATOR_POSITION_SEPERATOR = " ";
-	
+
 	protected EditPart getMediator(OutputConnector tempConnector,
 			int mediatorPosition) {
 		int count = 0;
@@ -42,18 +42,17 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 				return editpart;
 			} else {
 				count++;
-				if(mediator instanceof Mediator){
-				tempConnector = AbstractESBBreakpointBuilder
-						.getOutputConnector((Mediator) mediator);
-				}
-				else if(mediator instanceof SequencesImpl){
-					
+				if (mediator instanceof Mediator) {
+					tempConnector = AbstractESBBreakpointBuilder
+							.getOutputConnector((Mediator) mediator);
+				} else if (mediator instanceof SequencesImpl) {
+
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	protected EditPart getMediatorInFaultSeq(EList<EsbElement> children,
 			String[] positionArray) {
 		int count = 0;

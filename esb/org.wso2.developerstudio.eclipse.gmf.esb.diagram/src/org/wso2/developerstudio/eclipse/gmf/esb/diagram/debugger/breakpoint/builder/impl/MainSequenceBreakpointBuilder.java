@@ -16,6 +16,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -49,13 +50,13 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) next;
 
-		String message = getInitialMessage(ESBDebuggerConstants.SEQUENCE);
+		Map<String, String> attributeMap = setInitialAttributes(ESBDebuggerConstants.MAIN_SEQUENCE);
 
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.SEQUENCE_TYPE, ESBDebuggerConstants.NAMED);
+		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
+				ESBDebuggerConstants.NAMED);
 
-		message = addAttributeToMessage(message,
-				ESBDebuggerConstants.SEQUENCE_KEY, ESBDebuggerConstants.MAIN);
+		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY,
+				ESBDebuggerConstants.MAIN);
 
 		if (reversed) {
 			String position = OUT_SEQ_POSITION
@@ -63,18 +64,16 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 							mainSequence.getOutSequenceOutputConnector(),
 							selection);
 
-			message = addAttributeToMessage(message,
-					ESBDebuggerConstants.MEDIATOR_POSITION, position);
+			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		} else {
 
 			String position = IN_SEQ_POSITION
 					+ getMediatorPosition(mainSequence.getOutputConnector(),
 							selection);
-			message = addAttributeToMessage(message,
-					ESBDebuggerConstants.MEDIATOR_POSITION, position);
+			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		}
 
-		return new ESBBreakpoint(resource, lineNumber, message);
+		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
 	/**

@@ -20,9 +20,8 @@ import java.util.Map;
 
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 
-public class ConnectorMediatorLocator extends AbstractMediatorLocator  {
+public class ConnectorMediatorLocator extends AbstractMediatorLocator {
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
@@ -30,7 +29,5 @@ public class ConnectorMediatorLocator extends AbstractMediatorLocator  {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
 
 }

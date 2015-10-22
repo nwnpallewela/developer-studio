@@ -17,9 +17,10 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -127,8 +128,8 @@ public abstract class AbstractESBBreakpointBuilder implements
 		if (breakpontList != null) {
 			for (ESBBreakpoint esbBreakpoint : breakpontList) {
 
-				String message = incrementPositionOfTheMessage(esbBreakpoint
-						.getMessage());
+				Map<String, String> message = incrementPositionOfTheMessage(esbBreakpoint
+						.getLocation());
 				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
 						esbBreakpoint.getResource(),
 						esbBreakpoint.getLineNumber(), message);
@@ -153,8 +154,8 @@ public abstract class AbstractESBBreakpointBuilder implements
 		if (breakpontList != null) {
 			for (ESBBreakpoint esbBreakpoint : breakpontList) {
 
-				String message = decreasePositionOfTheMessage(esbBreakpoint
-						.getMessage());
+				Map<String, String> message = decreasePositionOfTheMessage(esbBreakpoint
+						.getLocation());
 				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
 						esbBreakpoint.getResource(),
 						esbBreakpoint.getLineNumber(), message);
@@ -167,66 +168,42 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
-	private String incrementPositionOfTheMessage(String message) {
-		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
-		String modifiedMessage = EMPTY_STRING;
-		for (String string : attributes) {
-			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
-			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
-				String[] positionArray = keyValuePair[1].split(SPACE_CHARACTOR);
-				String lastPosition = positionArray[positionArray.length - 1];
-				positionArray[positionArray.length - 1] = EMPTY_STRING
-						+ (Integer.parseInt(lastPosition) + 1);
-				String newPosition = EMPTY_STRING;
-				for (String pos : positionArray) {
-					newPosition = newPosition + pos + SPACE_CHARACTOR;
-				}
-
-				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
-						+ ESBDebuggerConstants.MEDIATOR_POSITION
-						+ KEY_VALUE_SEPERATOR + newPosition;
-			} else {
-				if (StringUtils.isEmpty(modifiedMessage)) {
-					modifiedMessage = string;
-				} else {
-					modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
-							+ string;
-				}
-
+	private Map<String, String> incrementPositionOfTheMessage(
+			Map<String, String> message) {
+		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
+			String[] positionArray = message.get(
+					ESBDebuggerConstants.MEDIATOR_POSITION).split(
+					SPACE_CHARACTOR);
+			String lastPosition = positionArray[positionArray.length - 1];
+			positionArray[positionArray.length - 1] = EMPTY_STRING
+					+ (Integer.parseInt(lastPosition) + 1);
+			String newPosition = EMPTY_STRING;
+			for (String pos : positionArray) {
+				newPosition = newPosition + pos + SPACE_CHARACTOR;
 			}
+			message.put(ESBDebuggerConstants.MEDIATOR_POSITION, newPosition);
+
 		}
-		return modifiedMessage;
+		return message;
 	}
 
-	private String decreasePositionOfTheMessage(String message) {
-		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
-		String modifiedMessage = EMPTY_STRING;
-		for (String string : attributes) {
-			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
-			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
-				String[] positionArray = keyValuePair[1].split(SPACE_CHARACTOR);
-				String lastPosition = positionArray[positionArray.length - 1];
-				positionArray[positionArray.length - 1] = EMPTY_STRING
-						+ (Integer.parseInt(lastPosition) - 1);
-				String newPosition = EMPTY_STRING;
-				for (String pos : positionArray) {
-					newPosition = newPosition + pos + SPACE_CHARACTOR;
-				}
-
-				modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
-						+ ESBDebuggerConstants.MEDIATOR_POSITION
-						+ KEY_VALUE_SEPERATOR + newPosition;
-			} else {
-				if (StringUtils.isEmpty(modifiedMessage)) {
-					modifiedMessage = string;
-				} else {
-					modifiedMessage = modifiedMessage + ATTRIBUTE_SEPERATOR
-							+ string;
-				}
-
+	private Map<String, String> decreasePositionOfTheMessage(
+			Map<String, String> message) {
+		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
+			String[] positionArray = message.get(
+					ESBDebuggerConstants.MEDIATOR_POSITION).split(
+					SPACE_CHARACTOR);
+			String lastPosition = positionArray[positionArray.length - 1];
+			positionArray[positionArray.length - 1] = EMPTY_STRING
+					+ (Integer.parseInt(lastPosition) - 1);
+			String newPosition = EMPTY_STRING;
+			for (String pos : positionArray) {
+				newPosition = newPosition + pos + SPACE_CHARACTOR;
 			}
+			message.put(ESBDebuggerConstants.MEDIATOR_POSITION, newPosition);
+
 		}
-		return modifiedMessage;
+		return message;
 	}
 
 	/**
@@ -284,39 +261,27 @@ public abstract class AbstractESBBreakpointBuilder implements
 	}
 
 	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint) {
-		String message = ((ESBBreakpoint) breakpoint).getMessage();
-		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
-		for (String string : attributes) {
-			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
-			if (ESBDebuggerConstants.SEQUENCE_TYPE.equals(keyValuePair[0])) {
-				return keyValuePair[1];
-			}
+		Map<String, String> message = ((ESBBreakpoint) breakpoint)
+				.getLocation();
+		if (message.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
+			return message.get(ESBDebuggerConstants.SEQUENCE_TYPE);
 		}
 		return null;
 	}
 
 	private static String getMediatorPositionOfBreakpoint(IBreakpoint breakpoint) {
-		String message = ((ESBBreakpoint) breakpoint).getMessage();
-		String[] attributes = message.split(ATTRIBUTE_SEPERATOR);
-		for (String string : attributes) {
-			String[] keyValuePair = string.split(KEY_VALUE_SEPERATOR);
-			if (ESBDebuggerConstants.MEDIATOR_POSITION.equals(keyValuePair[0])) {
-				return keyValuePair[1];
-			}
+		Map<String, String> message = ((ESBBreakpoint) breakpoint)
+				.getLocation();
+		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
+			return message.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 		}
 		return null;
 	}
 
-	protected String getInitialMessage(String type) {
-		return ESBDebuggerConstants.MEDIATION_COMPONENT + KEY_VALUE_SEPERATOR
-				+ type;
-	}
-
-	protected String addAttributeToMessage(String message, String attributeKey,
-			String attributeValue) {
-
-		return message + ATTRIBUTE_SEPERATOR + attributeKey
-				+ KEY_VALUE_SEPERATOR + attributeValue;
+	protected Map<String, String> setInitialAttributes(String type) {
+		Map<String, String> attributes = new HashMap<>();
+		attributes.put(ESBDebuggerConstants.MEDIATION_COMPONENT, type);
+		return attributes;
 	}
 
 	/**
@@ -403,8 +368,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 						getInstanceId(selection.toString()))) {
 					position = position + count;
 					break;
-				}
-				else if(isMediatorChainEnds(mediator)) {
+				} else if (isMediatorChainEnds(mediator)) {
 					break;
 				} else {
 					count++;
