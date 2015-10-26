@@ -22,8 +22,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEve
 
 public interface IESBDebugger extends IDebugger, IEventProcessor {
 
-	public void notifyEvent(Map<String, String> event);
+	public void notifyEvent(Map<String, Object> map);
 
-	public void notifyResponce(Map<String, String> map);
+	public void notifyResponce(Map<String, Object> map);
 
 }

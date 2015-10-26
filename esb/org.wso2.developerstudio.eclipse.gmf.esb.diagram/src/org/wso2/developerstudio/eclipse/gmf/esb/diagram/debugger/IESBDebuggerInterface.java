@@ -58,10 +58,10 @@ public interface IESBDebuggerInterface {
 	public void sendCommand(String command);
 
 	public void sendBreakpointCommand(String operation, String type,
-			Map<String, String> attributeValues);
+			Map<String, Object> breakpointAttributes);
 
 	public void attachDebugger(IESBDebugger esbDebugger);
 
-	public void sendGetPropertiesCommand(Map<String, String> attributeValues);
+	public void sendGetPropertiesCommand(Map<String, Object> attributeValues);
 
 }

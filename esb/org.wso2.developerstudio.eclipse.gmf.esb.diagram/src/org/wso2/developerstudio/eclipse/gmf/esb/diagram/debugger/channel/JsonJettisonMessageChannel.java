@@ -16,7 +16,6 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,9 +33,9 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	public static final String COMMAND_KEY = "command";
-	private static final String KEY_VALUE_SEPERATOR = ":";
-	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String MESSAGE_SEPERATOR = "}";
+	private static final String SPACE_STRING = " ";
+	private static final String JSON_MESSAGE_PREFIX = "{";
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
@@ -54,22 +53,35 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	}
 
 	private JSONObject buildMessage(MessageAttribute messageModel,
-			Map<String, String> attributeValues) throws JSONException {
+			Map<String, Object> attributeValues) throws JSONException {
 		JSONObject jsonCommand = new JSONObject();
 		Set<String> attributePropertyNames = messageModel.getAttributes();
 		for (String propertyName : attributePropertyNames) {
 			if (messageModel.getAttribute(propertyName) == null) {
 				if (attributeValues.containsKey(propertyName)) {
-					String value = attributeValues.get(propertyName);
-					if (propertyName
-							.equals(ESBDebuggerConstants.MEDIATION_COMPONENT)
-							&& (value.equals(ESBDebuggerConstants.PROXY) || value
-									.equals(ESBDebuggerConstants.API))) {
-						jsonCommand.put(
-								ESBDebuggerConstants.MEDIATION_COMPONENT,
-								ESBDebuggerConstants.SEQUENCE);
+					if (ESBDebuggerConstants.MEDIATOR_POSITION
+							.equalsIgnoreCase(propertyName)) {
+						int[] position = (int[]) attributeValues
+								.get(ESBDebuggerConstants.MEDIATOR_POSITION);
+						StringBuilder builder = new StringBuilder();
+						for (int value : position) {
+							builder.append(value).append(SPACE_STRING);
+						}
+						jsonCommand.put(ESBDebuggerConstants.MEDIATOR_POSITION,
+								builder.toString().trim());
 					} else {
-						jsonCommand.put(propertyName, value);
+						String value = (String) attributeValues
+								.get(propertyName);
+						if (propertyName
+								.equals(ESBDebuggerConstants.MEDIATION_COMPONENT)
+								&& (value.equals(ESBDebuggerConstants.PROXY) || value
+										.equals(ESBDebuggerConstants.API))) {
+							jsonCommand.put(
+									ESBDebuggerConstants.MEDIATION_COMPONENT,
+									ESBDebuggerConstants.SEQUENCE);
+						} else {
+							jsonCommand.put(propertyName, value);
+						}
 					}
 
 				}
@@ -85,9 +97,9 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	}
 
 	@Override
-	public Map<String, String> getResponce(String responce) {
+	public Map<String, Object> getResponce(String responce) {
 
-		Map<String, String> message = new LinkedHashMap<>();
+		Map<String, Object> message = new LinkedHashMap<>();
 		try {
 			JSONObject responceMessage = new JSONObject(responce);
 			message = convertJsonToMap(responceMessage);
@@ -97,9 +109,9 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		return message;
 	}
 
-	private Map<String, String> convertJsonToMap(JSONObject responceMessage) {
+	private Map<String, Object> convertJsonToMap(JSONObject responceMessage) {
 		Iterator<?> keys = responceMessage.keys();
-		Map<String, String> message = new LinkedHashMap<>();
+		Map<String, Object> message = new LinkedHashMap<>();
 		String value = "";
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
@@ -114,19 +126,32 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 		return message;
 	}
 
-	private Map<String, String> convertJsonToMapFlat(JSONObject responceMessage) {
+	private Map<String, Object> convertJsonToMapFlat(JSONObject responceMessage) {
 		Iterator<?> keys = responceMessage.keys();
-		Map<String, String> message = new LinkedHashMap<>();
+		Map<String, Object> message = new LinkedHashMap<>();
 		String value = "";
 		while (keys.hasNext()) {
 			String key = (String) keys.next();
 			try {
 				value = responceMessage.getString(key);
-				if (value.contains(MESSAGE_SEPERATOR) && value.startsWith("{")) {
+				if (value.contains(MESSAGE_SEPERATOR)
+						&& value.startsWith(JSON_MESSAGE_PREFIX)) {
 					JSONObject insideMessage = new JSONObject(value);
 					message.putAll(convertJsonToMapFlat(insideMessage));
 				} else {
-					message.put(key, value);
+					if (ESBDebuggerConstants.MEDIATOR_POSITION
+							.equalsIgnoreCase(key)) {
+						String[] positionArray = value.trim().split(
+								SPACE_STRING);
+						int[] position = new int[positionArray.length];
+						int count = 0;
+						for (String positionValue : positionArray) {
+							position[count] = Integer.parseInt(positionValue);
+						}
+						message.put(key, position);
+					} else {
+						message.put(key, value);
+					}
 				}
 
 			} catch (JSONException e) {
@@ -137,37 +162,23 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	}
 
 	@Override
-	public Map<String, String> getEvent(String event) {
-		Map<String, String> message = new LinkedHashMap<>();
+	public Map<String, Object> getEvent(String event) {
+		Map<String, Object> message = new LinkedHashMap<>();
 		try {
 			JSONObject responceMessage = new JSONObject(event);
 			message = convertJsonToMapFlat(responceMessage);
 		} catch (JSONException e) {
 			log.error("Error while creating Event Map", e);
+		} catch (NumberFormatException e) {
+			log.error(
+					"Recieved Event Message have a invalid Mediator Position value",
+					e);
 		}
 		return message;
 	}
 
-	private String getBreakpointType(String string, String mediationComponent) {
-		if (ESBDebuggerConstants.TEMPLATE.equals(mediationComponent)) {
-			return ESBDebuggerConstants.TEMPLATE;
-		} else if (ESBDebuggerConstants.CONNECTOR.equals(mediationComponent)) {
-			return ESBDebuggerConstants.CONNECTOR;
-		} else if (ESBDebuggerConstants.SEQUENCE.equals(mediationComponent)) {
-			// if(string.contains(ESBDebuggerConstants.SEQUENCE+CHILD_ATTRIBUTE_SEPERATOR+ESBDebuggerConstants.PROXY)){
-			if (string.contains(ESBDebuggerConstants.PROXY_KEY)) {
-				return ESBDebuggerConstants.PROXY;
-			} else if (string.contains(ESBDebuggerConstants.API_KEY)) {
-				return ESBDebuggerConstants.API;
-			} else {
-				return ESBDebuggerConstants.SEQUENCE;
-			}
-		}
-		return null;
-	}
-
 	@Override
-	public String createGetPropertiesCommand(Map<String, String> attributeValues) {
+	public String createGetPropertiesCommand(Map<String, Object> attributeValues) {
 		MessageAttribute messageModel = DebuggerCommunicationMessageModel
 				.getPropertyMessageModel(ESBDebuggerConstants.GET_PROPERTY);
 		try {
@@ -180,7 +191,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 
 	@Override
 	public String createBreakpointCommand(String operation, String type,
-			Map<String, String> attributeValues) {
+			Map<String, Object> attributeValues) {
 		MessageAttribute messageModel = DebuggerCommunicationMessageModel
 				.getMessageModel(ESBDebuggerConstants.BREAKPOINT, type);
 		try {

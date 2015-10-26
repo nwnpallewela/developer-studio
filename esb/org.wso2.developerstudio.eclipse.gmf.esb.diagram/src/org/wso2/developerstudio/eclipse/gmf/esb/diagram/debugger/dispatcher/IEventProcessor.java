@@ -16,9 +16,6 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher;
 
-import java.util.List;
-import java.util.Map;
-
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 
 public interface IEventProcessor {

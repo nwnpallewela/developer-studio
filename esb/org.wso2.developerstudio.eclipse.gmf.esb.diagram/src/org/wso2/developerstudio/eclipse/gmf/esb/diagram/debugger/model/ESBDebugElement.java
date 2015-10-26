@@ -29,6 +29,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public abstract class ESBDebugElement extends DebugElement implements ISuspendResume, IDisconnect, ITerminate, IStep {
 
@@ -178,6 +179,22 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 	@Override
 	public void stepReturn() throws DebugException {
 		throw new DebugException(new Status(IStatus.ERROR, "com.codeandme.textinterpreter.debugger", "stepReturn() not supported"));
+	}
+	
+	protected String setName(String name) {
+		switch (name) {
+		case ESBDebuggerConstants.AXIS2_PROPERTIES:
+			return ESBDebuggerConstants.AXIS2_PROPERTY_TAG;
+		case ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES:
+			return ESBDebuggerConstants.AXIS2_CLIENT_PROPERTY_TAG;
+		case ESBDebuggerConstants.SYNAPSE_PROPERTIES:
+			return ESBDebuggerConstants.SYANPSE_PROPERTY_TAG;
+		case ESBDebuggerConstants.TRANSPORT_PROPERTIES:
+			return ESBDebuggerConstants.TRANSPORT_PROPERTY_TAG;
+		case ESBDebuggerConstants.OPERATION_PROPERTIES:
+			return ESBDebuggerConstants.OPERATION_PROPERTY_TAG;
+		}
+		return name;
 	}
 }
 

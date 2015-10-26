@@ -239,17 +239,18 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 			} else {
 
 				try {
-					ESBDebugerUtil.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
-							.getRecentlyAddedMediator());
-					if (!ESBDebugerUtil.isPageChangeOperationActivated()
-							&& !ESBDebugerUtil.isPageCreateOperationActivated()) {
-						ESBDebugerUtil.setRecentlyAddedMediator(this);
-						System.out.println("Added mediator : "
-								+ ESBDebugerUtil.getRecentlyAddedMediator()
-										.toString());
+					if (ESBDebugerUtil.getRecentlyAddedMediator() != null) {
+						ESBDebugerUtil
+								.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
+										.getRecentlyAddedMediator());
+						if (!ESBDebugerUtil.isPageChangeOperationActivated()
+								&& !ESBDebugerUtil
+										.isPageCreateOperationActivated()) {
+							ESBDebugerUtil.setRecentlyAddedMediator(this);
+						}
 					}
 				} catch (CoreException e) {
-					e.printStackTrace();
+					
 				}
 			}
 

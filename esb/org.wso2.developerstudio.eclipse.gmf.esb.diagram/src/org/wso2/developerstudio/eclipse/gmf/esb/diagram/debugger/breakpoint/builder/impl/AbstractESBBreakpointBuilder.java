@@ -28,6 +28,7 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.AggregateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.BAMMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.BeanMediator;
@@ -48,6 +49,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EnqueueMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.EnrichMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.EntitlementMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
+import org.wso2.developerstudio.eclipse.gmf.esb.EsbLink;
 import org.wso2.developerstudio.eclipse.gmf.esb.EventMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.FastXSLTMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.FaultMediator;
@@ -80,23 +82,22 @@ import org.wso2.developerstudio.eclipse.gmf.esb.URLRewriteMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.ValidateMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XQueryMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.Sequences2EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SequencesEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.TemplateEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.APIResourceImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
-import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
-import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
  * All ESBBreakpoint builders should extend AbstractESBBreakpointBuilder class.
@@ -114,8 +115,40 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
 	protected static final String SPACE_CHARACTOR = " ";
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+	protected static final int FIRST_ELEMENT_INDEX = 0;
 
+	
+	protected String getFaultSequenceName(EObject element) {
+		String faultSeqName = null;
+		if(element instanceof ProxyServiceImpl){
+			faultSeqName=((ProxyServiceImpl)element).getFaultSequenceName();
+		}else if(element instanceof APIResource){
+			faultSeqName=((APIResource)element).getFaultSequenceName();
+		}
+		if(faultSeqName!=null){
+			return faultSeqName;
+		}else{
+			return EMPTY_STRING;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param position
+	 * @param listSeqPosition
+	 * @return
+	 */
+	protected int[] insertPreviousListSequencePosition(int[] position,
+			int listSeqPosition) {
+		int[] newPositionArray = new int[position.length+1];
+		newPositionArray[FIRST_ELEMENT_INDEX]=listSeqPosition;
+		int count = 1;
+		for (int value : position) {
+			newPositionArray[count]=value;
+		}
+		return newPositionArray;
+	}
+	
 	/**
 	 * This method increment position of the breakpoints by one. It deletes the
 	 * older breakpoint and add the modified breakpoint.
@@ -123,12 +156,12 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param breakpontList
 	 * @throws CoreException
 	 */
-	protected void incrementBreakpointPosition(List<ESBBreakpoint> breakpontList)
+	protected void increaseBreakpointPosition(List<ESBBreakpoint> breakpontList)
 			throws CoreException {
 		if (breakpontList != null) {
 			for (ESBBreakpoint esbBreakpoint : breakpontList) {
 
-				Map<String, String> message = incrementPositionOfTheMessage(esbBreakpoint
+				Map<String, Object> message = increasePositionOfTheMessage(esbBreakpoint
 						.getLocation());
 				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
 						esbBreakpoint.getResource(),
@@ -154,7 +187,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 		if (breakpontList != null) {
 			for (ESBBreakpoint esbBreakpoint : breakpontList) {
 
-				Map<String, String> message = decreasePositionOfTheMessage(esbBreakpoint
+				Map<String, Object> message = decreasePositionOfTheMessage(esbBreakpoint
 						.getLocation());
 				ESBBreakpoint modifiedBreakpoint = new ESBBreakpoint(
 						esbBreakpoint.getResource(),
@@ -168,47 +201,34 @@ public abstract class AbstractESBBreakpointBuilder implements
 		}
 	}
 
-	private Map<String, String> incrementPositionOfTheMessage(
-			Map<String, String> message) {
-		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			String[] positionArray = message.get(
-					ESBDebuggerConstants.MEDIATOR_POSITION).split(
-					SPACE_CHARACTOR);
-			String lastPosition = positionArray[positionArray.length - 1];
-			positionArray[positionArray.length - 1] = EMPTY_STRING
-					+ (Integer.parseInt(lastPosition) + 1);
-			String newPosition = EMPTY_STRING;
-			for (String pos : positionArray) {
-				newPosition = newPosition + pos + SPACE_CHARACTOR;
-			}
-			message.put(ESBDebuggerConstants.MEDIATOR_POSITION, newPosition);
-
+	private Map<String, Object> increasePositionOfTheMessage(
+			Map<String, Object> map) {
+		if (map.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
+			int[] positionArray = (int[]) map
+					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
+			int lastPosition = positionArray[positionArray.length - 1];
+			positionArray[positionArray.length - 1] = lastPosition + 1;
+			map.put(ESBDebuggerConstants.MEDIATOR_POSITION, positionArray);
 		}
-		return message;
+		return map;
 	}
 
-	private Map<String, String> decreasePositionOfTheMessage(
-			Map<String, String> message) {
-		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			String[] positionArray = message.get(
-					ESBDebuggerConstants.MEDIATOR_POSITION).split(
-					SPACE_CHARACTOR);
-			String lastPosition = positionArray[positionArray.length - 1];
-			positionArray[positionArray.length - 1] = EMPTY_STRING
-					+ (Integer.parseInt(lastPosition) - 1);
-			String newPosition = EMPTY_STRING;
-			for (String pos : positionArray) {
-				newPosition = newPosition + pos + SPACE_CHARACTOR;
-			}
-			message.put(ESBDebuggerConstants.MEDIATOR_POSITION, newPosition);
-
+	private Map<String, Object> decreasePositionOfTheMessage(
+			Map<String, Object> map) {
+		if (map.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
+			int[] positionArray = (int[]) map
+					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
+			int lastPosition = positionArray[positionArray.length - 1];
+			positionArray[positionArray.length - 1] = lastPosition - 1;
+			map.put(ESBDebuggerConstants.MEDIATOR_POSITION, positionArray);
 		}
-		return message;
+		return map;
 	}
 
 	/**
 	 * Only breakpoints which contains a higher mediator position than added
-	 * mediator position are selected
+	 * mediator position are selected. Returns empty list for a negative
+	 * mediator position
 	 * 
 	 * @param resource
 	 * @param position
@@ -216,10 +236,10 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @throws CoreException
 	 */
 	protected static List<ESBBreakpoint> getBreakpointsRelatedToModification(
-			IResource resource, int position, String listSequence, String action)
-			throws CoreException {
+			IResource resource, int[] position, String listSequence,
+			String action) throws CoreException {
 		List<ESBBreakpoint> breakpointList = new ArrayList<ESBBreakpoint>();
-		if (position >= 0) {
+		if (position[position.length - 1] >= 0) {
 			String listSequencePosition = EMPTY_STRING;
 			IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 					.getBreakpointManager()
@@ -227,28 +247,25 @@ public abstract class AbstractESBBreakpointBuilder implements
 			for (IBreakpoint breakpoint : breakpoints) {
 				IResource file = ((ESBBreakpoint) breakpoint).getResource();
 				if (file.equals(resource)) {
-					String positionValue = getMediatorPositionOfBreakpoint(breakpoint);
-					String[] positionArray = positionValue
-							.split(SPACE_CHARACTOR);
-					String lastPosition = positionArray[positionArray.length - 1];
+					int[] positionArray = getMediatorPositionOfBreakpoint(breakpoint);
+					int lastPosition = positionArray[positionArray.length - 1];
 					String sequnceType = EMPTY_STRING;
 					if (positionArray.length > 1) {
-						listSequencePosition = positionArray[positionArray.length - 2];
+						listSequencePosition = EMPTY_STRING
+								+ (positionArray[positionArray.length - 2]);
 					} else {
 						sequnceType = getSequenceTypeOfBreakpoint(breakpoint);
 					}
 					if (listSequence.equalsIgnoreCase(listSequencePosition)
 							|| listSequence.equalsIgnoreCase(sequnceType)) {
 						if ((ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-								.equals(action) && (position <= Integer
-								.parseInt(lastPosition)))
+								.equals(action) && (position[position.length - 1] <= lastPosition))
 								|| (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
-										.equals(action) && position < Integer
-										.parseInt(lastPosition))) {
+										.equals(action) && position[position.length - 1] < lastPosition)) {
 							breakpointList.add((ESBBreakpoint) breakpoint);
 						} else if (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
 								.equals(action)
-								&& position == Integer.parseInt(lastPosition)) {
+								&& position[position.length - 1] == lastPosition) {
 							DebugPlugin.getDefault().getBreakpointManager()
 									.removeBreakpoint(breakpoint, true);
 						}
@@ -261,34 +278,44 @@ public abstract class AbstractESBBreakpointBuilder implements
 	}
 
 	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint) {
-		Map<String, String> message = ((ESBBreakpoint) breakpoint)
+		Map<String, Object> message = ((ESBBreakpoint) breakpoint)
 				.getLocation();
 		if (message.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
-			return message.get(ESBDebuggerConstants.SEQUENCE_TYPE);
+			return (String) message.get(ESBDebuggerConstants.SEQUENCE_TYPE);
 		}
 		return null;
 	}
 
-	private static String getMediatorPositionOfBreakpoint(IBreakpoint breakpoint) {
-		Map<String, String> message = ((ESBBreakpoint) breakpoint)
+	/**
+	 * Returns mediator position String of the breakpoint
+	 * 
+	 * @param breakpoint
+	 * @return String
+	 */
+	private static int[] getMediatorPositionOfBreakpoint(IBreakpoint breakpoint) {
+		Map<String, Object> message = ((ESBBreakpoint) breakpoint)
 				.getLocation();
-		if (message.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			return message.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-		}
-		return null;
+		return (int[]) message.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 	}
 
-	protected Map<String, String> setInitialAttributes(String type) {
-		Map<String, String> attributes = new HashMap<>();
+	/**
+	 * Returns attribute map with Mediation component attribute @param type
+	 * inserted to the map
+	 * 
+	 * @param type
+	 * @return Map<String, String>
+	 */
+	protected Map<String, Object> setInitialAttributes(String type) {
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put(ESBDebuggerConstants.MEDIATION_COMPONENT, type);
 		return attributes;
 	}
 
 	/**
-	 * this method returns the mediator instance id.
+	 * This method returns the mediator instance id.
 	 * 
 	 * @param instance
-	 * @return
+	 * @return String
 	 */
 	protected String getInstanceId(String instance) {
 		int indexOfAt = instance.indexOf(INSTANCE_ID_PREFIX);
@@ -297,38 +324,42 @@ public abstract class AbstractESBBreakpointBuilder implements
 	}
 
 	/**
+	 * Returns mediator position of abstractMediator in the mediation flow
+	 * starting from outputConnector Returns -1 if not found this mediator in
+	 * the mediation flow.
 	 * 
 	 * @param outputConnector
 	 * @param abstractMediator
-	 * @return
+	 * @return int[]
+	 * @throws MediatorNotFoundException
 	 */
-	protected int getMediatorPosition(OutputConnector outputConnector,
-			AbstractMediator abstractMediator) {
-		if (abstractMediator == null) {
-			return -1;
-		} else {
-			OutputConnector tempConnector = outputConnector;
-			int count = 0;
-			try {
-				while (tempConnector != null) {
-					EObject mediator = tempConnector.getOutgoingLink()
-							.getTarget().eContainer();
-					EditPart editpart = EditorUtils.getEditpart(mediator);
-					if (editpart.equals(abstractMediator)) {
-						break;
-					}
-					if (isMediatorChainEnds(editpart)) {
-						return -1;
-					} else {
-						count++;
-						tempConnector = getOutputConnector((Mediator) mediator);
-					}
+	protected int[] getMediatorPosition(OutputConnector outputConnector,
+			AbstractMediator abstractMediator) throws MediatorNotFoundException {
+		OutputConnector tempConnector = outputConnector;
+		int count = 0;
+		List<Integer> positionList = new ArrayList<>();
+		while (tempConnector != null) {
+			EsbLink outgoingLink = tempConnector.getOutgoingLink();
+			if (outgoingLink != null && outgoingLink.getTarget() != null) {
+				EObject mediator = outgoingLink.getTarget().eContainer();
+				EditPart editpart = EditorUtils.getEditpart(mediator);
+				if (abstractMediator.equals(editpart)) {
+					positionList.add(count);
+					break;
+				} else if (isMediatorChainEnded(editpart)) {
+					throw new MediatorNotFoundException(abstractMediator
+							+ " Mediator is not found in "
+							+ outputConnector.eClass());
+				} else {
+					count++;
+					tempConnector = getOutputConnector((Mediator) mediator);
 				}
-			} catch (NullPointerException e) {
-				log.error("Diagram links are not properly connected", e);
+			} else {
+				throw new MediatorNotFoundException(
+						"Mediation flow diagram error");
 			}
-			return count;
 		}
+		return convertIntegerListToArray(positionList);
 	}
 
 	/**
@@ -337,11 +368,12 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param editpart
 	 * @return
 	 */
-	private boolean isMediatorChainEnds(EditPart editpart) {
+	private boolean isMediatorChainEnded(EditPart editpart) {
 		if (editpart instanceof ProxyServiceEditPart
 				|| editpart instanceof SequencesEditPart
 				|| editpart instanceof APIResourceEditPart
-				|| editpart instanceof TemplateEditPart) {
+				|| editpart instanceof TemplateEditPart
+				|| editpart instanceof Sequences2EditPart) {
 			return true;
 		}
 		return false;
@@ -349,36 +381,47 @@ public abstract class AbstractESBBreakpointBuilder implements
 
 	/**
 	 * This method returns mediator position in sequence specified by the
-	 * output-connector.
+	 * output-connector. Returns Empty String if selection editpart not found in
+	 * mediation flow.
 	 * 
 	 * @param outConnector
 	 * @param selection
-	 * @return
+	 * @return String
+	 * @throws MediatorNotFoundException
 	 */
-	protected String getMediatorPosition(OutputConnector outConnector,
-			EObject selection) {
+	protected int[] getMediatorPosition(OutputConnector outConnector,
+			EObject selection) throws MediatorNotFoundException {
+		List<Integer> positionList = new ArrayList<>();
 		OutputConnector tempConnector = outConnector;
 		int count = 0;
-		String position = EMPTY_STRING;
-		try {
-			while (tempConnector != null) {
-				EObject mediator = tempConnector.getOutgoingLink().getTarget()
-						.eContainer();
-				if (getInstanceId(mediator.toString()).equals(
+		while (tempConnector != null) {
+			EsbLink outgoingLink = tempConnector.getOutgoingLink();
+			if (outgoingLink != null && outgoingLink.getTarget() != null) {
+				EObject mediator = outgoingLink.getTarget().eContainer();
+				if (isMediatorChainEnded(mediator)) {
+					throw new MediatorNotFoundException(" Selected Mediator is not found in a valid position");
+				} else if (getInstanceId(mediator.toString()).equals(
 						getInstanceId(selection.toString()))) {
-					position = position + count;
-					break;
-				} else if (isMediatorChainEnds(mediator)) {
+					positionList.add(count);
 					break;
 				} else {
 					count++;
 					tempConnector = getOutputConnector((Mediator) mediator);
 				}
+			} else {
+				throw new MediatorNotFoundException(
+						"Mediation flow diagram error");
 			}
-		} catch (NullPointerException e) {
-			log.error("Diagram links are not properly connected", e);
 		}
-		return position;
+		return convertIntegerListToArray(positionList);
+	}
+
+	private int[] convertIntegerListToArray(List<Integer> integerList) {
+		int[] intArray = new int[integerList.size()];
+		for (int index = 0; index < intArray.length; index++) {
+			intArray[index] = integerList.get(index);
+		}
+		return intArray;
 	}
 
 	/**
@@ -387,7 +430,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	private boolean isMediatorChainEnds(EObject mediator) {
+	private boolean isMediatorChainEnded(EObject mediator) {
 		if (mediator instanceof SequencesImpl
 				|| mediator instanceof ProxyServiceImpl
 				|| mediator instanceof APIResourceImpl
@@ -403,21 +446,24 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param eList
 	 * @param selection
 	 * @return
+	 * @throws MediatorNotFoundException
 	 */
-	protected String getMediatorPositionInFaultSeq(EList<EsbElement> eList,
-			EObject selection) {
+	protected int[] getMediatorPositionInFaultSeq(EList<EsbElement> eList,
+			EObject selection) throws MediatorNotFoundException {
 		int count = 0;
-		String position = EMPTY_STRING;
+		List<Integer> positionList = new ArrayList<>();
+		String selectionInstanceID = getInstanceId(selection.toString());
 		for (EsbElement mediator : eList) {
-			if (getInstanceId(mediator.toString()).equals(
-					getInstanceId(selection.toString()))) {
-				position = position + (count);
-				break;
+			if (getInstanceId(mediator.toString()).equals(selectionInstanceID)) {
+				positionList.add(count);
+				return convertIntegerListToArray(positionList);
 			} else {
 				count++;
 			}
 		}
-		return position;
+		throw new MediatorNotFoundException(selection
+				+ " Mediator not found in Fault Sequence");
+
 	}
 
 	/**

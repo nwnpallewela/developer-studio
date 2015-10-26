@@ -35,6 +35,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.AbstractEsbNodeDeserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditor;
@@ -124,6 +126,7 @@ public class OpenEditorUtil {
 							EditPart editPart = mediatorLocator
 									.getMediatorEditPart(esbServer,
 											event.getDetail());
+
 							if (editPart instanceof AbstractMediator) {
 								((AbstractMediator) editPart)
 										.setBreakpointHitStatus(true);
@@ -139,6 +142,10 @@ public class OpenEditorUtil {
 
 						}
 
+					} catch (MediatorNotFoundException e) {
+						log.error(e.getMessage(), e);
+					} catch (MissingAttributeException e) {
+						log.error(e.getMessage(), e);
 					} catch (Exception e1) {
 						log.error(
 								"Error occured while getting artifact type for the given ESB configuration ",

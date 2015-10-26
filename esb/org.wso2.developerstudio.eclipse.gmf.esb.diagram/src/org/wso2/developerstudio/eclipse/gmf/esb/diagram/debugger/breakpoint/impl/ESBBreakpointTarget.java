@@ -16,10 +16,6 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -38,6 +34,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
@@ -88,15 +85,15 @@ public class ESBBreakpointTarget {
 	 * @param part
 	 * @param selection
 	 * @throws CoreException
+	 * @throws MediatorNotFoundException 
 	 */
 	public static void toggleDiagramBreakpoints(AbstractMediator part,
-			EObject selection) throws CoreException {
+			EObject selection) throws CoreException, MediatorNotFoundException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 
 		if (activeEditor instanceof EsbMultiPageEditor) {
 
-			boolean partReversed = part.reversed;
 			IFile file = ((FileEditorInput) (((EsbMultiPageEditor) activeEditor)
 					.getEditorInput())).getFile();
 			Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
@@ -110,18 +107,20 @@ public class ESBBreakpointTarget {
 			if (breakpointBuilder != null) {
 				IResource resource = (IResource) file
 						.getAdapter(IResource.class);
-
+				boolean partReversed = part.reversed;
 				ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
 						esbServer, resource, selection, partReversed);
-				ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
-				if (existingBreakpoint == null) {
-					DebugPlugin.getDefault().getBreakpointManager()
-							.addBreakpoint(breakpoint);
-					ESBDebugerUtil.addBreakpointMark(part);
-				} else {
-					DebugPlugin.getDefault().getBreakpointManager()
-							.removeBreakpoint(existingBreakpoint, true);
-					ESBDebugerUtil.removeBreakpointMark(part);
+				if (breakpoint != null) {
+					ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
+					if (existingBreakpoint == null) {
+						DebugPlugin.getDefault().getBreakpointManager()
+								.addBreakpoint(breakpoint);
+						ESBDebugerUtil.addBreakpointMark(part);
+					} else {
+						DebugPlugin.getDefault().getBreakpointManager()
+								.removeBreakpoint(existingBreakpoint, true);
+						ESBDebugerUtil.removeBreakpointMark(part);
+					}
 				}
 			}
 		}

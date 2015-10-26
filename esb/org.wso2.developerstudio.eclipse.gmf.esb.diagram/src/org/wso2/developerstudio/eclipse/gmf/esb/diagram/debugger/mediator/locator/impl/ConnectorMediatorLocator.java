@@ -25,7 +25,7 @@ public class ConnectorMediatorLocator extends AbstractMediatorLocator {
 
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, String> info) {
+			Map<String, Object> info) {
 		// TODO Auto-generated method stub
 		return null;
 	}

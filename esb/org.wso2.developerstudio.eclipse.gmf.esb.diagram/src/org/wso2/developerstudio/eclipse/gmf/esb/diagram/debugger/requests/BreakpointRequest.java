@@ -27,7 +27,7 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	public static final int REMOVED = 2;
 	private final int mType;
 	private final int mLine;
-	private final Map<String, String> breakpointAttributes;
+	private final Map<String, Object> breakpointAttributes;
 
 	public BreakpointRequest(ESBBreakpoint breakpoint, int type) {
 		mType = type;
@@ -43,7 +43,7 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 		return mLine;
 	}
 
-	public Map<String, String> getBreakpointAttributes() {
+	public Map<String, Object> getBreakpointAttributes() {
 		return breakpointAttributes;
 	}
 

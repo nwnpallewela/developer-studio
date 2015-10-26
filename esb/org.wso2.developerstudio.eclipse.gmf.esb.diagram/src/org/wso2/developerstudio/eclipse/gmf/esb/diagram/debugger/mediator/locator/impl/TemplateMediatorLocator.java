@@ -18,11 +18,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locat
 
 import java.util.Map;
 
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
@@ -36,28 +36,36 @@ public class TemplateMediatorLocator extends AbstractMediatorLocator {
 	/**
 	 * This method returns EditPart of a Template Sequence according to given
 	 * information Map
+	 * 
+	 * @throws MediatorNotFoundException
+	 * @throws MissingAttributeException 
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, String> info) {
+			Map<String, Object> info) throws MediatorNotFoundException, MissingAttributeException {
 		EditPart editPart = null;
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
 
-			String position = info.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-			String[] positionArray = position
-					.split(MEDIATOR_POSITION_SEPERATOR);
-			TreeIterator<EObject> treeIterator = esbServer.eAllContents();
+			int[] positionArray = (int[]) info
+					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 
-			EObject next = treeIterator.next();
+			TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
+					FIRST_ELEMENT_INDEX);
 
-			TemplateImpl template = (TemplateImpl) next;
-			EsbElement sequnce = template.getChild();
+			if (template.getChild() instanceof SequencesImpl) {
+				EsbElement sequnce = template.getChild();
+				editPart = getMediatorFromMediationFlow(
+						((SequencesImpl) sequnce).getOutputConnector(),
+						positionArray);
+			} else {
+				throw new UnsupportedOperationException(
+						"Breakpoint Integration not supported for "
+								+ template.getChild());
+			}
 
-			editPart = getMediator(
-					((SequencesImpl) sequnce).getOutputConnector(),
-					Integer.parseInt(positionArray[0]));
-
+		}else{
+			throw new MissingAttributeException("Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
 		}
 		return editPart;
 	}

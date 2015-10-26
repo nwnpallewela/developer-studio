@@ -19,6 +19,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
@@ -146,7 +147,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	}
 
 	private void showSource(SuspendedEvent event) {
-		Map<String, String> info = event.getDetail();
+		Map<String, Object> info = event.getDetail();
 		
 		ESBBreakpoint breakpoint = getBreakpoint(info);
 		if (breakpoint != null) {
@@ -157,7 +158,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		}
 	}
 
-	private ESBBreakpoint getBreakpoint(Map<String, String> info) {
+	private ESBBreakpoint getBreakpoint(Map<String, Object> info) {
 
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager().getBreakpoints(getModelIdentifier());

@@ -45,5 +45,5 @@ public interface IDebugger {
 
 	public void setEventDispatcher(EventDispatchJob dispatcher);
 
-	public void suspended(Map<String, String> position);
+	public void suspended(Map<String, Object> position);
 }

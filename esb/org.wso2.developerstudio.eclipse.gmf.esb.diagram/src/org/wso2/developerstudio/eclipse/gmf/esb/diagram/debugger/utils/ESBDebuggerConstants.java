@@ -23,8 +23,8 @@ public class ESBDebuggerConstants {
 	public static final String AXIS2_PROPERTY_TAG = "axis2";
 	public static final String OPERATION_PROPERTY_TAG = "operation";
 	public static final String AXIS2_CLIENT_PROPERTY_TAG = "axis2-client";
-	public static final String TRANSPORT = "transport";
-	public static final String SYANPSE = "synapse";
+	public static final String TRANSPORT_PROPERTY_TAG = "transport";
+	public static final String SYANPSE_PROPERTY_TAG = "synapse";
 	public static final String COMMAND_GET = "get";
 
 	public static final String VARIABLE_TYPE = "ESB Message";
@@ -96,6 +96,7 @@ public class ESBDebuggerConstants {
 	public static final String URI_MAPPING = "url-mapping";
 	public static final String API_INSEQ = "api_inseq";
 	public static final String API_OUTSEQ = "api_outseq";
+	public static final String MAPPING_URL_TYPE = "mapping";
 
 	public static final String API_METHOD_POST = "POST";
 	public static final String API_METHOD_GET = "GET";

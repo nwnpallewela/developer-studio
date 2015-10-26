@@ -18,10 +18,10 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locat
 
 import java.util.Map;
 
-import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
@@ -31,43 +31,53 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
  */
 public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 
-	private static final String IN_SEQUENCE_VALUE = "0";
+	private static final int IN_SEQUENCE_VALUE = 0;
 	private static final int NO_OF_LIST_MEDIATORS = 2;
 
 	/**
 	 * This method returns EditPart of a Main Sequence according to given
 	 * information Map
+	 * 
+	 * @throws MediatorNotFoundException
+	 * @throws MissingAttributeException
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, String> info) {
+			Map<String, Object> info) throws MediatorNotFoundException,
+			MissingAttributeException {
 
 		EditPart editPart = null;
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			String position = info.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-			String[] positionArray = position
-					.split(MEDIATOR_POSITION_SEPERATOR);
+			int[] positionArray = (int[]) info
+					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
+			if (positionArray.length == NO_OF_LIST_MEDIATORS) {
+				ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
+						.eContents().get(FIRST_ELEMENT_INDEX);
 
-			TreeIterator<EObject> treeIterator = esbServer.eAllContents();
-			EObject next = treeIterator.next();
-
-			ProxyServiceImpl mainSequence = (ProxyServiceImpl) next;
-
-			if (positionArray.length == NO_OF_LIST_MEDIATORS
-					&& IN_SEQUENCE_VALUE.equals(positionArray[0].trim())) {
-
-				editPart = getMediator(mainSequence.getOutputConnector(),
-						Integer.parseInt(positionArray[1]));
-
-			} else if (positionArray.length == NO_OF_LIST_MEDIATORS) {
-
-				editPart = getMediator(
-						mainSequence.getOutSequenceOutputConnector(),
-						Integer.parseInt(positionArray[1]));
+				if (positionArray[FIRST_ELEMENT_INDEX]==IN_SEQUENCE_VALUE) {
+					editPart = getMediatorFromMediationFlow(
+							mainSequence.getOutputConnector(),
+							removeOutterListSeqPositionFromArray(positionArray));
+				} else {
+					editPart = getMediatorFromMediationFlow(
+							mainSequence.getOutSequenceOutputConnector(),
+							removeOutterListSeqPositionFromArray(positionArray));
+				}
 			}
 
+		} else {
+			throw new MissingAttributeException(
+					"Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
 		}
 		return editPart;
+	}
+
+	private int[] removeOutterListSeqPositionFromArray(int[] positionArray) {
+		int[] newPositionArray = new int[positionArray.length - 1];
+		for (int index = 0; index < positionArray.length - 1; index++) {
+			newPositionArray[index] = positionArray[index + 1];
+		}
+		return newPositionArray;
 	}
 
 }

@@ -105,6 +105,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Dese
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -547,10 +549,16 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 						EsbDiagram diagram = (EsbDiagram) graphicalEditor
 								.getDiagram().getElement();
 						EsbServer server = diagram.getServer();
-						addDesignViewBreakpoints(server);
+						try {
+							addDesignViewBreakpoints(server);
+						} catch (MediatorNotFoundException e) {
+							log.error(e.getMessage(), e);
+						}catch (MissingAttributeException e){
+							log.error(e.getMessage(), e);
+						}
 					}
 
-					private void addDesignViewBreakpoints(EsbServer server) {
+					private void addDesignViewBreakpoints(EsbServer server) throws MediatorNotFoundException, MissingAttributeException {
 						IEditorInput editorInput = getEditorInput();
 						if (editorInput instanceof FileEditorInput) {
 							IFile file = ((FileEditorInput) editorInput)
@@ -566,7 +574,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 
 					private void addBreakpointMarkForExistingBreakpoints(
 							EsbServer server, IFile file,
-							IMediatorLocator mediatorLocator) {
+							IMediatorLocator mediatorLocator) throws MediatorNotFoundException, MissingAttributeException {
 						IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 								.getBreakpointManager()
 								.getBreakpoints(ESBDebugModelPresentation.ID);

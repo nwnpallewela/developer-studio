@@ -20,10 +20,12 @@ import java.util.Map;
 
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 
 public interface IMediatorLocator {
 
 	EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, String> info);
+			Map<String, Object> map) throws MediatorNotFoundException, MissingAttributeException;
 
 }

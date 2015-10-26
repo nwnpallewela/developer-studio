@@ -21,11 +21,11 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 
@@ -36,28 +36,28 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	/**
 	 * This method returns the ESBBreakpoint object for the selection
+	 * 
+	 * @throws MediatorNotFoundException
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, EObject selection,
-			boolean selectedMediatorReversed) throws CoreException {
+			boolean selectedMediatorReversed) throws CoreException,
+			MediatorNotFoundException {
 
 		int lineNumber = -1;
-		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
-		EObject next = treeIterator.next();
+		SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
+				FIRST_ELEMENT_INDEX);
 
-		SequencesImpl sequence = (SequencesImpl) next;
-
-		Map<String, String> attributeMap = setInitialAttributes(ESBDebuggerConstants.SEQUENCE);
+		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.SEQUENCE);
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 				ESBDebuggerConstants.NAMED);
 
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
 
-		String position = getMediatorPosition(sequence.getOutputConnector(),
+		int[] position = getMediatorPosition(sequence.getOutputConnector(),
 				selection);
 		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
-
 		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
@@ -65,25 +65,26 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 * This method update all breakpoints affected by the mediator insertion or
 	 * deletion action specified by action parameter and mediator object
 	 * specified by abstractMediator parameter.
+	 * 
+	 * @throws MediatorNotFoundException
 	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
-			String action) throws CoreException {
-		TreeIterator<EObject> treeIterator = esbServer.eAllContents();
+			String action) throws CoreException, MediatorNotFoundException {
 
-		SequencesImpl sequence = (SequencesImpl) treeIterator.next();
-		int position = getMediatorPosition(sequence.getOutputConnector(),
+		SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
+				FIRST_ELEMENT_INDEX);
+
+		int[] position = getMediatorPosition(sequence.getOutputConnector(),
 				abstractMediator);
 		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
 				resource, position, EMPTY_STRING, action);
 		if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
 				.equalsIgnoreCase(action)) {
-			incrementBreakpointPosition(breakpontList);
+			increaseBreakpointPosition(breakpontList);
 		} else {
 			decreaseBreakpointPosition(breakpontList);
 		}
-
 	}
-
 }

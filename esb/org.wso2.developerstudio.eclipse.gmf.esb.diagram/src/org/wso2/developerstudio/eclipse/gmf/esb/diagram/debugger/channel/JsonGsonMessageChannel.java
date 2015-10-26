@@ -27,7 +27,7 @@ public class JsonGsonMessageChannel implements IChannelCommunication {
 
 
 	@Override
-	public String createGetPropertiesCommand(Map<String, String> attributeValues) {
+	public String createGetPropertiesCommand(Map<String, Object> attributeValues) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -35,21 +35,21 @@ public class JsonGsonMessageChannel implements IChannelCommunication {
 
 	@Override
 	public String createBreakpointCommand(String operation, String type,
-			Map<String, String> attributeValues) {
+			Map<String, Object> attributeValues) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public Map<String, String> getResponce(String responce) {
+	public Map<String, Object> getResponce(String responce) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public Map<String, String> getEvent(String buffer) {
+	public Map<String, Object> getEvent(String buffer) {
 		// TODO Auto-generated method stub
 		return null;
 	}

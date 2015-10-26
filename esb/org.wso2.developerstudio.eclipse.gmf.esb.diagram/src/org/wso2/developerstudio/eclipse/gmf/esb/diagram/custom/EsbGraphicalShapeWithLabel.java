@@ -133,20 +133,9 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	}
 
 	public void removeBreakpointMark() {
-		/*try {
-		//	this.remove(pane);
-		} catch (NullPointerException e) {
-			log.error("Mediator icon figure does not have a layer pane", e);
-		}*/
-
-		try {
+		if(breakpointLayer!=null){
 			pane.remove(breakpointLayer);
-		} catch (NullPointerException e) {
-			log.error(
-					"Mediator icon layer pane does not have a breakpoint layer",
-			e);
 		}
-		//this.add(pane);
 
 	}
 	

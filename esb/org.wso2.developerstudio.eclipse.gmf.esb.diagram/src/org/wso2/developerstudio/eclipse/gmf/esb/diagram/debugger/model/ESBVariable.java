@@ -42,7 +42,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 		mName = name;
 		setValue(value);
 	}
-
+	
 	/**
 	 * Sets value of the variable when given as a String object.
 	 * 

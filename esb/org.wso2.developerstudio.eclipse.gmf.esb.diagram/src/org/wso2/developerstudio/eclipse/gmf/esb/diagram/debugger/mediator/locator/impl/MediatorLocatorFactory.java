@@ -20,14 +20,14 @@ import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 
 /**
- * 
+ * Factory design pattern implementation to get Mediator Locator according to
+ * the type.
  *
  */
 public class MediatorLocatorFactory {
 
-public static IMediatorLocator getMediatorLocator(ArtifactType type) {
-		
-		
+	public static IMediatorLocator getMediatorLocator(ArtifactType type) {
+
 		switch (type) {
 		case PROXY:
 			return new ProxyMediatorLocator();

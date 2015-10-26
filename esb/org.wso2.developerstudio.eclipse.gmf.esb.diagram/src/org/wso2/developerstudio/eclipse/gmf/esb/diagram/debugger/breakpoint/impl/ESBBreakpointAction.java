@@ -32,6 +32,7 @@ import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -126,6 +127,8 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 							(AbstractMediator) selectedEP, selectedObj);
 				} catch (CoreException e) {
 					log.error("Error while registering the breakpoint", e);
+				} catch (MediatorNotFoundException e) {
+					log.warn(e.getMessage(), e);
 				}
 			}
 		}

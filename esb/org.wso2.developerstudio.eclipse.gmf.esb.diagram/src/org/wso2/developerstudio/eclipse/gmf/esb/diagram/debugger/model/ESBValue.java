@@ -46,7 +46,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleMedia
  */
 public class ESBValue extends ESBDebugElement implements IValue {
 
-	private static final CharSequence JASON_OBJECT_IDENTIFING_KEY = "{";
+	private static final String JASON_OBJECT_IDENTIFING_KEY = "{";
 	private static final String EMPTY_STRING = "";
 	private static final String KEY_ENVELOPE = "envelope";
 
@@ -58,7 +58,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 		super(target);
 
 		variableValue = value;
-		if (value.contains(JASON_OBJECT_IDENTIFING_KEY)) {
+		if (value.startsWith(JASON_OBJECT_IDENTIFING_KEY)) {
 			JSONObject responceMessage = new JSONObject(value);
 			Map<String, String> message = convertJsonToMap(responceMessage);
 			for (String name : message.keySet()) {

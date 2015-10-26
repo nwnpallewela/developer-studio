@@ -22,12 +22,12 @@ public interface IChannelCommunication {
 
 	String createCommand(String command);
 	
-	String createBreakpointCommand(String operation,String type,Map<String,String> attributeValues);
+	String createBreakpointCommand(String operation,String type,Map<String, Object> attributeValues);
 
-	Map<String, String> getResponce(String responce);
+	Map<String, Object> getResponce(String responce);
 
-	Map<String, String> getEvent(String buffer);
+	Map<String, Object> getEvent(String buffer);
 
-	String createGetPropertiesCommand(Map<String, String> attributeValues);
+	String createGetPropertiesCommand(Map<String, Object> attributeValues);
 
 }
