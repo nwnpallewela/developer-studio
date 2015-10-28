@@ -18,21 +18,25 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.bui
 
 import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 
 /**
  * Factory design pattern implementation to get BreakpointBuilder's according to
  * the type.
  *
  */
-public class BreakpointBuilderFactory {
+public class ESBBreakpointBuilderFactory {
 
 	/**
-	 * This method takes type as a input and returns specific BreakpointBuilder
+	 * This method takes project type as a input and returns specific
+	 * BreakpointBuilder
 	 * 
 	 * @param type
 	 * @return BreakpointBuilder
+	 * @throws ESBDebuggerException
 	 */
-	public static IESBBreakpointBuilder getBreakpointBuilder(ArtifactType type) {
+	public static IESBBreakpointBuilder getBreakpointBuilder(ArtifactType type)
+			throws ESBDebuggerException {
 
 		switch (type) {
 		case PROXY:
@@ -46,7 +50,8 @@ public class BreakpointBuilderFactory {
 		case MAIN_SEQUENCE:
 			return new MainSequenceBreakpointBuilder();
 		default:
-			return null;
+			throw new ESBDebuggerException(
+					"Unsupported Project Type for Debugging");
 		}
 	}
 }

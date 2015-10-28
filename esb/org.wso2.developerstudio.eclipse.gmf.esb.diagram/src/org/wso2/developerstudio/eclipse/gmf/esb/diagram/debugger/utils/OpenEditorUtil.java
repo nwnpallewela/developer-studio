@@ -143,9 +143,9 @@ public class OpenEditorUtil {
 						}
 
 					} catch (MediatorNotFoundException e) {
-						log.error(e.getMessage(), e);
+						log.warn(e.getMessage(), e);
 					} catch (MissingAttributeException e) {
-						log.error(e.getMessage(), e);
+						log.warn(e.getMessage(), e);
 					} catch (Exception e1) {
 						log.error(
 								"Error occured while getting artifact type for the given ESB configuration ",

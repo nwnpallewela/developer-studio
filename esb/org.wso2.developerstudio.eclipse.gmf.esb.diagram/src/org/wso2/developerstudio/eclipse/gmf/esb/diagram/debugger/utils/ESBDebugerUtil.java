@@ -40,7 +40,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FilterMediatorGra
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBBreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
@@ -134,7 +135,7 @@ public class ESBDebugerUtil {
 	}
 
 	public static void modifyBreakpointsAfterMediatorAddition(
-			AbstractMediator abstractMediator) throws CoreException {
+			AbstractMediator abstractMediator) throws CoreException, ESBDebuggerException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 
@@ -144,7 +145,7 @@ public class ESBDebugerUtil {
 
 			EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
-			IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
+			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
 
 			if (breakpointBuilder != null) {
@@ -163,7 +164,7 @@ public class ESBDebugerUtil {
 	}
 
 	public static void modifyBreakpointsAfterMediatorDeletion()
-			throws CoreException {
+			throws CoreException, ESBDebuggerException {
 
 		if (getDeletedMediator() != null) {
 
@@ -175,7 +176,7 @@ public class ESBDebugerUtil {
 
 				EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
-				IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
+				IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 						.getBreakpointBuilder(esbServer.getType());
 
 				if (breakpointBuilder != null) {

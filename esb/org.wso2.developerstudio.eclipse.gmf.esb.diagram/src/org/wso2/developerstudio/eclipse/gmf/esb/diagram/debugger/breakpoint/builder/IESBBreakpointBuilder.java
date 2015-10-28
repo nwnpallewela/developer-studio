@@ -18,7 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.bui
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
@@ -31,8 +30,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.Media
 public interface IESBBreakpointBuilder {
 
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection, boolean partReversed)
-			throws CoreException, MediatorNotFoundException;
+			IResource resource, AbstractMediator part) throws CoreException,
+			MediatorNotFoundException;
 
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,

@@ -115,23 +115,22 @@ public abstract class AbstractESBBreakpointBuilder implements
 	protected static final String INSTANCE_ID_PREFIX = "@";
 	protected static final String INSTANCE_ID_POSTFIX = " ";
 	protected static final String SPACE_CHARACTOR = " ";
-	protected static final int FIRST_ELEMENT_INDEX = 0;
+	protected static final int INDEX_OF_FIRST_ELEMENT = 0;
 
-	
 	protected String getFaultSequenceName(EObject element) {
 		String faultSeqName = null;
-		if(element instanceof ProxyServiceImpl){
-			faultSeqName=((ProxyServiceImpl)element).getFaultSequenceName();
-		}else if(element instanceof APIResource){
-			faultSeqName=((APIResource)element).getFaultSequenceName();
+		if (element instanceof ProxyServiceImpl) {
+			faultSeqName = ((ProxyServiceImpl) element).getFaultSequenceName();
+		} else if (element instanceof APIResource) {
+			faultSeqName = ((APIResource) element).getFaultSequenceName();
 		}
-		if(faultSeqName!=null){
+		if (faultSeqName != null) {
 			return faultSeqName;
-		}else{
+		} else {
 			return EMPTY_STRING;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param position
@@ -140,15 +139,15 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 */
 	protected int[] insertPreviousListSequencePosition(int[] position,
 			int listSeqPosition) {
-		int[] newPositionArray = new int[position.length+1];
-		newPositionArray[FIRST_ELEMENT_INDEX]=listSeqPosition;
+		int[] newPositionArray = new int[position.length + 1];
+		newPositionArray[INDEX_OF_FIRST_ELEMENT] = listSeqPosition;
 		int count = 1;
 		for (int value : position) {
-			newPositionArray[count]=value;
+			newPositionArray[count] = value;
 		}
 		return newPositionArray;
 	}
-	
+
 	/**
 	 * This method increment position of the breakpoints by one. It deletes the
 	 * older breakpoint and add the modified breakpoint.
@@ -398,8 +397,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 			EsbLink outgoingLink = tempConnector.getOutgoingLink();
 			if (outgoingLink != null && outgoingLink.getTarget() != null) {
 				EObject mediator = outgoingLink.getTarget().eContainer();
-				if (isMediatorChainEnded(mediator)) {
-					throw new MediatorNotFoundException(" Selected Mediator is not found in a valid position");
+				if (isMediatorChainEnd(mediator)) {
+					throw new MediatorNotFoundException(
+							"Selected Mediator is not found in a valid position");
 				} else if (getInstanceId(mediator.toString()).equals(
 						getInstanceId(selection.toString()))) {
 					positionList.add(count);
@@ -430,7 +430,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param mediator
 	 * @return
 	 */
-	private boolean isMediatorChainEnded(EObject mediator) {
+	private boolean isMediatorChainEnd(EObject mediator) {
 		if (mediator instanceof SequencesImpl
 				|| mediator instanceof ProxyServiceImpl
 				|| mediator instanceof APIResourceImpl

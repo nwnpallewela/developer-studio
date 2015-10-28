@@ -25,6 +25,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.notation.View;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
@@ -43,12 +44,12 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection, boolean reversed)
-			throws CoreException, MediatorNotFoundException {
+			IResource resource, AbstractMediator part) throws CoreException,
+			MediatorNotFoundException {
 
 		int lineNumber = -1;
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
-				FIRST_ELEMENT_INDEX);
+				INDEX_OF_FIRST_ELEMENT);
 
 		if (template.getChild() instanceof SequencesImpl) {
 			EsbElement sequnce = template.getChild();
@@ -56,7 +57,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 			attributeMap.put(ESBDebuggerConstants.TEMPLATE_KEY,
 					template.getName());
-
+			EObject selection = ((View) part.getModel()).getElement();
 			int[] position = getMediatorPosition(
 					((SequencesImpl) sequnce).getOutputConnector(), selection);
 			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
@@ -72,14 +73,15 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 * This method update all breakpoints affected by the mediator insertion or
 	 * deletion action specified by action parameter and mediator object
 	 * specified by abstractMediator parameter.
-	 * @throws MediatorNotFoundException 
+	 * 
+	 * @throws MediatorNotFoundException
 	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws CoreException, MediatorNotFoundException {
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
-				FIRST_ELEMENT_INDEX);
+				INDEX_OF_FIRST_ELEMENT);
 
 		if (template.getChild() instanceof SequencesImpl) {
 			EsbElement sequnce = template.getChild();

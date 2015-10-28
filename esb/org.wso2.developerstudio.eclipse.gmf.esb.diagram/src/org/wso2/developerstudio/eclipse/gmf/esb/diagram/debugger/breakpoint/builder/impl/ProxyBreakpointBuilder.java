@@ -18,6 +18,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.bui
 
 import java.util.List;
 import java.util.Map;
+import org.eclipse.gmf.runtime.notation.View;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -41,20 +42,21 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection,
-			boolean selectedMediatorReversed) throws CoreException,
+			IResource resource, AbstractMediator part) throws CoreException,
 			MediatorNotFoundException {
+
 		int lineNumber = -1;
 		ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents().get(
-				FIRST_ELEMENT_INDEX);
+				INDEX_OF_FIRST_ELEMENT);
 		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.PROXY);
 		attributeMap.put(ESBDebuggerConstants.PROXY_KEY, proxy.getName());
 		int[] position = null;
-		if (selectedMediatorReversed) {
+		 EObject selection = ((View) part.getModel()).getElement();
+		if (part.reversed) {
 			try {
 				position = getMediatorPositionInFaultSeq(proxy.getContainer()
 						.getFaultContainer().getMediatorFlow().getChildren(),
-						selection);
+						selection );
 				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 						getFaultSequenceName(proxy));
 			} catch (MediatorNotFoundException ex) {
@@ -64,10 +66,10 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 						ESBDebuggerConstants.PROXY_OUTSEQ);
 			}
 		} else {
-			attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-					ESBDebuggerConstants.PROXY_INSEQ);
 			position = getMediatorPosition(proxy.getOutputConnector(),
 					selection);
+			attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
+					ESBDebuggerConstants.PROXY_INSEQ);
 		}
 		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		return new ESBBreakpoint(resource, lineNumber, attributeMap);

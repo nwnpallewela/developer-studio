@@ -27,7 +27,7 @@ public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection,boolean reversed) throws CoreException {
+			IResource resource,AbstractMediator part) throws CoreException {
 		int lineNumber = -1;
 		String message = "";
 		

@@ -18,13 +18,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.imp
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.common.ui.action.AbstractActionHandler;
-import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
@@ -32,7 +30,10 @@ import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -117,18 +118,21 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 	protected void doRun(IProgressMonitor progressMonitor) {
 
 		EditPart selectedEP = getSelectedEditPart();
-		if (selectedEP instanceof AbstractMediator
-				&& selectedEP.getModel() instanceof View) {
-			EObject selectedObj = ((View) selectedEP.getModel()).getElement();
-			if (ESBBreakpointTarget.canToggleDiagramBreakpoints(selectedEP,
-					selectedObj)) {
+		if (selectedEP instanceof AbstractMediator) {
+			if (ESBBreakpointTarget.canToggleDiagramBreakpoints(selectedEP)) {
 				try {
-					ESBBreakpointTarget.toggleDiagramBreakpoints(
-							(AbstractMediator) selectedEP, selectedObj);
+					ESBBreakpointTarget
+							.toggleDiagramBreakpoints((AbstractMediator) selectedEP);
 				} catch (CoreException e) {
 					log.error("Error while registering the breakpoint", e);
 				} catch (MediatorNotFoundException e) {
-					log.warn(e.getMessage(), e);
+					log.error(e.getMessage(), e);
+				} catch (BreakpointMarkerNotFoundException e) {
+					log.error(e.getMessage(), e);
+				} catch (MissingAttributeException e) {
+					log.error(e.getMessage(), e);
+				} catch (ESBDebuggerException e) {
+					log.error(e.getMessage(), e);
 				}
 			}
 		}

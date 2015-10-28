@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.notation.View;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
@@ -38,16 +39,17 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 
 	/**
 	 * This method returns the ESBBreakpoint object for the selection
-	 * @throws MediatorNotFoundException 
+	 * 
+	 * @throws MediatorNotFoundException
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection, boolean reversed)
-			throws CoreException, MediatorNotFoundException {
+			IResource resource, AbstractMediator part) throws CoreException,
+			MediatorNotFoundException {
 
 		int lineNumber = -1;
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
-				.eContents().get(FIRST_ELEMENT_INDEX);
+				.eContents().get(INDEX_OF_FIRST_ELEMENT);
 
 		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.MAIN_SEQUENCE);
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
@@ -56,7 +58,8 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 				ESBDebuggerConstants.MAIN);
 		int listSeqPosition;
 		int[] position = null;
-		if (reversed) {
+		EObject selection = ((View) part.getModel()).getElement();
+		if (part.reversed) {
 			listSeqPosition = OUT_SEQ_POSITION;
 			position = getMediatorPosition(
 					mainSequence.getOutSequenceOutputConnector(), selection);
@@ -74,7 +77,8 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	 * This method update all breakpoints affected by the mediator insertion or
 	 * deletion action specified by action parameter and mediator object
 	 * specified by abstractMediator parameter.
-	 * @throws MediatorNotFoundException 
+	 * 
+	 * @throws MediatorNotFoundException
 	 */
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
@@ -82,7 +86,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 			String action) throws CoreException, MediatorNotFoundException {
 
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
-				.eContents().get(FIRST_ELEMENT_INDEX);
+				.eContents().get(INDEX_OF_FIRST_ELEMENT);
 
 		String listSequenceNumber = EMPTY_STRING + OUT_SEQ_POSITION;
 		if (abstractMediator.reversed) {

@@ -16,22 +16,27 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
 
-public class MediatorNotFoundException extends ESBDebuggerException {
+/**
+ * This Exception is used to throw when an common error occurs in ESBDebugger.
+ * All other custom exceptions related to ESBDebugger should extend this class.
+ *
+ */
+public class ESBDebuggerException extends Exception {
 
-	private static final long serialVersionUID = -4159108240634620947L;
+	private static final long serialVersionUID = -4852375242125932927L;
 
-	public MediatorNotFoundException() {
+	public ESBDebuggerException() {
 	}
 
-	public MediatorNotFoundException(String message) {
+	public ESBDebuggerException(String message) {
 		super(message);
 	}
 
-	public MediatorNotFoundException(Throwable cause) {
+	public ESBDebuggerException(Throwable cause) {
 		super(cause);
 	}
 
-	public MediatorNotFoundException(String message, Throwable cause) {
+	public ESBDebuggerException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

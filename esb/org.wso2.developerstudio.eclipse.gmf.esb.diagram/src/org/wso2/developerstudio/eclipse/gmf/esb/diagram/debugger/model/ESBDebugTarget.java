@@ -42,6 +42,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Suspende
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
@@ -148,11 +150,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	private void showSource(SuspendedEvent event) {
 		Map<String, Object> info = event.getDetail();
-		
+
 		ESBBreakpoint breakpoint = getBreakpoint(info);
 		if (breakpoint != null) {
 			IFile file = (IFile) breakpoint.getResource();
-			if (file != null && file.exists()) {
+			if (file.exists()) {
 				OpenEditorUtil.openSeparateEditor(file, event);
 			}
 		}

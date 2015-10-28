@@ -105,6 +105,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Dese
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
@@ -578,23 +580,28 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 						IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 								.getBreakpointManager()
 								.getBreakpoints(ESBDebugModelPresentation.ID);
-						if (breakpoints != null) {
-							for (IBreakpoint breakpoint : breakpoints) {
-								System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getResource().toString()+" "+((ESBBreakpoint)breakpoint).getLocation());
-								if (file.equals(breakpoint.getMarker()
-										.getResource())) {
-									//System.out.println("ESBMultipage editor :-Breakpoints in this file : "+((ESBBreakpoint)breakpoint).getMessage());
-									EditPart editPart = mediatorLocator
+						for (IBreakpoint breakpoint : breakpoints) {
+							if (file.equals(((ESBBreakpoint) breakpoint)
+									.getResource())) {
+								try {
+									EditPart editPart = null;
+
+									editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
-													((ESBBreakpoint)breakpoint).getLocation());
+													((ESBBreakpoint) breakpoint)
+															.getLocation());
 									if (editPart instanceof AbstractMediator) {
 										ESBDebugerUtil
 												.addBreakpointMark((AbstractMediator) editPart);
 									}
+								} catch (MediatorNotFoundException ex) {
+									log.warn(ex.getMessage(), ex);
+								} catch (MissingAttributeException ex) {
+									log.warn(ex.getMessage(), ex);
 								}
-
 							}
+
 						}
 					}
 
@@ -1050,11 +1057,14 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 	private void updateModifiedBreakpoints() {
 		try {
 			if (ESBDebugerUtil.getRecentlyAddedMediator() != null) {
-				ESBDebugerUtil.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
-						.getRecentlyAddedMediator());
+				ESBDebugerUtil
+						.modifyBreakpointsAfterMediatorAddition(ESBDebugerUtil
+								.getRecentlyAddedMediator());
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
+		} catch (ESBDebuggerException e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	

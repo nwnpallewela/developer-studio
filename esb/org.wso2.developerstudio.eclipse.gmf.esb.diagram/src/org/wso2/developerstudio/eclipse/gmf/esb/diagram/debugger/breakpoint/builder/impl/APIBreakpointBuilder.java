@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.gmf.runtime.notation.View;
 import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.ApiResourceUrlStyle;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
@@ -45,12 +46,11 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, EObject selection,
-			boolean selectedMediatorReversed) throws CoreException,
+			IResource resource, AbstractMediator part) throws CoreException,
 			MediatorNotFoundException {
 		int lineNumber = -1;
 		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
-				FIRST_ELEMENT_INDEX);
+				INDEX_OF_FIRST_ELEMENT);
 
 		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.API);
 		attributeMap.put(ESBDebuggerConstants.API_KEY, api.getApiName());
@@ -58,8 +58,8 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		for (APIResource apiResource : apiResources) {
 			boolean mediatorLocated = true;
 			try {
-
-				if (selectedMediatorReversed) {
+				EObject selection = ((View) part.getModel()).getElement();
+				if (part.reversed) {
 					int[] position = null;
 					try {
 						position = getMediatorPositionInFaultSeq(apiResource
@@ -147,7 +147,8 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws CoreException, MediatorNotFoundException {
-		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(FIRST_ELEMENT_INDEX);
+		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
+				INDEX_OF_FIRST_ELEMENT);
 
 		if (api != null && abstractMediator != null) {
 			EList<APIResource> apiResources = api.getResources();

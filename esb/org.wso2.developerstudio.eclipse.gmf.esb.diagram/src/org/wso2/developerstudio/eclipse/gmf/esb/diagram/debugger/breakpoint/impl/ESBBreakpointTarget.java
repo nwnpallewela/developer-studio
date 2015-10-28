@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.notation.Diagram;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,8 +32,10 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.BreakpointBuilderFactory;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBBreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
@@ -61,11 +62,9 @@ public class ESBBreakpointTarget {
 	 * breakpoint.
 	 * 
 	 * @param part
-	 * @param selection
 	 * @return
 	 */
-	public static boolean canToggleDiagramBreakpoints(EditPart part,
-			EObject selection) {
+	public static boolean canToggleDiagramBreakpoints(EditPart part) {
 		return true;
 	}
 
@@ -83,12 +82,11 @@ public class ESBBreakpointTarget {
 	 * This method performs the graphical view breakpoint insertion action
 	 * 
 	 * @param part
-	 * @param selection
 	 * @throws CoreException
-	 * @throws MediatorNotFoundException 
+	 * @throws ESBDebuggerException 
 	 */
-	public static void toggleDiagramBreakpoints(AbstractMediator part,
-			EObject selection) throws CoreException, MediatorNotFoundException {
+	public static void toggleDiagramBreakpoints(AbstractMediator part)
+			throws CoreException, ESBDebuggerException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 
@@ -101,26 +99,22 @@ public class ESBBreakpointTarget {
 			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
 			EsbServer esbServer = esbDiagram.getServer();
 
-			IESBBreakpointBuilder breakpointBuilder = BreakpointBuilderFactory
+			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
 
-			if (breakpointBuilder != null) {
-				IResource resource = (IResource) file
-						.getAdapter(IResource.class);
-				boolean partReversed = part.reversed;
-				ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
-						esbServer, resource, selection, partReversed);
-				if (breakpoint != null) {
-					ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
-					if (existingBreakpoint == null) {
-						DebugPlugin.getDefault().getBreakpointManager()
-								.addBreakpoint(breakpoint);
-						ESBDebugerUtil.addBreakpointMark(part);
-					} else {
-						DebugPlugin.getDefault().getBreakpointManager()
-								.removeBreakpoint(existingBreakpoint, true);
-						ESBDebugerUtil.removeBreakpointMark(part);
-					}
+			IResource resource = (IResource) file.getAdapter(IResource.class);
+			ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
+					esbServer, resource, part);
+			if (breakpoint != null) {
+				ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
+				if (existingBreakpoint == null) {
+					DebugPlugin.getDefault().getBreakpointManager()
+							.addBreakpoint(breakpoint);
+					ESBDebugerUtil.addBreakpointMark(part);
+				} else {
+					DebugPlugin.getDefault().getBreakpointManager()
+							.removeBreakpoint(existingBreakpoint, true);
+					ESBDebugerUtil.removeBreakpointMark(part);
 				}
 			}
 		}
@@ -131,9 +125,12 @@ public class ESBBreakpointTarget {
 	 * @param targetBreakpoint
 	 * @return
 	 * @throws CoreException
+	 * @throws MissingAttributeException
+	 * @throws BreakpointMarkerNotFoundException
 	 */
 	private static ESBBreakpoint getMatchingBreakpoint(
-			ESBBreakpoint targetBreakpoint) throws CoreException {
+			ESBBreakpoint targetBreakpoint) throws CoreException,
+			BreakpointMarkerNotFoundException, MissingAttributeException {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);

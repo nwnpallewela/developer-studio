@@ -59,6 +59,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.connections.ConnectionCalculator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.layout.XYRepossition;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.MediatorFigureReverser;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceInputConnectorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceOutSequenceOutputConnectorEditPart;
@@ -122,6 +123,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleConta
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleMediatorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ValidateMediatorEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.policies.MediatorFlowMediatorFlowCompartment21CanonicalEditPolicy;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.StatusDialog;
@@ -154,6 +157,7 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	 */
 	public boolean reversed = false;
 
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public AbstractMediator(View view) {
 		super(view);
@@ -250,7 +254,9 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 						}
 					}
 				} catch (CoreException e) {
-					
+					log.error(e.getMessage(), e);
+				} catch (ESBDebuggerException e) {
+					log.error(e.getMessage(), e);
 				}
 			}
 
