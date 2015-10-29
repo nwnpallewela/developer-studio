@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.EditPart;
@@ -48,20 +49,20 @@ public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 
 		EditPart editPart = null;
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			int[] positionArray = (int[]) info
+			@SuppressWarnings("unchecked")
+			List<Integer> positionArray = (List<Integer>) info
 					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-			if (positionArray.length == NO_OF_LIST_MEDIATORS) {
+			if (positionArray.size() == NO_OF_LIST_MEDIATORS) {
 				ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
-						.eContents().get(FIRST_ELEMENT_INDEX);
+						.eContents().get(INDEX_OF_FIRST_ELEMENT);
 
-				if (positionArray[FIRST_ELEMENT_INDEX]==IN_SEQUENCE_VALUE) {
+				if (positionArray.get(INDEX_OF_FIRST_ELEMENT) == IN_SEQUENCE_VALUE) {
 					editPart = getMediatorFromMediationFlow(
-							mainSequence.getOutputConnector(),
-							removeOutterListSeqPositionFromArray(positionArray));
+							mainSequence.getOutputConnector(), positionArray);
 				} else {
 					editPart = getMediatorFromMediationFlow(
 							mainSequence.getOutSequenceOutputConnector(),
-							removeOutterListSeqPositionFromArray(positionArray));
+							positionArray);
 				}
 			}
 
@@ -71,13 +72,4 @@ public class MainSequenceMediatorLocator extends AbstractMediatorLocator {
 		}
 		return editPart;
 	}
-
-	private int[] removeOutterListSeqPositionFromArray(int[] positionArray) {
-		int[] newPositionArray = new int[positionArray.length - 1];
-		for (int index = 0; index < positionArray.length - 1; index++) {
-			newPositionArray[index] = positionArray[index + 1];
-		}
-		return newPositionArray;
-	}
-
 }

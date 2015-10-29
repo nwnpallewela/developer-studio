@@ -57,7 +57,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY,
 				ESBDebuggerConstants.MAIN);
 		int listSeqPosition;
-		int[] position = null;
+		List<Integer> position = null;
 		EObject selection = ((View) part.getModel()).getElement();
 		if (part.reversed) {
 			listSeqPosition = OUT_SEQ_POSITION;
@@ -68,8 +68,8 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 			position = getMediatorPosition(mainSequence.getOutputConnector(),
 					selection);
 		}
-		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION,
-				insertPreviousListSequencePosition(position, listSeqPosition));
+		position.add(INDEX_OF_FIRST_ELEMENT, listSeqPosition);
+		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		return new ESBBreakpoint(resource, lineNumber, attributeMap);
 	}
 
@@ -90,7 +90,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 
 		String listSequenceNumber = EMPTY_STRING + OUT_SEQ_POSITION;
 		if (abstractMediator.reversed) {
-			int[] position = getMediatorPosition(
+			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutSequenceOutputConnector(),
 					abstractMediator);
 			List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
@@ -103,7 +103,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 			}
 		} else {
 			listSequenceNumber = EMPTY_STRING + IN_SEQ_POSITION;
-			int[] position = getMediatorPosition(
+			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutputConnector(), abstractMediator);
 			List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
 					resource, position, listSequenceNumber, action);

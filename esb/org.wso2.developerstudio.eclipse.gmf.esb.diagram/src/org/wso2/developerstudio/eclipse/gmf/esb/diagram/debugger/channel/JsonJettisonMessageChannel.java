@@ -18,6 +18,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,7 +62,8 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 				if (attributeValues.containsKey(propertyName)) {
 					if (ESBDebuggerConstants.MEDIATOR_POSITION
 							.equalsIgnoreCase(propertyName)) {
-						int[] position = (int[]) attributeValues
+						@SuppressWarnings("unchecked")
+						List<Integer> position = (List<Integer>) attributeValues
 								.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 						StringBuilder builder = new StringBuilder();
 						for (int value : position) {

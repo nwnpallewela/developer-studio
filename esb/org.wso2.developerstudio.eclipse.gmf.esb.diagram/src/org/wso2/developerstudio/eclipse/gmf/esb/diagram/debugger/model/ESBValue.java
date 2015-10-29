@@ -201,4 +201,8 @@ public class ESBValue extends ESBDebugElement implements IValue {
 	public boolean hasVariables() throws DebugException {
 		return !(valueChildren == null || valueChildren.isEmpty());
 	}
+
+	public List<IVariable> getVariableList() {
+		return valueChildren;
+	}
 }

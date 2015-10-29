@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.EditPart;
@@ -46,12 +47,13 @@ public class ProxyMediatorLocator extends AbstractMediatorLocator {
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
 				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
-			int[] positionArray = (int[]) info
+			@SuppressWarnings("unchecked")
+			List<Integer> positionArray = (List<Integer>) info
 					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 			String sequenceType = (String) info
 					.get(ESBDebuggerConstants.SEQUENCE_TYPE);
 			ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents()
-					.get(FIRST_ELEMENT_INDEX);
+					.get(INDEX_OF_FIRST_ELEMENT);
 			if (sequenceType == null
 					|| sequenceType.equals(getFaultSequenceName(proxy))) {
 				editPart = getMediatorInFaultSeq(proxy.getContainer()

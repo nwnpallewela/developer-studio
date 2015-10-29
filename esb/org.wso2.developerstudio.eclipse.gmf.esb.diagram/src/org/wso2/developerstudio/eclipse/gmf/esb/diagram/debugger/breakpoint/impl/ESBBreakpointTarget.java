@@ -83,7 +83,7 @@ public class ESBBreakpointTarget {
 	 * 
 	 * @param part
 	 * @throws CoreException
-	 * @throws ESBDebuggerException 
+	 * @throws ESBDebuggerException
 	 */
 	public static void toggleDiagramBreakpoints(AbstractMediator part)
 			throws CoreException, ESBDebuggerException {
@@ -105,17 +105,15 @@ public class ESBBreakpointTarget {
 			IResource resource = (IResource) file.getAdapter(IResource.class);
 			ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
 					esbServer, resource, part);
-			if (breakpoint != null) {
-				ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
-				if (existingBreakpoint == null) {
-					DebugPlugin.getDefault().getBreakpointManager()
-							.addBreakpoint(breakpoint);
-					ESBDebugerUtil.addBreakpointMark(part);
-				} else {
-					DebugPlugin.getDefault().getBreakpointManager()
-							.removeBreakpoint(existingBreakpoint, true);
-					ESBDebugerUtil.removeBreakpointMark(part);
-				}
+			ESBBreakpoint existingBreakpoint = getMatchingBreakpoint(breakpoint);
+			if (existingBreakpoint == null) {
+				DebugPlugin.getDefault().getBreakpointManager()
+						.addBreakpoint(breakpoint);
+				ESBDebugerUtil.addBreakpointMark(part);
+			} else {
+				DebugPlugin.getDefault().getBreakpointManager()
+						.removeBreakpoint(existingBreakpoint, true);
+				ESBDebugerUtil.removeBreakpointMark(part);
 			}
 		}
 	}

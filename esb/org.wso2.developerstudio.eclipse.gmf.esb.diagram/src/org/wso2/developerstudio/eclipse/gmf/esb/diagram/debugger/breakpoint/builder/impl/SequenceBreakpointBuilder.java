@@ -55,7 +55,7 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
 		EObject selection = ((View) part.getModel()).getElement();
-		int[] position = getMediatorPosition(sequence.getOutputConnector(),
+		List<Integer> position = getMediatorPosition(sequence.getOutputConnector(),
 				selection);
 		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		return new ESBBreakpoint(resource, lineNumber, attributeMap);
@@ -76,7 +76,7 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 
-		int[] position = getMediatorPosition(sequence.getOutputConnector(),
+		List<Integer> position = getMediatorPosition(sequence.getOutputConnector(),
 				abstractMediator);
 		List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
 				resource, position, EMPTY_STRING, action);

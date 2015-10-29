@@ -33,7 +33,7 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 public class ESBVariable extends ESBDebugElement implements IVariable {
 
 	private final String mName;
-	private IValue mValue;
+	private ESBValue mValue;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	protected ESBVariable(IDebugTarget target, String name, String value)
@@ -64,7 +64,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	 */
 	@Override
 	public void setValue(IValue value) {
-		mValue = value;
+		mValue = (ESBValue) value;
 	}
 
 	/**

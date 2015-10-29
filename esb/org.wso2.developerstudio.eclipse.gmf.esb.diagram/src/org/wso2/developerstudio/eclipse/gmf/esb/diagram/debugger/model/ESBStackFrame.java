@@ -33,12 +33,20 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 	private final IThread mThread;
 	private int mLineNumber = 1;
-	private final List<ESBVariable> mVariables = new ArrayList<>();
+	private List<IVariable> mVariables = new ArrayList<>();
+	private ESBVariable properties = null;
 	private boolean mDirtyVariables = true;
 
 	public ESBStackFrame(IDebugTarget target, IThread thread) {
 		super(target);
 		mThread = thread;
+		try {
+			properties = new ESBVariable(target, "Properties",
+					"{Properties:Synapse properties list}");
+			mVariables = ((ESBValue) properties.getValue()).getVariableList();
+		} catch (DebugException e) {
+
+		}
 	}
 
 	@Override
@@ -99,15 +107,17 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 	 * public IFile getSourceFile() { return (getDebugTarget()).getFile(); }
 	 */
 
-	public synchronized void setVariables(Map<String, String> variables) throws DebugException {
+	public synchronized void setVariables(Map<String, String> variables)
+			throws DebugException {
 		for (String name : variables.keySet()) {
 			boolean processed = false;
 			// try to find existing variable
-			for (ESBVariable variable : mVariables) {
+			for (IVariable variable : mVariables) {
 				if (variable.getName().equals(name)) {
 					// variable exists
 					variable.setValue(variables.get(name));
-					variable.fireChangeEvent(DebugEvent.CONTENT);
+					((ESBVariable) variable)
+							.fireChangeEvent(DebugEvent.CONTENT);
 					processed = true;
 					break;
 				}

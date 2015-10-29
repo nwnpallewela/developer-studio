@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,12 +48,13 @@ public class APIMediatorLocator extends AbstractMediatorLocator {
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
 				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
 
-			int[] positionArray = (int[]) info
+			@SuppressWarnings("unchecked")
+			List<Integer> positionArray = (List<Integer>) info
 					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 			String sequenceType = (String) info
 					.get(ESBDebuggerConstants.SEQUENCE_TYPE);
 			SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
-					FIRST_ELEMENT_INDEX);
+					INDEX_OF_FIRST_ELEMENT);
 			APIResource apiResource = getMatchingAPIResource(api, info);
 			if (sequenceType == null
 					|| sequenceType.equals(getFaultSequenceName(apiResource))) {

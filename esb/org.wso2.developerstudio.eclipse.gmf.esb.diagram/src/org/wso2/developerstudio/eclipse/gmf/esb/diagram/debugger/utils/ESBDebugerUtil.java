@@ -17,6 +17,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -135,7 +136,8 @@ public class ESBDebugerUtil {
 	}
 
 	public static void modifyBreakpointsAfterMediatorAddition(
-			AbstractMediator abstractMediator) throws CoreException, ESBDebuggerException {
+			AbstractMediator abstractMediator) throws CoreException,
+			ESBDebuggerException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 
@@ -148,18 +150,17 @@ public class ESBDebugerUtil {
 			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
 
-			if (breakpointBuilder != null) {
-				try {
-					breakpointBuilder.updateExistingBreakpoints(resource,
-							abstractMediator, esbServer,
-							ESBDebuggerConstants.MEDIATOR_INSERT_ACTION);
-				} catch (MediatorNotFoundException e) {
-					log.info(
-							"Inserted Mediator not found in a valid location for breakpoint validation",
-							e);
-				}
+			try {
+				breakpointBuilder.updateExistingBreakpoints(resource,
+						abstractMediator, esbServer,
+						ESBDebuggerConstants.MEDIATOR_INSERT_ACTION);
+			} catch (MediatorNotFoundException e) {
+				log.info(
+						"Inserted Mediator not found in a valid location for breakpoint validation",
+						e);
+			} finally {
+				setRecentlyAddedMediator(null);
 			}
-			setRecentlyAddedMediator(null);
 		}
 	}
 
@@ -179,19 +180,18 @@ public class ESBDebugerUtil {
 				IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 						.getBreakpointBuilder(esbServer.getType());
 
-				if (breakpointBuilder != null) {
-					try {
-						breakpointBuilder.updateExistingBreakpoints(resource,
-								getDeletedMediator(), esbServer,
-								ESBDebuggerConstants.MEDIATOR_DELETE_ACTION);
-					} catch (MediatorNotFoundException e) {
-						log.info(
-								"Deleted Mediator not found in a valid location for breakpoint validation",
-								e);
-					}
+				try {
+					breakpointBuilder.updateExistingBreakpoints(resource,
+							getDeletedMediator(), esbServer,
+							ESBDebuggerConstants.MEDIATOR_DELETE_ACTION);
+				} catch (MediatorNotFoundException e) {
+					log.info(
+							"Deleted Mediator not found in a valid location for breakpoint validation",
+							e);
+				} finally {
+					setDeletedMediator(null);
+					ESBDebugerUtil.setDeleteOperationPerformed(false);
 				}
-				setDeletedMediator(null);
-				ESBDebugerUtil.setDeleteOperationPerformed(false);
 			}
 		}
 	}
@@ -237,16 +237,18 @@ public class ESBDebugerUtil {
 	 * @param breakpointMessage
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean isBreakpointMatches(Map<String, Object> message,
 			Map<String, Object> breakpointMessage) {
 		Set<String> attributeKeys = new HashSet<String>();
 		attributeKeys.addAll(message.keySet());
 		attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
 		attributeKeys.remove(ESBDebuggerConstants.EVENT);
-		
+
 		if (!isBreakpointPositionMatches(
-				((int[]) message.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
-				((int[]) breakpointMessage
+				((List<Integer>) message
+						.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
+				((List<Integer>) breakpointMessage
 						.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
 			return false;
 		}
@@ -268,13 +270,14 @@ public class ESBDebugerUtil {
 	}
 
 	private static boolean isBreakpointPositionMatches(
-			int[] messagePositionArray, int[] breakpointPositionArray) {
-		for (int index = 0; index < breakpointPositionArray.length; index++) {
-			if (!(breakpointPositionArray[index] == messagePositionArray[index])) {
+			List<Integer> messagePositionArray,
+			List<Integer> breakpointPositionArray) {
+		for (int index = 0; index < breakpointPositionArray.size(); index++) {
+			if (!(breakpointPositionArray.get(index) == messagePositionArray
+					.get(index))) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 

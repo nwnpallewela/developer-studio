@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
@@ -33,17 +35,18 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 public abstract class AbstractMediatorLocator implements IMediatorLocator {
 
 	protected static final String MEDIATOR_POSITION_SEPERATOR = " ";
-	protected static final int FIRST_ELEMENT_INDEX = 0;
+	protected static final int INDEX_OF_FIRST_ELEMENT = 0;
 	private static final String EMPTY_STRING = "";
 
 	protected EditPart getMediatorFromMediationFlow(
-			OutputConnector tempConnector, int[] mediatorPosition) throws MediatorNotFoundException {
+			OutputConnector tempConnector, List<Integer> mediatorPosition)
+			throws MediatorNotFoundException {
 		int count = 0;
 		while (tempConnector != null) {
 			EsbLink outgoingLink = tempConnector.getOutgoingLink();
 			if (outgoingLink != null && outgoingLink.getTarget() != null) {
 				EObject mediator = outgoingLink.getTarget().eContainer();
-				if (count == mediatorPosition[FIRST_ELEMENT_INDEX]) {
+				if (count == mediatorPosition.get(INDEX_OF_FIRST_ELEMENT)) {
 					return EditorUtils.getEditpart(mediator);
 				} else {
 					count++;
@@ -52,7 +55,7 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 								.getOutputConnector((Mediator) mediator);
 					}
 				}
-			}else{
+			} else {
 				throw new MediatorNotFoundException(
 						"Mediation flow diagram error");
 			}
@@ -61,9 +64,9 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 	}
 
 	protected EditPart getMediatorInFaultSeq(EList<EsbElement> children,
-			int[] positionArray) throws MediatorNotFoundException {
+			List<Integer> positionList) throws MediatorNotFoundException {
 		int count = 0;
-		int position = positionArray[FIRST_ELEMENT_INDEX];
+		int position = positionList.get(INDEX_OF_FIRST_ELEMENT);
 		for (EsbElement mediator : children) {
 			if (count == position) {
 				return EditorUtils.getEditpart(mediator);
@@ -74,17 +77,17 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 		throw new MediatorNotFoundException(
 				"Breakpoint position value is invalid");
 	}
-	
+
 	protected String getFaultSequenceName(EObject element) {
 		String faultSeqName = null;
-		if(element instanceof ProxyServiceImpl){
-			faultSeqName=((ProxyServiceImpl)element).getFaultSequenceName();
-		}else if(element instanceof APIResource){
-			faultSeqName=((APIResource)element).getFaultSequenceName();
+		if (element instanceof ProxyServiceImpl) {
+			faultSeqName = ((ProxyServiceImpl) element).getFaultSequenceName();
+		} else if (element instanceof APIResource) {
+			faultSeqName = ((APIResource) element).getFaultSequenceName();
 		}
-		if(faultSeqName!=null){
+		if (faultSeqName != null) {
 			return faultSeqName;
-		}else{
+		} else {
 			return EMPTY_STRING;
 		}
 	}

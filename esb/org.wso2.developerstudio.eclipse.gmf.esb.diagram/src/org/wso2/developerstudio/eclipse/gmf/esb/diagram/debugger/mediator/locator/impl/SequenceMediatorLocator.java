@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.EditPart;
@@ -43,10 +44,11 @@ public class SequenceMediatorLocator extends AbstractMediatorLocator {
 		EditPart editPart = null;
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
-			int[] positionArray = (int[]) info
+			@SuppressWarnings("unchecked")
+			List<Integer> positionArray = (List<Integer>) info
 					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
 			SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
-					FIRST_ELEMENT_INDEX);
+					INDEX_OF_FIRST_ELEMENT);
 
 			editPart = getMediatorFromMediationFlow(
 					sequence.getOutputConnector(), positionArray);
