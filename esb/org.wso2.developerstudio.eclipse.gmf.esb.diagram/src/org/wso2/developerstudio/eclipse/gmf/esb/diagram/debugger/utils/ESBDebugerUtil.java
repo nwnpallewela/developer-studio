@@ -293,13 +293,8 @@ public class ESBDebugerUtil {
 	private static boolean isBreakpointPositionMatches(
 			List<Integer> messagePositionArray,
 			List<Integer> breakpointPositionArray) {
-		for (int index = 0; index < breakpointPositionArray.size(); index++) {
-			if (!(breakpointPositionArray.get(index) == messagePositionArray
-					.get(index))) {
-				return false;
-			}
-		}
-		return true;
+
+		return breakpointPositionArray.equals(messagePositionArray);
 	}
 
 	public static String getMethodValuesFromResource(APIResource apiResource) {

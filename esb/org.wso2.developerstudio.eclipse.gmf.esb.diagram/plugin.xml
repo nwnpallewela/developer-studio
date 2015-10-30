@@ -79,7 +79,7 @@
     </debugModelPresentation>
  </extension>
     <extension
-          id="ESBBreakpointMarker"
+          id="debugger.ESBBreakpointMarker"
           point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.debug.core.breakpointMarker">

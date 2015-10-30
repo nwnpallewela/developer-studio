@@ -17,6 +17,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -34,6 +35,10 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  * design view and source view ESB breakpoints is map to this type.
  */
 public class ESBBreakpoint extends Breakpoint {
+
+	private static final String ATTRIBUTE_SEPERATOR = ",";
+	private static final String KEY_VALUE_SEPERATOR = ":";
+	private static final String TEMP_ATTRIBUTE_SEPERATOR = " ";
 
 	// Default constructor is needed by the debug framework to restore
 	// breakpoints
@@ -54,11 +59,28 @@ public class ESBBreakpoint extends Breakpoint {
 				IMarker marker = resource
 						.createMarker(ESBDebuggerConstants.ESB_BREAKPOINT_MARKER);
 				setMarker(marker);
-				marker.setAttribute(IBreakpoint.ENABLED, true);
-				marker.setAttribute(IBreakpoint.PERSISTED, persistent);
-				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
-				marker.setAttribute(IMarker.LOCATION, attributes);
+				setEnabled(true);
+				System.out.println(getMarker().getType() + "    "
+						+ getMarker().getId());
+				ensureMarker().setAttribute(IBreakpoint.PERSISTED, persistent);
+				ensureMarker().setAttribute(IBreakpoint.ENABLED, true);
+				ensureMarker().setAttribute(IBreakpoint.PERSISTED, persistent);
+				ensureMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber);
+				ensureMarker().setAttribute(IBreakpoint.ID,
+						getModelIdentifier());
+				ensureMarker().setAttribute(IMarker.LOCATION,
+						convertMapToString(attributes));
+
+			}
+
+			private String convertMapToString(Map<String, Object> attributes) {
+				Set<String> keys = attributes.keySet();
+				StringBuilder builder = new StringBuilder();
+				for (String key : keys) {
+					builder.append(key).append(KEY_VALUE_SEPERATOR)
+							.append(attributes.get(key))
+							.append(TEMP_ATTRIBUTE_SEPERATOR);
+				}
 			}
 		};
 		run(getMarkerRule(resource), runnable);

@@ -85,11 +85,6 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 		return -1;
 	}
 
-	/*
-	 * @Override public String getName() { return getSourceFile().getName() +
-	 * ", line " + getLineNumber(); }
-	 */
-
 	@Override
 	public IRegisterGroup[] getRegisterGroups() {
 		return new IRegisterGroup[0];
@@ -104,18 +99,12 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 		mLineNumber = lineNumber;
 	}
 
-	/*
-	 * public IFile getSourceFile() { return (getDebugTarget()).getFile(); }
-	 */
-
 	public synchronized void setVariables(Map<String, String> variables)
 			throws DebugException {
 		for (String name : variables.keySet()) {
 			boolean processed = false;
-			// try to find existing variable
 			for (IVariable variable : mVariables) {
 				if (variable.getName().equals(getPresentingName(name))) {
-					// variable exists
 					variable.setValue(variables.get(name));
 					((ESBVariable) variable)
 							.fireChangeEvent(DebugEvent.CONTENT);
@@ -125,7 +114,6 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 			}
 
 			if (!processed) {
-				// not found, create new variable
 				ESBVariable textVariable = new ESBVariable(getDebugTarget(),
 						getPresentingName(name), variables.get(name));
 				mVariables.add(textVariable);
