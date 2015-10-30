@@ -32,8 +32,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -125,11 +123,7 @@ public class ESBBreakpointAction extends ConfigureEsbNodeAction {
 							.toggleDiagramBreakpoints((AbstractMediator) selectedEP);
 				} catch (CoreException e) {
 					log.error("Error while registering the breakpoint", e);
-				} catch (MediatorNotFoundException e) {
-					log.error(e.getMessage(), e);
 				} catch (BreakpointMarkerNotFoundException e) {
-					log.error(e.getMessage(), e);
-				} catch (MissingAttributeException e) {
 					log.error(e.getMessage(), e);
 				} catch (ESBDebuggerException e) {
 					log.error(e.getMessage(), e);

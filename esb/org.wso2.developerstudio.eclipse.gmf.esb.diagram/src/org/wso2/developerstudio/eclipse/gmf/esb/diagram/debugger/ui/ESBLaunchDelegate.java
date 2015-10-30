@@ -51,9 +51,6 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 public class ESBLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2,
 		ILaunchConfigurationDelegate {
 
-	// *******************************
-	// ILaunchShortcut
-	// **********************************************************************
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	@Override

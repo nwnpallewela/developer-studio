@@ -38,16 +38,16 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	/**
-	 * This method returns the ESBBreakpoint object for the selection
+	 * This method returns the ESBBreakpoint object for the selected editpart
 	 * 
 	 * @throws MediatorNotFoundException
+	 * @throws CoreException
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part) throws CoreException,
-			MediatorNotFoundException {
+			IResource resource, AbstractMediator part)
+			throws MediatorNotFoundException, CoreException {
 
-		int lineNumber = -1;
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 
@@ -61,10 +61,11 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			List<Integer> position = getMediatorPosition(
 					((SequencesImpl) sequnce).getOutputConnector(), selection);
 			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
+			int lineNumber = -1;
 			return new ESBBreakpoint(resource, lineNumber, attributeMap);
 		} else {
 			throw new UnsupportedOperationException(
-					"Breakpoint Integration not supported for "
+					"Breakpoint Integration not supported for template : "
 							+ template.getChild());
 		}
 	}
@@ -79,7 +80,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
-			String action) throws CoreException, MediatorNotFoundException {
+			String action) throws MediatorNotFoundException {
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 

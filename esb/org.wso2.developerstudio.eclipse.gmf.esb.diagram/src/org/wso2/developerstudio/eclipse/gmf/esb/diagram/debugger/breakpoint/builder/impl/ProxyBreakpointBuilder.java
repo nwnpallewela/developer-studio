@@ -56,7 +56,7 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 		attributeMap.put(ESBDebuggerConstants.PROXY_KEY, proxy.getName());
 		List<Integer> position = null;
 		EObject selection = ((View) part.getModel()).getElement();
-		
+
 		EditPart container = getContainerFromEditPart(part,
 				ProxyServiceContainerEditPart.class);
 		if (container instanceof ProxyServiceSequenceAndEndpointContainerEditPart) {
@@ -92,7 +92,7 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
-			String action) throws CoreException, MediatorNotFoundException {
+			String action) throws MediatorNotFoundException {
 		ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 		if (abstractMediator.reversed) {

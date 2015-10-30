@@ -42,7 +42,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 		mName = name;
 		setValue(value);
 	}
-	
+
 	/**
 	 * Sets value of the variable when given as a String object.
 	 * 
@@ -94,22 +94,22 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	}
 
 	/**
-     * Returns the name of this variable.
-     */
+	 * Returns the name of this variable.
+	 */
 	@Override
 	public String getName() {
 		return mName;
 	}
 
 	/**
-	 * Returns a description of the type of data this variable is declared to reference.
+	 * Returns a description of the type of data this variable is declared to
+	 * reference.
 	 */
 	@Override
 	public String getReferenceTypeName() throws DebugException {
 		return ESBDebuggerConstants.VARIABLE_TYPE;
 	}
 
-	
 	@Override
 	public boolean hasValueChanged() throws DebugException {
 		return false;

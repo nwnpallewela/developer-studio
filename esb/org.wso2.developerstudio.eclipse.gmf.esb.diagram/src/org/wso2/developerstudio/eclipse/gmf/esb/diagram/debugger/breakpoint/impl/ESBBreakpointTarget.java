@@ -29,22 +29,26 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBBreakpointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
  * This is a utility class which contains methods related to breakpoints
  *
  */
 public class ESBBreakpointTarget {
+
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	/**
 	 * This method checks whether selected line can be assign as a line
@@ -119,24 +123,23 @@ public class ESBBreakpointTarget {
 	}
 
 	/**
+	 * This method finds similar mediator registered as a breakpoint in the
+	 * BreakpointManager and returns.
 	 * 
 	 * @param targetBreakpoint
-	 * @return
-	 * @throws CoreException
-	 * @throws MissingAttributeException
-	 * @throws BreakpointMarkerNotFoundException
+	 * @return ESBBreakpoint if found or null
 	 */
 	private static ESBBreakpoint getMatchingBreakpoint(
-			ESBBreakpoint targetBreakpoint) throws CoreException,
-			BreakpointMarkerNotFoundException, MissingAttributeException {
+			ESBBreakpoint targetBreakpoint) {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
-		if (breakpoints != null) {
-			for (IBreakpoint breakpoint : breakpoints) {
+		for (IBreakpoint breakpoint : breakpoints) {
+			try {
 				ESBBreakpoint esbBreakpoint = (ESBBreakpoint) breakpoint;
-				if ((targetBreakpoint.getMarker().getResource())
-						.equals(breakpoint.getMarker().getResource())) {
+				if ((esbBreakpoint.getResource()).equals(targetBreakpoint
+						.getResource())) {
+
 					if (ESBDebugerUtil.isBreakpointMatches(
 							targetBreakpoint.getLocation(),
 							esbBreakpoint.getLocation())) {
@@ -147,7 +150,14 @@ public class ESBBreakpointTarget {
 						return esbBreakpoint;
 					}
 				}
+			} catch (BreakpointMarkerNotFoundException e) {
+				log.error(e.getMessage(), e);
+				ESBDebugerUtil
+						.removeESBBreakpointFromBreakpointManager(breakpoint);
+			} catch (CoreException e) {
+				log.error(e.getMessage(), e);
 			}
+
 		}
 		return null;
 	}

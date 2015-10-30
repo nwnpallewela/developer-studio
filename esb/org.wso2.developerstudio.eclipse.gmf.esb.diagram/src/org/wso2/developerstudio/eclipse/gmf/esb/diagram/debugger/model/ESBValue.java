@@ -103,32 +103,32 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			AbstractMediator mediator) {
 		if (mediator instanceof FixedSizedAbstractMediator) {
 			((FixedSizedAbstractMediator) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		} else if (mediator instanceof SingleCompartmentComplexFiguredAbstractMediator) {
 
 			((SingleCompartmentComplexFiguredAbstractMediator) mediator)
 					.getPrimaryShape().setToolTipMessage(
-							formatMessage(message.get(name)));
+							formatMessageEnvelope(message.get(name)));
 
 		} else if (mediator instanceof CloneMediatorEditPart) {
 			((CloneMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		} else if (mediator instanceof EntitlementMediatorEditPart) {
 			((EntitlementMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		} else if (mediator instanceof FilterMediatorEditPart) {
 			((FilterMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		} else if (mediator instanceof SwitchMediatorEditPart) {
 			((SwitchMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		} else if (mediator instanceof ThrottleMediatorEditPart) {
 			((ThrottleMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessage(message.get(name)));
+					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
 		}
 	}
 
-	private String formatMessage(String string) {
+	private String formatMessageEnvelope(String string) {
 		String[] envelopeAttributes = string.split("><");
 		String message = "";
 		for (String attribute : envelopeAttributes) {
@@ -204,5 +204,15 @@ public class ESBValue extends ESBDebugElement implements IValue {
 
 	public List<IVariable> getVariableList() {
 		return valueChildren;
+	}
+
+	public void addChildVariable(IVariable child) {
+		if (valueChildren == null) {
+			valueChildren = new ArrayList<IVariable>();
+			valueChildren.add(child);
+		} else {
+			valueChildren.add(child);
+		}
+
 	}
 }

@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
@@ -188,32 +187,38 @@ public class ESBDebugger implements IESBDebugger {
 		if (responce.containsKey(ESBDebuggerConstants.COMMAND_RESPONSE)) {
 			if (ESBDebuggerConstants.FAILED.equals(responce
 					.get(ESBDebuggerConstants.COMMAND_RESPONSE))) {
-				log.warn((String) responce.get(ESBDebuggerConstants.FAILED_REASON));
+				log.warn((String) responce
+						.get(ESBDebuggerConstants.FAILED_REASON));
 			}
 		} else {
 			if (responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
 
 				mVariables.put(ESBDebuggerConstants.AXIS2_PROPERTIES,
-						(String) responce.get(ESBDebuggerConstants.AXIS2_PROPERTIES));
+						(String) responce
+								.get(ESBDebuggerConstants.AXIS2_PROPERTIES));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.SYNAPSE_PROPERTIES)) {
 				mVariables.put(ESBDebuggerConstants.SYNAPSE_PROPERTIES,
-						(String) responce.get(ESBDebuggerConstants.SYNAPSE_PROPERTIES));
+						(String) responce
+								.get(ESBDebuggerConstants.SYNAPSE_PROPERTIES));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES)) {
 				mVariables
 						.put(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES,
-								(String) responce.get(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES));
+								(String) responce
+										.get(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.OPERATION_PROPERTIES)) {
 				mVariables
 						.put(ESBDebuggerConstants.OPERATION_PROPERTIES,
-								(String) responce.get(ESBDebuggerConstants.OPERATION_PROPERTIES));
+								(String) responce
+										.get(ESBDebuggerConstants.OPERATION_PROPERTIES));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.TRANSPORT_PROPERTIES)) {
 				mVariables
 						.put(ESBDebuggerConstants.TRANSPORT_PROPERTIES,
-								(String) responce.get(ESBDebuggerConstants.TRANSPORT_PROPERTIES));
+								(String) responce
+										.get(ESBDebuggerConstants.TRANSPORT_PROPERTIES));
 			}
 		}
 
@@ -235,13 +240,7 @@ public class ESBDebugger implements IESBDebugger {
 			mediationFlowCompleted();
 		} else if (ESBDebuggerConstants.DEBUG_INFO_LOST_EVENT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
-			try {
-				ESBDebugerUtil.repopulateESBServerBreakpoints();
-			} catch (CoreException e) {
-				log.error(
-						"Error while Re-Sending the breakpoints for ESB Server",
-						e);
-			}
+			ESBDebugerUtil.repopulateESBServerBreakpoints();
 		}
 	}
 

@@ -34,7 +34,7 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ui.ESBLaunchDelegate"
-            description="Run ESB server"
+            description="Run ESB Debugger"
             icon="images/launcher.png"
             id="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.launchShortcut"
             label="ESB Debugger"

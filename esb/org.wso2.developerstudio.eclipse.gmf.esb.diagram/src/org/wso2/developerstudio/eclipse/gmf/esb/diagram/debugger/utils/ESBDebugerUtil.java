@@ -59,9 +59,24 @@ public class ESBDebugerUtil {
 	private static boolean deleteOperationPerformed;
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String EMPTY_STRING = "";
-	private static final String SPACE_CHARACTOR = " ";
+	private static final String SPACE_CHARACTER = " ";
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+
+	/**
+	 * Remove breakpoint from Breakpoint Manager
+	 * 
+	 * @param breakpoint
+	 */
+	public static void removeESBBreakpointFromBreakpointManager(
+			IBreakpoint breakpoint) {
+		try {
+			DebugPlugin.getDefault().getBreakpointManager()
+					.removeBreakpoint(breakpoint, true);
+		} catch (CoreException e1) {
+			log.error("Error while removing breakpoint : " + breakpoint, e1);
+		}
+	}
 
 	public static void setDeletedMediator(AbstractMediator editPart) {
 		deletedMediator = editPart;
@@ -217,15 +232,21 @@ public class ESBDebugerUtil {
 	 * 
 	 * @throws CoreException
 	 */
-	public static void repopulateESBServerBreakpoints() throws CoreException {
+	public static void repopulateESBServerBreakpoints() {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint breakpoint : breakpoints) {
-			DebugPlugin.getDefault().getBreakpointManager()
-					.removeBreakpoint(breakpoint, false);
-			DebugPlugin.getDefault().getBreakpointManager()
-					.addBreakpoint(breakpoint);
+			try {
+				DebugPlugin.getDefault().getBreakpointManager()
+						.removeBreakpoint(breakpoint, false);
+				DebugPlugin.getDefault().getBreakpointManager()
+						.addBreakpoint(breakpoint);
+			} catch (CoreException e) {
+				log.error(
+						"Error while repopulating breakpoint with Breakpoint Manager",
+						e);
+			}
 		}
 	}
 
@@ -284,27 +305,27 @@ public class ESBDebugerUtil {
 	public static String getMethodValuesFromResource(APIResource apiResource) {
 		String method = EMPTY_STRING;
 		if (apiResource.isAllowGet()) {
-			method += ESBDebuggerConstants.API_METHOD_GET + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_GET + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowPost()) {
-			method += ESBDebuggerConstants.API_METHOD_POST + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_POST + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowPut()) {
-			method += ESBDebuggerConstants.API_METHOD_PUT + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_PUT + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowDelete()) {
-			method += ESBDebuggerConstants.API_METHOD_DELETE + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_DELETE + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowOptions()) {
-			method += ESBDebuggerConstants.API_METHOD_OPTIONS + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_OPTIONS + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowHead()) {
-			method += ESBDebuggerConstants.API_METHOD_HEAD + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_HEAD + SPACE_CHARACTER;
 		}
 		if (apiResource.isAllowPatch()) {
-			method += ESBDebuggerConstants.API_METHOD_PATCH + SPACE_CHARACTOR;
+			method += ESBDebuggerConstants.API_METHOD_PATCH + SPACE_CHARACTER;
 		}
-		method = method.trim().replace(SPACE_CHARACTOR, ATTRIBUTE_SEPERATOR);
+		method = method.trim().replace(SPACE_CHARACTER, ATTRIBUTE_SEPERATOR);
 		return method;
 	}
 

@@ -24,15 +24,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.IChannelCommunication;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonJettisonMessageChannel;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.ResponceDispatcher;
-import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
-import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
@@ -45,8 +42,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	private ResponceDispatcher responceDispatcher;
 	private IChannelCommunication messageChannel;
 	private IESBDebugger esbDebugger;
-
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	@Override
 	public void intializeDispatchers() {
@@ -63,10 +58,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	public void setfRequestSocket(int commandPort) throws UnknownHostException,
 			IOException, IllegalArgumentException {
 		this.fRequestSocket = new Socket("localhost", commandPort);
-		/*
-		 * if (CommonFieldValidator.isPortValid(commandPort)) {
-		 * this.fRequestSocket = new Socket("localhost", commandPort); }
-		 */
 	}
 
 	@Override
@@ -84,10 +75,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	public void setfEventSocket(int eventPort) throws UnknownHostException,
 			IOException, IllegalArgumentException {
 		this.fEventSocket = new Socket("localhost", eventPort);
-		/*
-		 * if (CommonFieldValidator.isPortValid(eventPort)) { this.fEventSocket
-		 * = new Socket("localhost", eventPort); }
-		 */
 	}
 
 	@Override
@@ -158,30 +145,18 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void sendGetPropertiesCommand(Map<String, Object> attributeValues) {
-
-		try {
-			fRequestWriter.println(messageChannel
-					.createGetPropertiesCommand(attributeValues));
-			fRequestWriter.flush();
-		} catch (Exception ex) {
-			log.error(
-					"Error while sending get properties message for ESB Server",
-					ex);
-		}
+		fRequestWriter.println(messageChannel
+				.createGetPropertiesCommand(attributeValues));
+		fRequestWriter.flush();
 
 	}
 
 	@Override
 	public void sendBreakpointCommand(String operation, String type,
 			Map<String, Object> attributeValues) {
-		try {
-			fRequestWriter.println(messageChannel.createBreakpointCommand(
-					operation, type, attributeValues));
-			fRequestWriter.flush();
-		} catch (Exception ex) {
-			log.error("Error while sending breakpoint message for ESB Server",
-					ex);
-		}
+		fRequestWriter.println(messageChannel.createBreakpointCommand(
+				operation, type, attributeValues));
+		fRequestWriter.flush();
 
 	}
 

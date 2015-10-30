@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class JsonJettisonMessageChannel implements IChannelCommunication {
 
-	public static final String COMMAND_KEY = "command";
 	private static final String MESSAGE_SEPERATOR = "}";
 	private static final String SPACE_STRING = " ";
 	private static final String JSON_MESSAGE_PREFIX = "{";
@@ -44,7 +44,7 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 	public String createCommand(String command) {
 		try {
 			JSONObject jsonCommand = new JSONObject();
-			jsonCommand.put(COMMAND_KEY, command);
+			jsonCommand.put(ESBDebuggerConstants.COMMAND, command);
 			return jsonCommand.toString();
 		} catch (JSONException ex) {
 			log.error("Error while creating Command JSON message", ex);
@@ -145,10 +145,9 @@ public class JsonJettisonMessageChannel implements IChannelCommunication {
 							.equalsIgnoreCase(key)) {
 						String[] positionArray = value.trim().split(
 								SPACE_STRING);
-						int[] position = new int[positionArray.length];
-						int count = 0;
+						List<Integer> position = new ArrayList<>();
 						for (String positionValue : positionArray) {
-							position[count] = Integer.parseInt(positionValue);
+							position.add(Integer.parseInt(positionValue));
 						}
 						message.put(key, position);
 					} else {

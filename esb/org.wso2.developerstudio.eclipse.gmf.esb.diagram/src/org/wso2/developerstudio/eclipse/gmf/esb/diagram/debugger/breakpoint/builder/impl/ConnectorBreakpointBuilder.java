@@ -39,8 +39,7 @@ public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
-			AbstractMediator abstractMediator, EsbServer esbServer,String action)
-			throws CoreException {
+			AbstractMediator abstractMediator, EsbServer esbServer,String action) {
 		// TODO Auto-generated method stub
 		
 	}

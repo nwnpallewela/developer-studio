@@ -28,6 +28,7 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
@@ -42,7 +43,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 		mThread = thread;
 		try {
 			properties = new ESBVariable(target, "Properties",
-					"{Properties:Synapse properties list}");
+					"{Properties:Message properties list}");
 			mVariables = ((ESBValue) properties.getValue()).getVariableList();
 		} catch (DebugException e) {
 
@@ -113,7 +114,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 			boolean processed = false;
 			// try to find existing variable
 			for (IVariable variable : mVariables) {
-				if (variable.getName().equals(name)) {
+				if (variable.getName().equals(getPresentingName(name))) {
 					// variable exists
 					variable.setValue(variables.get(name));
 					((ESBVariable) variable)
@@ -126,7 +127,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 			if (!processed) {
 				// not found, create new variable
 				ESBVariable textVariable = new ESBVariable(getDebugTarget(),
-						name, variables.get(name));
+						getPresentingName(name), variables.get(name));
 				mVariables.add(textVariable);
 				textVariable.fireCreationEvent();
 			}
@@ -142,7 +143,23 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 	@Override
 	public String getName() throws DebugException {
-		// TODO Auto-generated method stub
 		return null;
 	}
+
+	private String getPresentingName(String name) {
+		switch (name) {
+		case ESBDebuggerConstants.AXIS2_PROPERTIES:
+			return ESBDebuggerConstants.AXIS2_PROPERTY_UI_NAME;
+		case ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES:
+			return ESBDebuggerConstants.AXIS2_CLIENT_PROPERTY_UI_NAME;
+		case ESBDebuggerConstants.SYNAPSE_PROPERTIES:
+			return ESBDebuggerConstants.SYANPSE_PROPERTY_UI_NAME;
+		case ESBDebuggerConstants.TRANSPORT_PROPERTIES:
+			return ESBDebuggerConstants.TRANSPORT_PROPERTY_UI_NAME;
+		case ESBDebuggerConstants.OPERATION_PROPERTIES:
+			return ESBDebuggerConstants.OPERATION_PROPERTY_UI_NAME;
+		}
+		return name;
+	}
+
 }

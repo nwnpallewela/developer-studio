@@ -83,7 +83,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
-			String action) throws CoreException, MediatorNotFoundException {
+			String action) throws MediatorNotFoundException {
 
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
 				.eContents().get(INDEX_OF_FIRST_ELEMENT);

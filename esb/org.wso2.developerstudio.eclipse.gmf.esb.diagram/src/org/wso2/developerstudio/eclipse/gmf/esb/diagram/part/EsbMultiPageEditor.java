@@ -576,14 +576,17 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 
 					private void addBreakpointMarkForExistingBreakpoints(
 							EsbServer server, IFile file,
-							IMediatorLocator mediatorLocator) throws MediatorNotFoundException, MissingAttributeException {
+							IMediatorLocator mediatorLocator)
+							throws MediatorNotFoundException,
+							MissingAttributeException {
 						IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 								.getBreakpointManager()
 								.getBreakpoints(ESBDebugModelPresentation.ID);
 						for (IBreakpoint breakpoint : breakpoints) {
-							if (file.equals(((ESBBreakpoint) breakpoint)
-									.getResource())) {
-								try {
+							try {
+								if (file.equals(((ESBBreakpoint) breakpoint)
+										.getResource())) {
+
 									EditPart editPart = null;
 
 									editPart = mediatorLocator
@@ -595,13 +598,12 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 										ESBDebugerUtil
 												.addBreakpointMark((AbstractMediator) editPart);
 									}
-								} catch (MediatorNotFoundException ex) {
-									log.warn(ex.getMessage(), ex);
-								} catch (MissingAttributeException ex) {
-									log.warn(ex.getMessage(), ex);
 								}
+							} catch (CoreException e) {
+								log.error(e.getMessage(), e);
+							} catch (BreakpointMarkerNotFoundException e) {
+								log.error(e.getMessage(), e);
 							}
-
 						}
 					}
 

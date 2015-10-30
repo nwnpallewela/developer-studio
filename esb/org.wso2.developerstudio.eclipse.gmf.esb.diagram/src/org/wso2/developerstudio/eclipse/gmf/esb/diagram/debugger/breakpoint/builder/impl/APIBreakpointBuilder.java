@@ -32,12 +32,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.APIResourceEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceContainer2EditPart;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceSequenceAndEndpointContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SynapseAPIAPICompartmentEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
@@ -163,7 +160,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	@Override
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
-			String action) throws CoreException, ESBDebuggerException {
+			String action) throws ESBDebuggerException {
 		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 		EditPart proxyContainer = getContainerFromEditPart(abstractMediator,

@@ -25,6 +25,13 @@ public class ESBDebuggerConstants {
 	public static final String AXIS2_CLIENT_PROPERTY_TAG = "axis2-client";
 	public static final String TRANSPORT_PROPERTY_TAG = "transport";
 	public static final String SYANPSE_PROPERTY_TAG = "synapse";
+	
+	public static final String AXIS2_PROPERTY_UI_NAME = "Axis2 Scope Properties";
+	public static final String OPERATION_PROPERTY_UI_NAME = "Operation Scope Properties";
+	public static final String AXIS2_CLIENT_PROPERTY_UI_NAME = "Axis2-Client Scope Properties";
+	public static final String TRANSPORT_PROPERTY_UI_NAME = "Transport Scope Properties";
+	public static final String SYANPSE_PROPERTY_UI_NAME = "Synapse Scope Properties";
+	
 	public static final String COMMAND_GET = "get";
 
 	public static final String VARIABLE_TYPE = "ESB Message";

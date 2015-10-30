@@ -18,8 +18,10 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 
 public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
@@ -29,7 +31,8 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	private final int mLine;
 	private final Map<String, Object> breakpointAttributes;
 
-	public BreakpointRequest(ESBBreakpoint breakpoint, int type) {
+	public BreakpointRequest(ESBBreakpoint breakpoint, int type)
+			throws BreakpointMarkerNotFoundException, CoreException {
 		mType = type;
 		mLine = breakpoint.getLineNumber();
 		breakpointAttributes = breakpoint.getLocation();

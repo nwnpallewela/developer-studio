@@ -43,7 +43,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
@@ -115,7 +115,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				setState(State.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
-				showSource((SuspendedEvent) event);
+				try {
+					showSource((SuspendedEvent) event);
+				} catch (ESBDebuggerException e) {
+					log.error(e.getMessage(), e);
+				}
 				fireModelEvent(new FetchVariablesRequest());
 
 			} else if (event instanceof ResumedEvent) {
@@ -148,32 +152,40 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		}
 	}
 
-	private void showSource(SuspendedEvent event) {
+	private void showSource(SuspendedEvent event) throws ESBDebuggerException {
 		Map<String, Object> info = event.getDetail();
 
 		ESBBreakpoint breakpoint = getBreakpoint(info);
-		if (breakpoint != null) {
-			IFile file = (IFile) breakpoint.getResource();
-			if (file.exists()) {
-				OpenEditorUtil.openSeparateEditor(file, event);
-			}
+		IFile file = (IFile) breakpoint.getResource();
+		if (file.exists()) {
+			OpenEditorUtil.openSeparateEditor(file, event);
 		}
 	}
 
-	private ESBBreakpoint getBreakpoint(Map<String, Object> info) {
+	private ESBBreakpoint getBreakpoint(Map<String, Object> info)
+			throws ESBDebuggerException {
 
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager().getBreakpoints(getModelIdentifier());
 		for (IBreakpoint breakpoint : breakpoints) {
 			if (breakpoint instanceof ESBBreakpoint) {
-				if (ESBDebugerUtil.isBreakpointMatches(info,
-						((ESBBreakpoint) breakpoint).getLocation())) {
-					return (ESBBreakpoint) breakpoint;
+				try {
+					if (ESBDebugerUtil.isBreakpointMatches(info,
+							((ESBBreakpoint) breakpoint).getLocation())) {
+						return (ESBBreakpoint) breakpoint;
+					}
+				} catch (BreakpointMarkerNotFoundException e) {
+					log.error(e.getMessage(), e);
+					ESBDebugerUtil
+							.removeESBBreakpointFromBreakpointManager(breakpoint);
+				} catch (CoreException e) {
+					log.error(e.getMessage(), e);
 				}
 			}
 		}
 
-		return null;
+		throw new ESBDebuggerException(
+				"Matching Breakpoint not found in Breakpoint Manager with attributes");
 	}
 
 	@Override
@@ -203,10 +215,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public boolean supportsBreakpoint(final IBreakpoint breakpoint) {
-		/*
-		 * if (mFile.equals(breakpoint.getMarker().getResource())) { //
-		 * breakpoint on our source file return true; }
-		 */
 		return true;
 	}
 
@@ -215,34 +223,33 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		return this;
 	}
 
-	private boolean isEnabledBreakpoint(IBreakpoint breakpoint) {
-		try {
-			return breakpoint.isEnabled()
-					&& (DebugPlugin.getDefault().getBreakpointManager()
-							.isEnabled());
-		} catch (CoreException e) {
-			// ignore invalid breakpoint
-		}
-
-		return false;
+	private boolean isEnabledBreakpoint(IBreakpoint breakpoint)
+			throws CoreException {
+		return breakpoint.isEnabled()
+				&& (DebugPlugin.getDefault().getBreakpointManager().isEnabled());
 	}
 
-	// ************************************************************
-	// IBreakpointListener
-	// ************************************************************
 	/**
 	 * This method get called when Breakpoint Manager got any new breakpoint
 	 * Registered.
 	 */
 	@Override
 	public void breakpointAdded(final IBreakpoint breakpoint) {
+		try {
+			if (breakpoint instanceof ESBBreakpoint
+					&& supportsBreakpoint(breakpoint)
+					&& isEnabledBreakpoint(breakpoint)) {
 
-		if (breakpoint instanceof ESBBreakpoint
-				&& supportsBreakpoint(breakpoint)
-				&& isEnabledBreakpoint(breakpoint)) {
-			fireModelEvent(new BreakpointRequest((ESBBreakpoint) breakpoint,
-					BreakpointRequest.ADDED));
+				fireModelEvent(new BreakpointRequest(
+						(ESBBreakpoint) breakpoint, BreakpointRequest.ADDED));
+			}
+		} catch (BreakpointMarkerNotFoundException e) {
+			log.error(e.getMessage(), e);
+			ESBDebugerUtil.removeESBBreakpointFromBreakpointManager(breakpoint);
+		} catch (CoreException e) {
+			log.error(e.getMessage(), e);
 		}
+
 	}
 
 	/**
@@ -252,12 +259,19 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	@Override
 	public void breakpointRemoved(final IBreakpoint breakpoint,
 			final IMarkerDelta delta) {
-		if (breakpoint instanceof ESBBreakpoint
-				&& supportsBreakpoint(breakpoint)
-				&& isEnabledBreakpoint(breakpoint)) {
+		try {
+			if (breakpoint instanceof ESBBreakpoint
+					&& supportsBreakpoint(breakpoint)
+					&& isEnabledBreakpoint(breakpoint)) {
 
-			fireModelEvent(new BreakpointRequest((ESBBreakpoint) breakpoint,
-					BreakpointRequest.REMOVED));
+				fireModelEvent(new BreakpointRequest(
+						(ESBBreakpoint) breakpoint, BreakpointRequest.REMOVED));
+			}
+		} catch (BreakpointMarkerNotFoundException e) {
+			log.error(e.getMessage(), e);
+			ESBDebugerUtil.removeESBBreakpointFromBreakpointManager(breakpoint);
+		} catch (CoreException e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -268,13 +282,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		breakpointAdded(breakpoint);
 	}
 
-	// ************************************************************
-	// IMemoryBlockRetrieval
-	// ************************************************************
-
 	@Override
 	public boolean supportsStorageRetrieval() {
-		return true;
+		return false;
 	}
 
 	@Override

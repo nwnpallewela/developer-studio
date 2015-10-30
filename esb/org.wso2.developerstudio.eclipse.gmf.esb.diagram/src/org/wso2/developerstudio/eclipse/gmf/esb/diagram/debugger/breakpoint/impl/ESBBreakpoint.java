@@ -17,6 +17,7 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
 import java.util.Map;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -24,6 +25,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.core.resources.IMarker;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -75,47 +77,54 @@ public class ESBBreakpoint extends Breakpoint {
 	 * returns source view line number of the breakpoint
 	 * 
 	 * @return
+	 * @throws BreakpointMarkerNotFoundException
 	 */
-	public int getLineNumber() {
+	public int getLineNumber() throws BreakpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
 		}
-		return -1;
+		throw new BreakpointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESBBreakpoint : "
+						+ this);
 	}
 
 	/**
 	 * Returns the map contains in ESBbreakpoint
 	 * 
 	 * @return
+	 * @throws CoreException
+	 * @throws BreakpointMarkerNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> getLocation() {
+	public Map<String, Object> getLocation() throws CoreException,
+			BreakpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
-			try {
-				if (marker.getAttributes().get(IMarker.LOCATION) instanceof Map<?, ?>) {
-					return (Map<String, Object>) marker.getAttributes().get(
-							IMarker.LOCATION);
-				}
-			} catch (CoreException e) {
-				// log this exception
+			if (marker.getAttributes().get(IMarker.LOCATION) instanceof Map<?, ?>) {
+				return (Map<String, Object>) marker.getAttributes().get(
+						IMarker.LOCATION);
 			}
 		}
-		return null;
+		throw new BreakpointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESBBreakpoint : "
+						+ this);
 	}
 
 	/**
 	 * Returns resource file of the marker set to breakpoint
 	 * 
 	 * @return
+	 * @throws BreakpointMarkerNotFoundException
 	 */
-	public IResource getResource() {
+	public IResource getResource() throws BreakpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getResource();
 		}
-		return null;
+		throw new BreakpointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESBBreakpoint : "
+						+ this);
 	}
 
 }
