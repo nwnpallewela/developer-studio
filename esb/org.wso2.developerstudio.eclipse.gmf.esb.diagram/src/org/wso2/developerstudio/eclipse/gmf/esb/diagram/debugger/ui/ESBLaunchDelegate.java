@@ -150,13 +150,11 @@ public class ESBLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2,
 
 	@Override
 	public ILaunchConfiguration[] getLaunchConfigurations(ISelection arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public ILaunchConfiguration[] getLaunchConfigurations(IEditorPart arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

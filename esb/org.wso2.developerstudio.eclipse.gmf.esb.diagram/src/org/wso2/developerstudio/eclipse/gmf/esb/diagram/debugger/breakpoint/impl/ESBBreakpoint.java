@@ -16,9 +16,14 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -39,6 +44,7 @@ public class ESBBreakpoint extends Breakpoint {
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String KEY_VALUE_SEPERATOR = ":";
 	private static final String TEMP_ATTRIBUTE_SEPERATOR = " ";
+	private static final String POSITION_VALUE_SEPERATOR = "~";
 
 	// Default constructor is needed by the debug framework to restore
 	// breakpoints
@@ -60,8 +66,6 @@ public class ESBBreakpoint extends Breakpoint {
 						.createMarker(ESBDebuggerConstants.ESB_BREAKPOINT_MARKER);
 				setMarker(marker);
 				setEnabled(true);
-				System.out.println(getMarker().getType() + "    "
-						+ getMarker().getId());
 				ensureMarker().setAttribute(IBreakpoint.PERSISTED, persistent);
 				ensureMarker().setAttribute(IBreakpoint.ENABLED, true);
 				ensureMarker().setAttribute(IBreakpoint.PERSISTED, persistent);
@@ -77,10 +81,41 @@ public class ESBBreakpoint extends Breakpoint {
 				Set<String> keys = attributes.keySet();
 				StringBuilder builder = new StringBuilder();
 				for (String key : keys) {
-					builder.append(key).append(KEY_VALUE_SEPERATOR)
-							.append(attributes.get(key))
-							.append(TEMP_ATTRIBUTE_SEPERATOR);
+					if (ESBDebuggerConstants.MEDIATOR_POSITION
+							.equalsIgnoreCase(key)) {
+						@SuppressWarnings("unchecked")
+						List<Integer> position = (List<Integer>) attributes
+								.get(ESBDebuggerConstants.MEDIATOR_POSITION);
+						builder.append(key).append(KEY_VALUE_SEPERATOR)
+								.append(buildPositionStringFromList(position))
+								.append(TEMP_ATTRIBUTE_SEPERATOR);
+					} else {
+						builder.append(key).append(KEY_VALUE_SEPERATOR)
+								.append(attributes.get(key))
+								.append(TEMP_ATTRIBUTE_SEPERATOR);
+					}
 				}
+				return builder
+						.toString()
+						.trim()
+						.replaceAll(TEMP_ATTRIBUTE_SEPERATOR,
+								ATTRIBUTE_SEPERATOR);
+			}
+
+			/**
+			 * @param position
+			 */
+			private String buildPositionStringFromList(List<Integer> position) {
+				StringBuilder positionBuilder = new StringBuilder();
+				for (Integer value : position) {
+					positionBuilder.append(value).append(
+							TEMP_ATTRIBUTE_SEPERATOR);
+				}
+				return positionBuilder
+						.toString()
+						.trim()
+						.replaceAll(TEMP_ATTRIBUTE_SEPERATOR,
+								POSITION_VALUE_SEPERATOR);
 			}
 		};
 		run(getMarkerRule(resource), runnable);
@@ -118,19 +153,44 @@ public class ESBBreakpoint extends Breakpoint {
 	 * @throws CoreException
 	 * @throws BreakpointMarkerNotFoundException
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> getLocation() throws CoreException,
 			BreakpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
-			if (marker.getAttributes().get(IMarker.LOCATION) instanceof Map<?, ?>) {
-				return (Map<String, Object>) marker.getAttributes().get(
-						IMarker.LOCATION);
+			String locationString = (String) marker.getAttributes().get(
+					IMarker.LOCATION);
+			if (StringUtils.isNotEmpty(locationString)) {
+				return convertLocationToMap(locationString);
 			}
 		}
 		throw new BreakpointMarkerNotFoundException(
 				"Assoiciated IMarker value not found for ESBBreakpoint : "
 						+ this);
+	}
+
+	private Map<String, Object> convertLocationToMap(String locationString) {
+		String[] locationArray = locationString.split(ATTRIBUTE_SEPERATOR);
+		Map<String, Object> attributeMap = new HashMap<>();
+		for (String attribute : locationArray) {
+			String[] keyValue = attribute.split(KEY_VALUE_SEPERATOR);
+			if (ESBDebuggerConstants.MEDIATOR_POSITION
+					.equalsIgnoreCase(keyValue[0])) {
+				attributeMap.put(keyValue[0],
+						convertStringToIntegerList(keyValue[1]));
+			} else {
+				attributeMap.put(keyValue[0], keyValue[1]);
+			}
+		}
+		return attributeMap;
+	}
+
+	private List<Integer> convertStringToIntegerList(String position) {
+		String[] positionArray = position.split(POSITION_VALUE_SEPERATOR);
+		List<Integer> positionList = new ArrayList<>();
+		for (String value : positionArray) {
+			positionList.add(Integer.parseInt(value));
+		}
+		return positionList;
 	}
 
 	/**
@@ -147,6 +207,48 @@ public class ESBBreakpoint extends Breakpoint {
 		throw new BreakpointMarkerNotFoundException(
 				"Assoiciated IMarker value not found for ESBBreakpoint : "
 						+ this);
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean equals(ESBBreakpoint breakpoint)
+			throws BreakpointMarkerNotFoundException, CoreException {
+		Map<String, Object> message = breakpoint.getLocation();
+		Map<String, Object> breakpointMessage = getLocation();
+
+		if (!isBreakpointPositionMatches(
+				((List<Integer>) message
+						.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
+				((List<Integer>) breakpointMessage
+						.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
+			return false;
+		}
+		
+		Set<String> attributeKeys = new HashSet<String>();
+		attributeKeys.addAll(message.keySet());
+		attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
+		attributeKeys.remove(ESBDebuggerConstants.EVENT);
+		attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
+		for (String key : attributeKeys) {
+			if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
+					.get(key)).trim()
+					.equals(((String) message.get(key)).trim())))) {
+				if (!(ESBDebuggerConstants.MAPPING_URL_TYPE
+						.equalsIgnoreCase(key) && breakpointMessage
+						.containsValue(message
+								.get(ESBDebuggerConstants.MAPPING_URL_TYPE)))) {
+					return false;
+				}
+
+			}
+		}
+		return true;
+
+	}
+
+	private boolean isBreakpointPositionMatches(
+			List<Integer> messagePositionArray,
+			List<Integer> breakpointPositionArray) {
+		return messagePositionArray.equals(breakpointPositionArray);
 	}
 
 }

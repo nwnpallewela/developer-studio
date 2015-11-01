@@ -140,15 +140,9 @@ public class ESBBreakpointTarget {
 				if ((esbBreakpoint.getResource()).equals(targetBreakpoint
 						.getResource())) {
 
-					if (ESBDebugerUtil.isBreakpointMatches(
-							targetBreakpoint.getLocation(),
-							esbBreakpoint.getLocation())) {
+					if (esbBreakpoint.equals(targetBreakpoint)) {
 						return esbBreakpoint;
-					} else if ((esbBreakpoint).getLineNumber() == (targetBreakpoint
-							.getLineNumber() + 1)
-							&& targetBreakpoint.getLineNumber() != -1) {
-						return esbBreakpoint;
-					}
+					} 
 				}
 			} catch (BreakpointMarkerNotFoundException e) {
 				log.error(e.getMessage(), e);

@@ -1,6 +1,9 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -10,6 +13,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
@@ -19,20 +23,20 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  * @author nuwan
  *
  */
-public class ESBBreakpointDisableEnableAction extends ConfigureEsbNodeAction {
+public class ESBBreakpointDeleteAllAction extends ConfigureEsbNodeAction {
 
 	/**
-	 * Creates a new {@link ESBBreakpointDisableEnableAction} instance.
+	 * Creates a new {@link ESBBreakpointDeleteAllAction} instance.
 	 * 
 	 * @param part
 	 *            {@link IWorkbenchPart} instance.
 	 */
-	public ESBBreakpointDisableEnableAction(IWorkbenchPart part) {
+	public ESBBreakpointDeleteAllAction(IWorkbenchPart part) {
 		super(part);
 		super.init();
-		setId(ESBDebuggerConstants.ESBBREAKPOINT_DISABLE_ENABLE_ACTION_ID);
-		setText(ESBDebuggerConstants.ESBBREAKPOINT_DISABLE_ENABLE_COMMAND_LABEL);
-		setToolTipText(ESBDebuggerConstants.ESBBREAKPOINT_DISABLE_ENABLE_COMMAND_TOOL_TIP);
+		setId(ESBDebuggerConstants.ESBBREAKPOINT_DELETE_ALL_ACTION_ID);
+		setText(ESBDebuggerConstants.ESBBREAKPOINT_DELETE_ALL_COMMAND_LABEL);
+		setToolTipText(ESBDebuggerConstants.ESBBREAKPOINT_DELETE_ALL_COMMAND_TOOL_TIP);
 		ISharedImages workbenchImages = PlatformUI.getWorkbench()
 				.getSharedImages();
 		setHoverImageDescriptor(workbenchImages
@@ -92,7 +96,18 @@ public class ESBBreakpointDisableEnableAction extends ConfigureEsbNodeAction {
 	 */
 	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
-		// TODO This action should implement
+		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+				.getBreakpointManager()
+				.getBreakpoints(ESBDebugModelPresentation.ID);
+		for (IBreakpoint breakpoint : breakpoints) {
+			try {
+				DebugPlugin.getDefault().getBreakpointManager()
+						.removeBreakpoint(breakpoint, true);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

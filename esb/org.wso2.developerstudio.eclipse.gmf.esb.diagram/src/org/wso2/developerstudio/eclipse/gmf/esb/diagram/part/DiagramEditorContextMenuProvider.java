@@ -106,7 +106,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.Directi
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.direction.DirectionXSLTMediatorAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.export.EsbModelExportAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointAction;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointDisableEnableAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointDeleteAllAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointRePopulateAction;
 
 /**
@@ -321,7 +321,7 @@ public class DiagramEditorContextMenuProvider extends DiagramContextMenuProvider
 											.getInstanceClass());
 									menu.appendToGroup("editGroup", new ESBBreakpointAction(part));
 									menu.appendToGroup("editGroup", new ESBBreakpointRePopulateAction(part));
-									menu.appendToGroup("editGroup", new ESBBreakpointDisableEnableAction(part));
+									menu.appendToGroup("editGroup", new ESBBreakpointDeleteAllAction(part));
 								}
 
 								if (null != contextAction) {

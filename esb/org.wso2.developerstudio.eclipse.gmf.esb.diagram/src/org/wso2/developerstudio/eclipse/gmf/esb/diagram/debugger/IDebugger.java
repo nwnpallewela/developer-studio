@@ -18,7 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;

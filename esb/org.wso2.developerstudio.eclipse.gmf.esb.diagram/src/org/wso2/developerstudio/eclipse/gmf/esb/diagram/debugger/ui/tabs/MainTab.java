@@ -74,8 +74,6 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 
     @Override
     public boolean canSave() {
-        // allow save when a file location is entered - no matter if the file
-        // exists or not
         return (!commandPort.getText().isEmpty()) && (!eventPort.getText().isEmpty());
     }
 
@@ -89,9 +87,6 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
         return "Global";
     }
 
-    /**
-     * @wbp.parser.entryPoint
-     */
     @Override
     public void createControl(final Composite parent) {
         Composite topControl = new Composite(parent, SWT.NONE);

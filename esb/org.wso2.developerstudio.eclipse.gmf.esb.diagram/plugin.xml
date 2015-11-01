@@ -91,7 +91,7 @@
    <extension
          point="org.eclipse.debug.core.breakpoints">
           <breakpoint
-            class="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoints.ESBBreakpoint"
+            class="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint"
             id="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.Breakpoint"
             markerType="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ESBBreakpointMarker"
             name="ESB Breakpoints">

@@ -50,10 +50,10 @@ public class ESBDebuggerConstants {
 	public static final String ESBBREAKPOINT_REPOPULATE_COMMAND_LABEL = "Resend ESB Breakpoints";
 	public static final String ESBBREAKPOINT_COMMAND_TOOL_TIP = "Set breakpoint for this mediator";
 	public static final String ESBBREAKPOINT_REPOPULATE_COMMAND_TOOL_TIP = "Resend all ESB Breakpoints to connected ESB Server";
-	public static final String ESBBREAKPOINT_DISABLE_ENABLE_COMMAND_TOOL_TIP = "Enable/Disable ESB Breakpoints";
-	public static final String ESBBREAKPOINT_DISABLE_ENABLE_COMMAND_LABEL = "Disable/enable Breakpoint";
+	public static final String ESBBREAKPOINT_DELETE_ALL_COMMAND_TOOL_TIP = "Delete All ESB Breakpoints from workspace";
+	public static final String ESBBREAKPOINT_DELETE_ALL_COMMAND_LABEL = "Delete All ESB Breakpoints";
 	public static final String ESBBREAKPOINT_ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.action";
-	public static final String ESBBREAKPOINT_DISABLE_ENABLE_ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.disable.enable.action";
+	public static final String ESBBREAKPOINT_DELETE_ALL_ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.delete.all.action";
 	public static final String ESBBREAKPOINT_REPOPULATE_ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.breakpoint.repopulate.action";
 	public static final String EMPTY_SELECTION = "Empty selection.";
 	public static final String ESB_BREAKPOINT_MARKER = "org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ESBBreakpointMarker";
