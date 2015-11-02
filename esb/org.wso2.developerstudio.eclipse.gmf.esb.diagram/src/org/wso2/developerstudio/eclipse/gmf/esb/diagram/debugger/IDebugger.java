@@ -31,8 +31,6 @@ public interface IDebugger {
 
 	public void loaded();
 
-	public boolean isBreakpoint(int lineNumber);
-
 	public void terminated();
 
 	public void resumed();

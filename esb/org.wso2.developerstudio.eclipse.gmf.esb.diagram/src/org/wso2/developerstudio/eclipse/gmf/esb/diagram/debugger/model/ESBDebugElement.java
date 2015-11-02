@@ -29,9 +29,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
-public abstract class ESBDebugElement extends DebugElement implements ISuspendResume, IDisconnect, ITerminate, IStep {
+public abstract class ESBDebugElement extends DebugElement implements
+		ISuspendResume, IDisconnect, ITerminate, IStep {
 
 	public ESBDebugElement(IDebugTarget target) {
 		super(target);
@@ -49,7 +49,6 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 	}
 
 	protected void setState(State state) {
-		// only the DebugTarget saves the correct state.
 		((ESBDebugElement) getDebugTarget()).mState = state;
 	}
 
@@ -62,10 +61,6 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 		return (ESBDebugTarget) super.getDebugTarget();
 	}
 
-	// ************************************************************
-	// ISuspendResume
-	// ************************************************************
-
 	@Override
 	public boolean canResume() {
 		return isSuspended();
@@ -73,7 +68,6 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 
 	@Override
 	public boolean canSuspend() {
-		// we cannot interrupt our debugger once it is running
 		return false;
 	}
 
@@ -84,31 +78,24 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 
 	@Override
 	public void resume() {
-		getDebugTarget().fireModelEvent(new ResumeRequest(ResumeRequest.CONTINUE));
+		getDebugTarget().fireModelEvent(
+				new ResumeRequest(ResumeRequest.CONTINUE));
 	}
 
 	@Override
 	public void suspend() throws DebugException {
-		throw new DebugException(new Status(IStatus.ERROR, "com.codeandme.textinterpreter.debugger", "suspend() not supported"));
+		throw new DebugException(new Status(IStatus.ERROR,
+				"ESB Mediation Debugger", "suspend() not supported"));
 	}
-
-	// ************************************************************
-	// IDisconnect
-	// ************************************************************
 
 	@Override
 	public boolean canDisconnect() {
-		return canTerminate();
+		return false;
 	}
 
 	@Override
 	public void disconnect() {
-		// disconnect request from eclipse
-
-		// send disconnect request to debugger
 		getDebugTarget().fireModelEvent(new DisconnectRequest());
-
-		// debugger is detached, simulate terminate event
 		getDebugTarget().handleEvent(new TerminatedEvent());
 	}
 
@@ -116,10 +103,6 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 	public boolean isDisconnected() {
 		return isTerminated();
 	}
-
-	// ************************************************************
-	// ITerminate
-	// ************************************************************
 
 	@Override
 	public boolean canTerminate() {
@@ -133,15 +116,8 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 
 	@Override
 	public void terminate() {
-		// terminate request from eclipse
-
-		// send terminate request to debugger
 		getDebugTarget().fireModelEvent(new TerminateRequest());
 	}
-
-	// ************************************************************
-	// IStep
-	// ************************************************************
 
 	@Override
 	public boolean canStepInto() {
@@ -165,36 +141,20 @@ public abstract class ESBDebugElement extends DebugElement implements ISuspendRe
 
 	@Override
 	public void stepInto() throws DebugException {
-		throw new DebugException(new Status(IStatus.ERROR, "com.codeandme.textinterpreter.debugger", "stepInto() not supported"));
+		throw new DebugException(new Status(IStatus.ERROR,
+				"ESB Mediation Debugger", "stepInto() not supported"));
 	}
 
 	@Override
 	public void stepOver() {
-		// stepOver request from eclipse
-
-		// send stepOver request to debugger
-		getDebugTarget().fireModelEvent(new ResumeRequest(ResumeRequest.STEP_OVER));
+		getDebugTarget().fireModelEvent(
+				new ResumeRequest(ResumeRequest.STEP_OVER));
 	}
 
 	@Override
 	public void stepReturn() throws DebugException {
-		throw new DebugException(new Status(IStatus.ERROR, "com.codeandme.textinterpreter.debugger", "stepReturn() not supported"));
+		throw new DebugException(new Status(IStatus.ERROR,
+				"ESB Mediation Debugger", "stepReturn() not supported"));
 	}
-	
-	protected String setName(String name) {
-		switch (name) {
-		case ESBDebuggerConstants.AXIS2_PROPERTIES:
-			return ESBDebuggerConstants.AXIS2_PROPERTY_TAG;
-		case ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES:
-			return ESBDebuggerConstants.AXIS2_CLIENT_PROPERTY_TAG;
-		case ESBDebuggerConstants.SYNAPSE_PROPERTIES:
-			return ESBDebuggerConstants.SYANPSE_PROPERTY_TAG;
-		case ESBDebuggerConstants.TRANSPORT_PROPERTIES:
-			return ESBDebuggerConstants.TRANSPORT_PROPERTY_TAG;
-		case ESBDebuggerConstants.OPERATION_PROPERTIES:
-			return ESBDebuggerConstants.OPERATION_PROPERTY_TAG;
-		}
-		return name;
-	}
-}
 
+}

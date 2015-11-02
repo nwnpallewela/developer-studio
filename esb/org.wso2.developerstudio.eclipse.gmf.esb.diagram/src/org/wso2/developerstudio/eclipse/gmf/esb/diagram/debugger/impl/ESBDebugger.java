@@ -19,10 +19,8 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
@@ -38,6 +36,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
@@ -51,7 +50,6 @@ public class ESBDebugger implements IESBDebugger {
 	private EventDispatchJob mDispatcher;
 	private boolean mIsStepping = false;
 	private IESBDebuggerInterface mDebuggerInterface;
-	private final Set<Integer> mBreakpoints = new HashSet<Integer>();
 	private Map<String, String> mVariables;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
@@ -113,28 +111,25 @@ public class ESBDebugger implements IESBDebugger {
 	}
 
 	@Override
-	public boolean isBreakpoint(final int lineNumber) {
-		if (mBreakpoints.contains(lineNumber))
-			return true;
-
-		return mIsStepping;
-	}
-
-	@Override
 	public void handleEvent(final IDebugEvent event) {
 
 		if (event instanceof ResumeRequest) {
+
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
 			mDebuggerInterface.sendCommand(ESBDebuggerConstants.RESUME);
 			OpenEditorUtil.removeBreakpointHitStatus();
+
 		} else if (event instanceof BreakpointRequest) {
 
 			sendBreakpointForServer((BreakpointRequest) event);
 
 		} else if (event instanceof FetchVariablesRequest) {
+
 			if (mVariables != null) {
 				fireEvent(new VariablesEvent(mVariables));
 			}
+		} else if (event instanceof TerminateRequest) {
+			terminated();
 		}
 	}
 

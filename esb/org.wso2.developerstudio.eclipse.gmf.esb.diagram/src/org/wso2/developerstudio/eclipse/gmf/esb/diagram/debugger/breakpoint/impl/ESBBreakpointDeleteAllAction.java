@@ -1,9 +1,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.edit.domain.IEditingDomainProvider;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
@@ -13,7 +10,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
@@ -96,18 +93,7 @@ public class ESBBreakpointDeleteAllAction extends ConfigureEsbNodeAction {
 	 */
 	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
-		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-				.getBreakpointManager()
-				.getBreakpoints(ESBDebugModelPresentation.ID);
-		for (IBreakpoint breakpoint : breakpoints) {
-			try {
-				DebugPlugin.getDefault().getBreakpointManager()
-						.removeBreakpoint(breakpoint, true);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		ESBDebugerUtil.removeAllESBBreakpointsFromBreakpointManager();
 	}
 
 }

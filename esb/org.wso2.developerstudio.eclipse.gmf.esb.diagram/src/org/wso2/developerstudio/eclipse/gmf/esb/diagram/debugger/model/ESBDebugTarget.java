@@ -61,8 +61,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public ESBDebugTarget(final ILaunch launch, int requestPortInternal,
-			int eventPortInternal) {
+	public ESBDebugTarget(final ILaunch launch) {
 		super(null);
 		mLaunch = launch;
 		fireCreationEvent();
@@ -85,6 +84,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		mDispatcher.addEvent(event);
 	}
 
+	/**
+	 * Handles events sent from {@link ESBDebugger} through
+	 * {@link EventDispatchJob}
+	 */
 	@Override
 	public void handleEvent(final IDebugEvent event) {
 
@@ -101,13 +104,6 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 				DebugPlugin.getDefault().getBreakpointManager()
 						.addBreakpointListener(this);
-
-				IBreakpoint[] breakpoints = DebugPlugin.getDefault()
-						.getBreakpointManager()
-						.getBreakpoints(getModelIdentifier());
-				for (IBreakpoint breakpoint : breakpoints) {
-					breakpointAdded(breakpoint);
-				}
 
 				resume();
 
@@ -152,35 +148,37 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		}
 	}
 
+	/**
+	 * This method finds the breakpoint registered in Breakpoint Manager which
+	 * suspended the ESB Server and call a method to open the source file and
+	 * show the associated mediator
+	 * 
+	 * @param event
+	 * @throws ESBDebuggerException
+	 */
 	private void showSource(SuspendedEvent event) throws ESBDebuggerException {
-		Map<String, Object> info = event.getDetail();
 
-		ESBBreakpoint breakpoint = getBreakpoint(info);
+		Map<String, Object> info = event.getDetail();
+		ESBBreakpoint breakpoint = getMatchingBreakpoint(info);
 		IFile file = (IFile) breakpoint.getResource();
 		if (file.exists()) {
 			OpenEditorUtil.openSeparateEditor(file, event);
 		}
 	}
 
-	private ESBBreakpoint getBreakpoint(Map<String, Object> info)
+	private ESBBreakpoint getMatchingBreakpoint(Map<String, Object> info)
 			throws ESBDebuggerException {
 
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager().getBreakpoints(getModelIdentifier());
 		for (IBreakpoint breakpoint : breakpoints) {
-			if (breakpoint instanceof ESBBreakpoint) {
-				try {
-					if (ESBDebugerUtil.isBreakpointMatches(info,
-							((ESBBreakpoint) breakpoint).getLocation())) {
-						return (ESBBreakpoint) breakpoint;
-					}
-				} catch (BreakpointMarkerNotFoundException e) {
-					log.error(e.getMessage(), e);
-					ESBDebugerUtil
-							.removeESBBreakpointFromBreakpointManager(breakpoint);
-				} catch (CoreException e) {
-					log.error(e.getMessage(), e);
+			try {
+				if (((ESBBreakpoint) breakpoint)
+						.isMatchedWithPropertiesMap(info)) {
+					return (ESBBreakpoint) breakpoint;
 				}
+			} catch (CoreException | BreakpointMarkerNotFoundException e) {
+				log.warn(e.getMessage(), e);
 			}
 		}
 
@@ -215,7 +213,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public boolean supportsBreakpoint(final IBreakpoint breakpoint) {
-		return true;
+		if (breakpoint instanceof ESBBreakpoint) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override

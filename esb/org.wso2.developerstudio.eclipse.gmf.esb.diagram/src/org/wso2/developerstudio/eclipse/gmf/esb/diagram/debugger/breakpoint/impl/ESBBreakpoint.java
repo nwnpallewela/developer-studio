@@ -209,40 +209,68 @@ public class ESBBreakpoint extends Breakpoint {
 						+ this);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @param breakpoint
+	 * @return boolean : true if breakpoints are matched or false
+	 * @throws BreakpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
 	public boolean equals(ESBBreakpoint breakpoint)
 			throws BreakpointMarkerNotFoundException, CoreException {
-		Map<String, Object> message = breakpoint.getLocation();
-		Map<String, Object> breakpointMessage = getLocation();
-
-		if (!isBreakpointPositionMatches(
-				((List<Integer>) message
-						.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
-				((List<Integer>) breakpointMessage
-						.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
-			return false;
+		if (breakpoint != null) {
+			Map<String, Object> message = breakpoint.getLocation();
+			return isMatchedWithPropertiesMap(message);
 		}
-		
-		Set<String> attributeKeys = new HashSet<String>();
-		attributeKeys.addAll(message.keySet());
-		attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
-		attributeKeys.remove(ESBDebuggerConstants.EVENT);
-		attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
-		for (String key : attributeKeys) {
-			if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
-					.get(key)).trim()
-					.equals(((String) message.get(key)).trim())))) {
-				if (!(ESBDebuggerConstants.MAPPING_URL_TYPE
-						.equalsIgnoreCase(key) && breakpointMessage
-						.containsValue(message
-								.get(ESBDebuggerConstants.MAPPING_URL_TYPE)))) {
-					return false;
-				}
+		return false;
 
+	}
+
+	/**
+	 * This method check whether breakpoint attribute values are matched with @param
+	 * message attribute values.
+	 * 
+	 * @param Map
+	 *            <String,Object>
+	 * @return boolean
+	 * @throws BreakpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean isMatchedWithPropertiesMap(Map<String, Object> message)
+			throws BreakpointMarkerNotFoundException, CoreException {
+
+		if (message != null) {
+			Map<String, Object> breakpointMessage = getLocation();
+			if (!isBreakpointPositionMatches(
+					((List<Integer>) message
+							.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
+					((List<Integer>) breakpointMessage
+							.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
+				return false;
 			}
-		}
-		return true;
 
+			Set<String> attributeKeys = new HashSet<String>();
+			attributeKeys.addAll(message.keySet());
+			attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
+			attributeKeys.remove(ESBDebuggerConstants.EVENT);
+			attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
+			for (String key : attributeKeys) {
+				if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
+						.get(key)).trim().equals(
+						((String) message.get(key)).trim())))) {
+					if (!(ESBDebuggerConstants.MAPPING_URL_TYPE
+							.equalsIgnoreCase(key) && breakpointMessage
+							.containsValue(message
+									.get(ESBDebuggerConstants.MAPPING_URL_TYPE)))) {
+						return false;
+					}
+
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isBreakpointPositionMatches(

@@ -78,6 +78,15 @@ public class ESBDebugerUtil {
 		}
 	}
 
+	public static void removeAllESBBreakpointsFromBreakpointManager() {
+		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
+				.getBreakpointManager()
+				.getBreakpoints(ESBDebugModelPresentation.ID);
+		for (IBreakpoint breakpoint : breakpoints) {
+			removeESBBreakpointFromBreakpointManager(breakpoint);
+		}
+	}
+
 	public static void setDeletedMediator(AbstractMediator editPart) {
 		deletedMediator = editPart;
 	}

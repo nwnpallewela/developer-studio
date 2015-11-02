@@ -16,6 +16,7 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ui.tabs;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -28,87 +29,96 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ui.ESBLaunchConstants;
 
-public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchConfigurationTab {
-    private Text commandPort;
-    private boolean mDisableUpdate = false;
-    private Text eventPort;
-    private final String[] mExtensions;
+public class MainTab extends AbstractLaunchConfigurationTab implements
+		ILaunchConfigurationTab {
+	private Text commandPort;
+	private boolean mDisableUpdate = false;
+	private Text eventPort;
+	private final String[] mExtensions;
 
-    public MainTab(final String[] extensions) {
-        mExtensions = extensions;
-    }
+	public MainTab(final String[] extensions) {
+		mExtensions = extensions;
+	}
 
-    @Override
-    public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
-        configuration.setAttribute(ESBLaunchConstants.FILE_LOCATION, "");
-    }
+	@Override
+	public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
+		configuration.setAttribute(ESBLaunchConstants.FILE_LOCATION, "");
+	}
 
 	@Override
 	public void initializeFrom(final ILaunchConfiguration configuration) {
 		mDisableUpdate = true;
-		if ("".equals(commandPort.getText())) {
+		if (StringUtils.isEmpty(commandPort.getText())) {
 			commandPort.setText(ESBLaunchConstants.DEFAULT_COMMAND_PORT);
 		}
-		if ("".equals(eventPort.getText())) {
+		if (StringUtils.isEmpty(eventPort.getText())) {
 			eventPort.setText(ESBLaunchConstants.DEFAULT_EVENT_PORT);
 		}
 		mDisableUpdate = false;
 	}
 
-    @Override
-    public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
-        configuration.setAttribute(ESBLaunchConstants.COMMAND_PORT, commandPort.getText().toString());
-        configuration.setAttribute(ESBLaunchConstants.EVENT_PORT, eventPort.getText().toString());
-    }
+	@Override
+	public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
+		configuration.setAttribute(ESBLaunchConstants.COMMAND_PORT, commandPort
+				.getText().toString());
+		configuration.setAttribute(ESBLaunchConstants.EVENT_PORT, eventPort
+				.getText().toString());
+	}
 
-    @Override
-    public boolean isValid(final ILaunchConfiguration launchConfig) {
-        try {
+	@Override
+	public boolean isValid(final ILaunchConfiguration launchConfig) {
 
-        } catch (Exception e) {
-            setErrorMessage("Invalid port number.");
-        }
+		try {
+			Integer.parseInt(commandPort.getText());
+			Integer.parseInt(eventPort.getText());
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 
-        return true;
-    }
+	}
 
-    @Override
-    public boolean canSave() {
-        return (!commandPort.getText().isEmpty()) && (!eventPort.getText().isEmpty());
-    }
+	@Override
+	public boolean canSave() {
+		return (!commandPort.getText().isEmpty())
+				&& (!eventPort.getText().isEmpty());
+	}
 
-    @Override
-    public String getMessage() {
-        return "Please select command and event ports.";
-    }
+	@Override
+	public String getMessage() {
+		return "Please select command and event ports.";
+	}
 
-    @Override
-    public String getName() {
-        return "Global";
-    }
+	@Override
+	public String getName() {
+		return "Global";
+	}
 
-    @Override
-    public void createControl(final Composite parent) {
-        Composite topControl = new Composite(parent, SWT.NONE);
-        topControl.setLayout(new GridLayout(1, false));
+	@Override
+	public void createControl(final Composite parent) {
+		Composite topControl = new Composite(parent, SWT.NONE);
+		topControl.setLayout(new GridLayout(1, false));
 
-        Group mgroup = new Group(topControl, SWT.NONE);
-        mgroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        mgroup.setText("Command Port");
-        mgroup.setLayout(new GridLayout(2, false));
+		Group mgroup = new Group(topControl, SWT.NONE);
+		mgroup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
+				1));
+		mgroup.setText("Command Port");
+		mgroup.setLayout(new GridLayout(2, false));
 
-        commandPort = new Text(mgroup, SWT.BORDER);
-        commandPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		commandPort = new Text(mgroup, SWT.BORDER);
+		commandPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 1, 1));
 
+		Group grpLaunch = new Group(topControl, SWT.NONE);
+		grpLaunch.setLayout(new GridLayout(2, false));
+		grpLaunch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+				1, 1));
+		grpLaunch.setText("Event Port");
 
-        Group grpLaunch = new Group(topControl, SWT.NONE);
-        grpLaunch.setLayout(new GridLayout(2, false));
-        grpLaunch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        grpLaunch.setText("Event Port");
+		eventPort = new Text(grpLaunch, SWT.BORDER);
+		eventPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+				1, 1));
 
-        eventPort = new Text(grpLaunch, SWT.BORDER);
-        eventPort.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        setControl(topControl);
-    }
+		setControl(topControl);
+	}
 }

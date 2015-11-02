@@ -19,6 +19,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IThread;
 
@@ -59,11 +60,12 @@ public class ESBThread extends ESBDebugElement implements IThread {
 
 	@Override
 	public String getName() {
-		return "ESB Thread";
+		return "ESB Debug Thread";
 	}
 
 	@Override
 	public IBreakpoint[] getBreakpoints() {
-		return null;
+		return DebugPlugin.getDefault().getBreakpointManager()
+				.getBreakpoints(getModelIdentifier());
 	}
 }
