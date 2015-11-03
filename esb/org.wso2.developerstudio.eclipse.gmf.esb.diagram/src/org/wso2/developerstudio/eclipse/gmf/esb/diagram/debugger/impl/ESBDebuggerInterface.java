@@ -21,42 +21,56 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.IChannelCommunication;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonJettisonMessageChannel;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatcher;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.ResponceDispatcher;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponceDispatcher;
 
 public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
-	Socket fRequestSocket;
-	PrintWriter fRequestWriter;
-	BufferedReader fRequestReader;
-	Socket fEventSocket;
-	BufferedReader fEventReader;
-	private EventDispatcher eventDispatcher;
-	private ResponceDispatcher responceDispatcher;
+	private Socket fRequestSocket;
+	private PrintWriter fRequestWriter;
+	private BufferedReader fRequestReader;
+
+	private Socket fEventSocket;
+	private BufferedReader fEventReader;
+
+	private ChannelEventDispatcher eventDispatcher;
+	private ChannelResponceDispatcher responceDispatcher;
+
 	private IChannelCommunication messageChannel;
 	private IESBDebugger esbDebugger;
 
+	public ESBDebuggerInterface(int commandPort, int eventPort)
+			throws IOException {
+		setfRequestSocket(commandPort);
+		setfEventSocket(eventPort);
+		setfEventReader();
+		setfRequestReader();
+		setfRequestWriter();
+		intializeDispatchers();
+	}
+
 	@Override
 	public void intializeDispatchers() {
-		eventDispatcher = new EventDispatcher();
+
+		eventDispatcher = new ChannelEventDispatcher();
 		eventDispatcher.init(getfEventReader(), this);
 		eventDispatcher.start();
-		responceDispatcher = new ResponceDispatcher();
+
+		responceDispatcher = new ChannelResponceDispatcher();
 		responceDispatcher.init(getfRequestReader(), this);
 		responceDispatcher.start();
+
 		messageChannel = new JsonJettisonMessageChannel();
 	}
 
 	@Override
-	public void setfRequestSocket(int commandPort) throws UnknownHostException,
-			IOException, IllegalArgumentException {
+	public void setfRequestSocket(int commandPort) throws IOException {
 		this.fRequestSocket = new Socket("localhost", commandPort);
 	}
 
@@ -72,8 +86,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void setfEventSocket(int eventPort) throws UnknownHostException,
-			IOException, IllegalArgumentException {
+	public void setfEventSocket(int eventPort) throws IOException {
 		this.fEventSocket = new Socket("localhost", eventPort);
 	}
 
@@ -99,34 +112,29 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public EventDispatcher getEventDispatcher() {
+	public ChannelEventDispatcher getEventDispatcher() {
 		return eventDispatcher;
 	}
 
 	@Override
-	public void setEventDispatcher(EventDispatcher eventDispatcher) {
+	public void setEventDispatcher(ChannelEventDispatcher eventDispatcher) {
 		this.eventDispatcher = eventDispatcher;
 	}
 
 	@Override
-	public ResponceDispatcher getResponceDispatcher() {
+	public ChannelResponceDispatcher getResponceDispatcher() {
 		return responceDispatcher;
 	}
 
 	@Override
-	public void setResponceDispatcher(ResponceDispatcher responceDispatcher) {
+	public void setResponceDispatcher(ChannelResponceDispatcher responceDispatcher) {
 		this.responceDispatcher = responceDispatcher;
 	}
 
 	@Override
 	public void sendCommand(String command) {
-		try {
-			fRequestWriter.println(messageChannel.createCommand(command));
-			fRequestWriter.flush();
-
-		} catch (Exception ex) {
-		}
-
+		fRequestWriter.println(messageChannel.createCommand(command));
+		fRequestWriter.flush();
 	}
 
 	public void notifyEvent(String buffer) {

@@ -29,6 +29,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 public abstract class ESBDebugElement extends DebugElement implements
 		ISuspendResume, IDisconnect, ITerminate, IStep {
@@ -37,23 +38,23 @@ public abstract class ESBDebugElement extends DebugElement implements
 		super(target);
 	}
 
-	public enum State {
+	public enum ESBDebuggerState {
 		NOT_STARTED, SUSPENDED, RESUMED, TERMINATED, STEPPING
-	};
+	}
 
-	private State mState = State.NOT_STARTED;
+	protected ESBDebuggerState esbDebuggerState = ESBDebuggerState.NOT_STARTED;
 
 	@Override
 	public String getModelIdentifier() {
 		return ESBDebugModelPresentation.ID;
 	}
 
-	protected void setState(State state) {
-		((ESBDebugElement) getDebugTarget()).mState = state;
+	protected void setState(ESBDebuggerState state) {
+		getDebugTarget().esbDebuggerState = state;
 	}
 
-	protected State getState() {
-		return ((ESBDebugElement) getDebugTarget()).mState;
+	protected ESBDebuggerState getState() {
+		return getDebugTarget().esbDebuggerState;
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public abstract class ESBDebugElement extends DebugElement implements
 
 	@Override
 	public boolean isSuspended() {
-		return (getState() == State.SUSPENDED);
+		return getState() == ESBDebuggerState.SUSPENDED;
 	}
 
 	@Override
@@ -85,7 +86,8 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void suspend() throws DebugException {
 		throw new DebugException(new Status(IStatus.ERROR,
-				"ESB Mediation Debugger", "suspend() not supported"));
+				ESBDebuggerConstants.ESB_MEDIATION_DEBUGGER_NAME,
+				"suspend() not supported"));
 	}
 
 	@Override
@@ -111,7 +113,7 @@ public abstract class ESBDebugElement extends DebugElement implements
 
 	@Override
 	public boolean isTerminated() {
-		return (getState() == State.TERMINATED);
+		return getState() == ESBDebuggerState.TERMINATED;
 	}
 
 	@Override
@@ -136,13 +138,14 @@ public abstract class ESBDebugElement extends DebugElement implements
 
 	@Override
 	public boolean isStepping() {
-		return (getState() == State.STEPPING);
+		return getState() == ESBDebuggerState.STEPPING;
 	}
 
 	@Override
 	public void stepInto() throws DebugException {
 		throw new DebugException(new Status(IStatus.ERROR,
-				"ESB Mediation Debugger", "stepInto() not supported"));
+				ESBDebuggerConstants.ESB_MEDIATION_DEBUGGER_NAME,
+				"stepInto() not supported"));
 	}
 
 	@Override
@@ -154,7 +157,8 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void stepReturn() throws DebugException {
 		throw new DebugException(new Status(IStatus.ERROR,
-				"ESB Mediation Debugger", "stepReturn() not supported"));
+				ESBDebuggerConstants.ESB_MEDIATION_DEBUGGER_NAME,
+				"stepReturn() not supported"));
 	}
 
 }

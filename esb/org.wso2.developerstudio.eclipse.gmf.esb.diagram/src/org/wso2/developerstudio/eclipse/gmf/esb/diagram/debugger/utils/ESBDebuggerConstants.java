@@ -17,6 +17,20 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
+	// ESB Debugger launch constants
+	public static final String LAUNCH_CONFIGURATION_TYPE_ID = "org.wso2.developerstudio.eclipse.esb.debugger.launch";
+	public static final String ESB_SERVER_LOCATION = "ESB server location";
+	public static final String COMMAND_PORT_UI_TAG = "Command Port";
+	public static final String EVENT_PORTUI_TAG = "Event Port";
+	public static final String DEFAULT_COMMAND_PORT = "6006";
+	public static final String DEFAULT_EVENT_PORT = "6007";
+	public static final String ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_MESSAGE = "Please select command and event ports.";
+	public static final String ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_TITLE ="Global";
+
+	public static final String ESB_MEDIATION_DEBUGGER_NAME = "ESB Mediation Debugger";
+	public static final String ERROR_MESSAGE_TAG = "Error";
+
+	public static final String ESB_DEBUGGER_EVENT_DISPATCH_JOB = "ESB Mediation Debugger event dispatcher";
 	public static final String MEDIATOR_DELETE_ACTION = "mediatordelete";
 	public static final String MEDIATOR_INSERT_ACTION = "mediatorinsert";
 
@@ -25,13 +39,13 @@ public class ESBDebuggerConstants {
 	public static final String AXIS2_CLIENT_PROPERTY_TAG = "axis2-client";
 	public static final String TRANSPORT_PROPERTY_TAG = "transport";
 	public static final String SYANPSE_PROPERTY_TAG = "synapse";
-	
+
 	public static final String AXIS2_PROPERTY_UI_NAME = "Axis2 Scope Properties";
 	public static final String OPERATION_PROPERTY_UI_NAME = "Operation Scope Properties";
 	public static final String AXIS2_CLIENT_PROPERTY_UI_NAME = "Axis2-Client Scope Properties";
 	public static final String TRANSPORT_PROPERTY_UI_NAME = "Transport Scope Properties";
 	public static final String SYANPSE_PROPERTY_UI_NAME = "Synapse Scope Properties";
-	
+
 	public static final String COMMAND_GET = "get";
 
 	public static final String VARIABLE_TYPE = "ESB Message";

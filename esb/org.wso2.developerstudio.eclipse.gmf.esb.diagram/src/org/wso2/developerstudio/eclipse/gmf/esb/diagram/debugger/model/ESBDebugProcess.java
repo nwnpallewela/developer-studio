@@ -20,9 +20,9 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
 
-public class ESBProcess extends ESBDebugElement implements IProcess {
+public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
-	public ESBProcess(final ESBDebugTarget debugTarget) {
+	public ESBDebugProcess(final ESBDebugTarget debugTarget) {
 		super(debugTarget);
 	}
 

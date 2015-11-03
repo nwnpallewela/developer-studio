@@ -16,6 +16,9 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model;
 
+/**
+ * All debug events in ESB Debugger should extended from {@link AbstractEvent}
+ */
 public abstract class AbstractEvent implements IDebugEvent {
 
 	@Override

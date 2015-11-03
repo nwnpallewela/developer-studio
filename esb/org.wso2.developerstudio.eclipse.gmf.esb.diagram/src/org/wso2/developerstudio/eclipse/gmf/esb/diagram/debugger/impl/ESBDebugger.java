@@ -17,7 +17,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,7 +24,7 @@ import java.util.Map;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.MediationFlowCompleteEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
@@ -43,50 +42,25 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEdito
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * {@link ESBDebugger} implements the representation of ESB Mediation debugger
+ * to communicate UI and ESB Server.
+ */
 public class ESBDebugger implements IESBDebugger {
 
-	public static final int BREAKPOINT_ADDED = 1;
-	public static final int BREAKPOINT_REMOVED = 2;
-	private EventDispatchJob mDispatcher;
+	private InternalEventDispatcher mDispatcher;
 	private boolean mIsStepping = false;
 	private IESBDebuggerInterface mDebuggerInterface;
-	private Map<String, String> mVariables;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+
+	public ESBDebugger(int commandPort, int eventPort) throws IOException {
+		this(new ESBDebuggerInterface(commandPort, eventPort));
+	}
 
 	public ESBDebugger(IESBDebuggerInterface debuggerInterface) {
 		mDebuggerInterface = debuggerInterface;
 		mDebuggerInterface.attachDebugger(this);
-		mVariables = new HashMap<>();
-	}
-
-	@Override
-	public void setDebuggerInterface(int commandPort, int eventPort)
-			throws UnknownHostException, IllegalArgumentException, IOException {
-		mDebuggerInterface.setfEventSocket(eventPort);
-		mDebuggerInterface.setfRequestSocket(commandPort);
-		try {
-			mDebuggerInterface.setfEventReader();
-		} catch (IOException e) {
-			log.error("Error while seting Event Reader for DebuggerInterface",
-					e);
-		}
-		try {
-			mDebuggerInterface.setfRequestReader();
-		} catch (IOException e) {
-			log.error(
-					"Error while seting Request Reader for DebuggerInterface",
-					e);
-		}
-		try {
-			mDebuggerInterface.setfRequestWriter();
-		} catch (IOException e) {
-			log.error(
-					"Error while seting Request Writer for DebuggerInterface",
-					e);
-		}
-		mDebuggerInterface.intializeDispatchers();
-
 	}
 
 	@Override
@@ -114,20 +88,13 @@ public class ESBDebugger implements IESBDebugger {
 	public void handleEvent(final IDebugEvent event) {
 
 		if (event instanceof ResumeRequest) {
-
 			mIsStepping = (((ResumeRequest) event).getType() == ResumeRequest.STEP_OVER);
 			mDebuggerInterface.sendCommand(ESBDebuggerConstants.RESUME);
 			OpenEditorUtil.removeBreakpointHitStatus();
-
 		} else if (event instanceof BreakpointRequest) {
-
 			sendBreakpointForServer((BreakpointRequest) event);
-
 		} else if (event instanceof FetchVariablesRequest) {
-
-			if (mVariables != null) {
-				fireEvent(new VariablesEvent(mVariables));
-			}
+			getPropertiesFromESB();
 		} else if (event instanceof TerminateRequest) {
 			terminated();
 		}
@@ -140,34 +107,41 @@ public class ESBDebugger implements IESBDebugger {
 		breakpointAttributes.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
 				ESBDebuggerConstants.BREAKPOINT);
 
-		if (event.getType() == BREAKPOINT_ADDED) {
+		switch (event.getType()) {
+		case ADDED:
 			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
 					ESBDebuggerConstants.SET);
-		} else {
+			break;
+		case REMOVED:
 			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
 					ESBDebuggerConstants.CLEAR);
+			break;
+		default:
+			throw new IllegalArgumentException(
+					"Invalid Breakpoint action reqested");
 		}
-		mDebuggerInterface.sendBreakpointCommand(((String) breakpointAttributes
-				.get(ESBDebuggerConstants.COMMAND)),
-				((String) breakpointAttributes
-						.get(ESBDebuggerConstants.MEDIATION_COMPONENT)),
-				breakpointAttributes);
+		mDebuggerInterface
+				.sendBreakpointCommand((String) breakpointAttributes
+						.get(ESBDebuggerConstants.COMMAND),
+						(String) breakpointAttributes
+								.get(ESBDebuggerConstants.MEDIATION_COMPONENT),
+						breakpointAttributes);
 
 	}
 
-	public void setEventDispatcher(final EventDispatchJob dispatcher) {
+	@Override
+	public void setEventDispatcher(final InternalEventDispatcher dispatcher) {
 		mDispatcher = dispatcher;
 	}
 
 	/**
-	 * Pass an event to the {@link EventDispatchJob} where it is handled
+	 * Pass an event to the {@link InternalEventDispatcher} where it is handled
 	 * asynchronously.
 	 * 
 	 * @param event
 	 *            event to handle
 	 */
 	private void fireEvent(final IDebugEvent event) {
-
 		mDispatcher.addEvent(event);
 	}
 
@@ -187,33 +161,42 @@ public class ESBDebugger implements IESBDebugger {
 			}
 		} else {
 			if (responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
-
+				Map<String, String> mVariables = new HashMap<>();
 				mVariables.put(ESBDebuggerConstants.AXIS2_PROPERTIES,
 						(String) responce
 								.get(ESBDebuggerConstants.AXIS2_PROPERTIES));
+				fireEvent(new VariablesEvent(mVariables));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.SYNAPSE_PROPERTIES)) {
+				Map<String, String> mVariables = new HashMap<>();
 				mVariables.put(ESBDebuggerConstants.SYNAPSE_PROPERTIES,
 						(String) responce
 								.get(ESBDebuggerConstants.SYNAPSE_PROPERTIES));
+				fireEvent(new VariablesEvent(mVariables));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES)) {
+				Map<String, String> mVariables = new HashMap<>();
 				mVariables
 						.put(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES,
 								(String) responce
 										.get(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES));
+				fireEvent(new VariablesEvent(mVariables));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.OPERATION_PROPERTIES)) {
+				Map<String, String> mVariables = new HashMap<>();
 				mVariables
 						.put(ESBDebuggerConstants.OPERATION_PROPERTIES,
 								(String) responce
 										.get(ESBDebuggerConstants.OPERATION_PROPERTIES));
+				fireEvent(new VariablesEvent(mVariables));
 			} else if (responce
 					.containsKey(ESBDebuggerConstants.TRANSPORT_PROPERTIES)) {
+				Map<String, String> mVariables = new HashMap<>();
 				mVariables
 						.put(ESBDebuggerConstants.TRANSPORT_PROPERTIES,
 								(String) responce
 										.get(ESBDebuggerConstants.TRANSPORT_PROPERTIES));
+				fireEvent(new VariablesEvent(mVariables));
 			}
 		}
 
@@ -228,8 +211,6 @@ public class ESBDebugger implements IESBDebugger {
 		if (ESBDebuggerConstants.BREAKPOINT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
 			suspended(event);
-			getPropertiesFromESB();
-
 		} else if (ESBDebuggerConstants.TERMINATED_EVENT.equals(event
 				.get(ESBDebuggerConstants.EVENT))) {
 			mediationFlowCompleted();

@@ -17,8 +17,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
 import java.util.Map;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IEventProcessor;
 
+/**
+ * 
+ *
+ */
 public interface IESBDebugger extends IDebugger, IEventProcessor {
 
 	public void notifyEvent(Map<String, Object> map);

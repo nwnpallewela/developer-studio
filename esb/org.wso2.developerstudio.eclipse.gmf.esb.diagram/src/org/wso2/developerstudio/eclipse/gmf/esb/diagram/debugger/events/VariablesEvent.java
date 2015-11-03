@@ -21,6 +21,11 @@ import java.util.Map;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 
+/**
+ * {@link VariablesEvent} represent the request event from {@link ESBDebugger}
+ * to {@link ESBDebugTarget} when {@link ESBDebugger} notify new property
+ * variables are received from ESB Server
+ */
 public class VariablesEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final Map<String, String> mVariables;

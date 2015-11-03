@@ -16,6 +16,10 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
 
+/**
+ * {@link MediatorNotFoundException} throws when required mediator object is not
+ * found in ESB Mediation flow.
+ */
 public class MediatorNotFoundException extends ESBDebuggerException {
 
 	private static final long serialVersionUID = -4159108240634620947L;

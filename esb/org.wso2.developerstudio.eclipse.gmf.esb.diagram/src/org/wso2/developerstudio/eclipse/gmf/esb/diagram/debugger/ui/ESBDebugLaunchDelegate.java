@@ -30,15 +30,19 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.DebuggerCommunicationMessageModel;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * {@link ESBDebugLaunchDelegate} handles the launch operation of ESBDebugger
+ *
+ */
 public class ESBDebugLaunchDelegate implements ILaunchConfigurationDelegate {
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
@@ -51,58 +55,83 @@ public class ESBDebugLaunchDelegate implements ILaunchConfigurationDelegate {
 		DebuggerCommunicationMessageModel.populateMessageModels();
 		int commandPort = 0;
 		int eventPort = 0;
-		commandPort = Integer.parseInt(configuration.getAttribute(
-				ESBLaunchConstants.COMMAND_PORT,
-				ESBLaunchConstants.DEFAULT_COMMAND_PORT));
-		eventPort = Integer.parseInt(configuration.getAttribute(
-				ESBLaunchConstants.EVENT_PORT,
-				ESBLaunchConstants.DEFAULT_COMMAND_PORT));
-
-		IESBDebugger esbDebugger = new ESBDebugger(new ESBDebuggerInterface());
 		try {
-			esbDebugger.setDebuggerInterface(commandPort, eventPort);
+			commandPort = Integer.parseInt(configuration.getAttribute(
+					ESBDebuggerConstants.COMMAND_PORT_UI_TAG,
+					ESBDebuggerConstants.DEFAULT_COMMAND_PORT));
+			eventPort = Integer.parseInt(configuration.getAttribute(
+					ESBDebuggerConstants.EVENT_PORTUI_TAG,
+					ESBDebuggerConstants.DEFAULT_COMMAND_PORT));
+
+			IESBDebugger esbDebugger = new ESBDebugger(commandPort, eventPort);
 
 			ESBDebugTarget debugTarget = new ESBDebugTarget(launch);
 
-			EventDispatchJob dispatcher = new EventDispatchJob(debugTarget,
+			InternalEventDispatcher dispatcher = new InternalEventDispatcher(debugTarget,
 					esbDebugger);
 			dispatcher.schedule();
 
-			// attach dispatcher to debugger & debugTarget
 			esbDebugger.setEventDispatcher(dispatcher);
 			debugTarget.setEventDispatcher(dispatcher);
 
-			// add debug target to launch
 			launch.addDebugTarget(debugTarget);
 			debugTarget.handleEvent(new DebuggerStartedEvent());
 
 		} catch (UnknownHostException e) {
-			log.error("Port already taken", e);
+			log.error("IP address of the host could not be determined.", e);
 			String simpleMessage = e.getMessage();
-			IStatus editorStatus = new Status(IStatus.ERROR,
+			final IStatus editorStatus = new Status(IStatus.ERROR,
 					Activator.PLUGIN_ID, simpleMessage);
-			ErrorDialog.openError(Display.getDefault().getActiveShell(),
-					"Error",
-					"IO error is detected when trying assign port to socket ",
-					editorStatus);
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					ErrorDialog.openError(
+							Display.getDefault().getActiveShell(),
+							ESBDebuggerConstants.ERROR_MESSAGE_TAG,
+							"IP address of the host could not be determined.",
+							editorStatus);
+
+				}
+			});
 		} catch (IllegalArgumentException e) {
-			log.error("Port already taken", e);
+			log.error(
+					"port parameter is outside the specified range of valid port values,"
+							+ " which is between 0 and 65535, inclusive.", e);
 			String simpleMessage = e.getMessage();
-			IStatus editorStatus = new Status(IStatus.ERROR,
+
+			final IStatus editorStatus = new Status(IStatus.ERROR,
 					Activator.PLUGIN_ID, simpleMessage);
-			ErrorDialog.openError(Display.getDefault().getActiveShell(),
-					"Error",
-					"IO error is detected when trying assign port to socket ",
-					editorStatus);
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					ErrorDialog
+							.openError(
+									Display.getDefault().getActiveShell(),
+									ESBDebuggerConstants.ERROR_MESSAGE_TAG,
+									"Port parameter is outside the specified range of valid port values,"
+											+ " which is between 0 and 65535, inclusive.",
+									editorStatus);
+				}
+			});
+
 		} catch (IOException e) {
-			log.error("Port already taken", e);
+			log.error("I/O error occurs when creating the socket.", e);
 			String simpleMessage = e.getMessage();
-			IStatus editorStatus = new Status(IStatus.ERROR,
+			final IStatus editorStatus = new Status(IStatus.ERROR,
 					Activator.PLUGIN_ID, simpleMessage);
-			ErrorDialog.openError(Display.getDefault().getActiveShell(),
-					"Error",
-					"IO error is detected when trying assign port to socket ",
-					editorStatus);
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					ErrorDialog
+							.openError(
+									Display.getDefault().getActiveShell(),
+									ESBDebuggerConstants.ERROR_MESSAGE_TAG,
+									"I/O error occurs when creating the socket."
+											+ " Make sure ESB Server is listning on same ports to connect.",
+									editorStatus);
+				}
+			});
+
 		}
 
 	}

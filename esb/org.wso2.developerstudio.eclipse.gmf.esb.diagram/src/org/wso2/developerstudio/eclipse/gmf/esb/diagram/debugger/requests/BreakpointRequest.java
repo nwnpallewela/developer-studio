@@ -22,23 +22,33 @@ import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 
+/**
+ * {@link BreakpointRequest} represent the request event from
+ * {@link ESBDebugTarget} to {@link ESBDebugger} when a
+ * <code>ESBBreakpoint<code> adding or removing operation occurred by user
+ *
+ */
 public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
-	public static final int ADDED = 1;
-	public static final int REMOVED = 2;
-	private final int mType;
+	public enum BreakpointEventAction {
+		ADDED, REMOVED, MODIFIED
+	}
+
+	private final BreakpointEventAction mType;
 	private final int mLine;
 	private final Map<String, Object> breakpointAttributes;
 
-	public BreakpointRequest(ESBBreakpoint breakpoint, int type)
+	public BreakpointRequest(ESBBreakpoint breakpoint,
+			BreakpointEventAction action)
 			throws BreakpointMarkerNotFoundException, CoreException {
-		mType = type;
+		mType = action;
 		mLine = breakpoint.getLineNumber();
 		breakpointAttributes = breakpoint.getLocation();
 	}
 
-	public int getType() {
+	public BreakpointEventAction getType() {
 		return mType;
 	}
 
@@ -53,7 +63,8 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 	@Override
 	public String toString() {
 		return "BreakpointEvent: "
-				+ ((getType() == ADDED) ? "ADDED" : "REMOVED") + ", line : "
-				+ getLine() + " , message : " + getBreakpointAttributes();
+				+ ((getType() == BreakpointEventAction.ADDED) ? "ADDED"
+						: "REMOVED") + ", line : " + getLine()
+				+ " , attributes : " + getBreakpointAttributes();
 	}
 }

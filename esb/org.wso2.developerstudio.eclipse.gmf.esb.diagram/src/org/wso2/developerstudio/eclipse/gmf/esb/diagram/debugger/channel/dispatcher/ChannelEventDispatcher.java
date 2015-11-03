@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebuggerInterface;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
-public class EventDispatcher extends Thread {
+/**
+ * {@link ChannelEventDispatcher} manages the event communication between
+ * {@link ESBDebugger} and {@link ESBDebuggerInterface}
+ *
+ */
+public class ChannelEventDispatcher extends Thread {
 
 	BufferedReader fEventReader;
 	ESBDebuggerInterface esbDebuggerInterface;
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public void init(BufferedReader fEventReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
@@ -40,7 +50,8 @@ public class EventDispatcher extends Thread {
 					esbDebuggerInterface.notifyEvent(buffer);
 				}
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
+			log.error("I/O error occurred", ex);
 		}
 	}
 

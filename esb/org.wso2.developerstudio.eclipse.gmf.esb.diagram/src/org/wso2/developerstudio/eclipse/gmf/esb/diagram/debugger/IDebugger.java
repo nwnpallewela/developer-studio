@@ -16,18 +16,9 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
-
 public interface IDebugger {
-
-	int UNSPECIFIED = 0;
-	int SUSPEND_BREAKPOINT = 1;
-	int SUSPEND_STEP_OVER = 2;
-	int RESUME_STEP_OVER = 3;
 
 	public void loaded();
 
@@ -35,12 +26,7 @@ public interface IDebugger {
 
 	public void resumed();
 
-	public void setDebuggerInterface(int commandPort, int eventPort)
-			throws UnknownHostException, IllegalArgumentException, IOException;
-
 	public IESBDebuggerInterface getESBDebuggerInterface();
-
-	public void setEventDispatcher(EventDispatchJob dispatcher);
 
 	public void suspended(Map<String, Object> position);
 }

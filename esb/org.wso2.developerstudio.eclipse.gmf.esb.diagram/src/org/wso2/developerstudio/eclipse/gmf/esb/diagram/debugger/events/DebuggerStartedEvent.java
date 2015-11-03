@@ -19,6 +19,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 
+/**
+ * {@link DebuggerStartedEvent} represent the request event from
+ * {@link ESBDebugger} to {@link ESBDebugTarget} when {@link ESBDebugger} notify
+ * esb server started in debug mode
+ */
 public class DebuggerStartedEvent extends AbstractEvent implements
 		IDebuggerEvent {
 

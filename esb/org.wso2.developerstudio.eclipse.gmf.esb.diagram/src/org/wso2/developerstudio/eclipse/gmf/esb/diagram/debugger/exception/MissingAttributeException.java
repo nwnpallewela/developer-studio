@@ -17,8 +17,8 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
 
 /**
- * 
- *
+ * {@link MissingAttributeException} throws when required attribute is not
+ * found.
  */
 public class MissingAttributeException extends ESBDebuggerException {
 

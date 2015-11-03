@@ -17,8 +17,8 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
 
 /**
- * 
- *
+ * {@link BreakpointMarkerNotFoundException} throws when a Breakpoint does not
+ * contain a designated @ IMarker} with it.
  */
 public class BreakpointMarkerNotFoundException extends ESBDebuggerException {
 

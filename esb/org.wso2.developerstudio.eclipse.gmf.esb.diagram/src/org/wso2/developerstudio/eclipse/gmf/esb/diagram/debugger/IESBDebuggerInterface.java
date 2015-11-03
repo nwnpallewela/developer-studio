@@ -19,23 +19,20 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatcher;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.ResponceDispatcher;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponceDispatcher;
 
 public interface IESBDebuggerInterface {
 
-	public void setfRequestSocket(int commandPort) throws UnknownHostException,
-			IOException;
+	public void setfRequestSocket(int commandPort) throws IOException;
 
 	public void setfRequestWriter() throws IOException;
 
 	public void setfRequestReader() throws IOException;
 
-	public void setfEventSocket(int eventPort) throws UnknownHostException,
-			IOException, IllegalArgumentException;
+	public void setfEventSocket(int eventPort) throws IOException;
 
 	public void setfEventReader() throws IOException;
 
@@ -45,13 +42,13 @@ public interface IESBDebuggerInterface {
 
 	public BufferedReader getfEventReader();
 
-	public void setResponceDispatcher(ResponceDispatcher responceDispatcher);
+	public void setResponceDispatcher(ChannelResponceDispatcher responceDispatcher);
 
-	public EventDispatcher getEventDispatcher();
+	public ChannelEventDispatcher getEventDispatcher();
 
-	public void setEventDispatcher(EventDispatcher eventDispatcher);
+	public void setEventDispatcher(ChannelEventDispatcher eventDispatcher);
 
-	public ResponceDispatcher getResponceDispatcher();
+	public ChannelResponceDispatcher getResponceDispatcher();
 
 	public void intializeDispatchers();
 

@@ -23,11 +23,11 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IThread;
 
-public class ESBThread extends ESBDebugElement implements IThread {
+public class ESBDebugThread extends ESBDebugElement implements IThread {
 
 	private final List<ESBStackFrame> mStackFrames = new ArrayList<>();
 
-	public ESBThread(final ESBDebugTarget debugTarget) {
+	public ESBDebugThread(final ESBDebugTarget debugTarget) {
 		super(debugTarget);
 	}
 

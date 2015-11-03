@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model;
 
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 
+/**
+ * {@link IEventProcessor} should be extended by classes which want to process
+ * IDebugEvents
+ *
+ */
 public interface IEventProcessor {
 
 	public void handleEvent(IDebugEvent event);
+	
+	public void setEventDispatcher(InternalEventDispatcher dispatcher);
 
 }

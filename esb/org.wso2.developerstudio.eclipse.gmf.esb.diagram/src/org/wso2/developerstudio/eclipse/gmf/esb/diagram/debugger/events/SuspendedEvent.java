@@ -21,6 +21,11 @@ import java.util.Map;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 
+/**
+ * {@link SuspendedEvent} represent the request event from {@link ESBDebugger}
+ * to {@link ESBDebugTarget} when {@link ESBDebugger} notify suspend action
+ * from ESB Server
+ */
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final Map<String, Object> mPosition;

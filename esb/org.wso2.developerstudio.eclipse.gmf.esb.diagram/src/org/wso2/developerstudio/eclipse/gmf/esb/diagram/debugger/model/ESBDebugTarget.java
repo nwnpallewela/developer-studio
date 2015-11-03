@@ -33,8 +33,7 @@ import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.EventDispatchJob;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.IEventProcessor;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.MediationFlowCompleteEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
@@ -42,9 +41,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Suspende
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IEventProcessor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest.BreakpointEventAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
@@ -54,39 +55,40 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		IEventProcessor {
 
-	private EventDispatchJob mDispatcher;
-	private final ESBProcess mProcess;
-	private final List<ESBThread> mThreads = new ArrayList<ESBThread>();
-	private final ILaunch mLaunch;
+	private InternalEventDispatcher dispatcher;
+	private final ESBDebugProcess esbDebugProcess;
+	private final List<ESBDebugThread> esbDebugThreads = new ArrayList<ESBDebugThread>();
+	private final ILaunch esbDebugerLaunch;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ESBDebugTarget(final ILaunch launch) {
 		super(null);
-		mLaunch = launch;
+		esbDebugerLaunch = launch;
 		fireCreationEvent();
-		mProcess = new ESBProcess(this);
-		mProcess.fireCreationEvent();
+		esbDebugProcess = new ESBDebugProcess(this);
+		esbDebugProcess.fireCreationEvent();
 	}
 
-	public void setEventDispatcher(final EventDispatchJob dispatcher) {
-		mDispatcher = dispatcher;
+	@Override
+	public void setEventDispatcher(final InternalEventDispatcher dispatcher) {
+		this.dispatcher = dispatcher;
 	}
 
 	/**
-	 * Pass an event to the {@link EventDispatchJob} where it is handled
+	 * Pass an event to the {@link InternalEventDispatcher} where it is handled
 	 * asynchronously.
 	 * 
 	 * @param event
 	 *            event to handle
 	 */
 	void fireModelEvent(final IDebugEvent event) {
-		mDispatcher.addEvent(event);
+		dispatcher.addEvent(event);
 	}
 
 	/**
 	 * Handles events sent from {@link ESBDebugger} through
-	 * {@link EventDispatchJob}
+	 * {@link InternalEventDispatcher}
 	 */
 	@Override
 	public void handleEvent(final IDebugEvent event) {
@@ -94,8 +96,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		if (!isDisconnected()) {
 
 			if (event instanceof DebuggerStartedEvent) {
-				ESBThread thread = new ESBThread(this);
-				mThreads.add(thread);
+				ESBDebugThread thread = new ESBDebugThread(this);
+				esbDebugThreads.add(thread);
 				thread.fireCreationEvent();
 
 				ESBStackFrame stackFrame = new ESBStackFrame(this, thread);
@@ -108,7 +110,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				resume();
 
 			} else if (event instanceof SuspendedEvent) {
-				setState(State.SUSPENDED);
+				setState(ESBDebuggerState.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
 				try {
@@ -120,7 +122,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 			} else if (event instanceof ResumedEvent) {
 				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
-					setState(State.RESUMED);
+					setState(ESBDebuggerState.RESUMED);
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
 				}
 
@@ -134,15 +136,14 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				}
 
 			} else if (event instanceof TerminatedEvent) {
-				setState(State.TERMINATED);
+				setState(ESBDebuggerState.TERMINATED);
 
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpointListener(this);
 
-				mDispatcher.terminate();
-				fireTerminateEvent();
+				dispatcher.terminate();
 			} else if (event instanceof MediationFlowCompleteEvent) {
-				setState(State.RESUMED);
+				setState(ESBDebuggerState.RESUMED);
 				OpenEditorUtil.removeBreakpointHitStatus();
 			}
 		}
@@ -188,22 +189,22 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public ILaunch getLaunch() {
-		return mLaunch;
+		return esbDebugerLaunch;
 	}
 
 	@Override
 	public IProcess getProcess() {
-		return mProcess;
+		return esbDebugProcess;
 	}
 
 	@Override
-	public ESBThread[] getThreads() {
-		return mThreads.toArray(new ESBThread[mThreads.size()]);
+	public ESBDebugThread[] getThreads() {
+		return esbDebugThreads.toArray(new ESBDebugThread[esbDebugThreads.size()]);
 	}
 
 	@Override
 	public boolean hasThreads() {
-		return !mThreads.isEmpty();
+		return !esbDebugThreads.isEmpty();
 	}
 
 	@Override
@@ -242,7 +243,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					&& isEnabledBreakpoint(breakpoint)) {
 
 				fireModelEvent(new BreakpointRequest(
-						(ESBBreakpoint) breakpoint, BreakpointRequest.ADDED));
+						(ESBBreakpoint) breakpoint, BreakpointEventAction.ADDED));
 			}
 		} catch (BreakpointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
@@ -266,7 +267,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					&& isEnabledBreakpoint(breakpoint)) {
 
 				fireModelEvent(new BreakpointRequest(
-						(ESBBreakpoint) breakpoint, BreakpointRequest.REMOVED));
+						(ESBBreakpoint) breakpoint,
+						BreakpointEventAction.REMOVED));
 			}
 		} catch (BreakpointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
@@ -289,8 +291,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	}
 
 	@Override
-	public IMemoryBlock getMemoryBlock(long arg0, long arg1)
-			throws DebugException {
+	public IMemoryBlock getMemoryBlock(long arg0, long arg1) {
 		return null;
 	}
 

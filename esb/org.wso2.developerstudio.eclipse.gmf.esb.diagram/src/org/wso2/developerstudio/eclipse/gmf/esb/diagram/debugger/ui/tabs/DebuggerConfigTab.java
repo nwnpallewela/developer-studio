@@ -27,41 +27,38 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ui.ESBLaunchConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
-public class MainTab extends AbstractLaunchConfigurationTab implements
+public class DebuggerConfigTab extends AbstractLaunchConfigurationTab implements
 		ILaunchConfigurationTab {
 	private Text commandPort;
-	private boolean mDisableUpdate = false;
 	private Text eventPort;
-	private final String[] mExtensions;
 
-	public MainTab(final String[] extensions) {
-		mExtensions = extensions;
+	public DebuggerConfigTab() {
 	}
 
 	@Override
 	public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(ESBLaunchConstants.FILE_LOCATION, "");
+		configuration
+				.setAttribute(ESBDebuggerConstants.ESB_SERVER_LOCATION, "");
 	}
 
 	@Override
 	public void initializeFrom(final ILaunchConfiguration configuration) {
-		mDisableUpdate = true;
 		if (StringUtils.isEmpty(commandPort.getText())) {
-			commandPort.setText(ESBLaunchConstants.DEFAULT_COMMAND_PORT);
+			commandPort.setText(ESBDebuggerConstants.DEFAULT_COMMAND_PORT);
 		}
 		if (StringUtils.isEmpty(eventPort.getText())) {
-			eventPort.setText(ESBLaunchConstants.DEFAULT_EVENT_PORT);
+			eventPort.setText(ESBDebuggerConstants.DEFAULT_EVENT_PORT);
 		}
-		mDisableUpdate = false;
 	}
 
 	@Override
 	public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(ESBLaunchConstants.COMMAND_PORT, commandPort
-				.getText().toString());
-		configuration.setAttribute(ESBLaunchConstants.EVENT_PORT, eventPort
+
+		configuration.setAttribute(ESBDebuggerConstants.COMMAND_PORT_UI_TAG,
+				commandPort.getText().toString());
+		configuration.setAttribute(ESBDebuggerConstants.EVENT_PORTUI_TAG, eventPort
 				.getText().toString());
 	}
 
@@ -71,8 +68,10 @@ public class MainTab extends AbstractLaunchConfigurationTab implements
 		try {
 			Integer.parseInt(commandPort.getText());
 			Integer.parseInt(eventPort.getText());
+			setErrorMessage(null);
 			return true;
 		} catch (NumberFormatException e) {
+			setErrorMessage("Port values should be integers");
 			return false;
 		}
 
@@ -80,18 +79,17 @@ public class MainTab extends AbstractLaunchConfigurationTab implements
 
 	@Override
 	public boolean canSave() {
-		return (!commandPort.getText().isEmpty())
-				&& (!eventPort.getText().isEmpty());
+		return isDirty();
 	}
 
 	@Override
 	public String getMessage() {
-		return "Please select command and event ports.";
+		return ESBDebuggerConstants.ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_MESSAGE;
 	}
 
 	@Override
 	public String getName() {
-		return "Global";
+		return ESBDebuggerConstants.ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_TITLE;
 	}
 
 	@Override

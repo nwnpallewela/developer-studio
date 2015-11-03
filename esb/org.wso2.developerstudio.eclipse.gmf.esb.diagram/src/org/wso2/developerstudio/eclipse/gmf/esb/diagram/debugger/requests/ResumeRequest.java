@@ -17,7 +17,14 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 
+/**
+ * {@link ResumeRequest} represent the request event from {@link ESBDebugTarget}
+ * to {@link ESBDebugger} when {@link ESBDebugTarget} asks ESB Server for
+ * resume.
+ *
+ */
 public class ResumeRequest extends AbstractEvent implements IModelRequest {
 
 	public static final int STEP_OVER = 1;
@@ -28,6 +35,7 @@ public class ResumeRequest extends AbstractEvent implements IModelRequest {
 
 	public ResumeRequest(int type) {
 		mType = type;
+		mLineNumber = -1;
 	}
 
 	public ResumeRequest(int type, int lineNumber) {

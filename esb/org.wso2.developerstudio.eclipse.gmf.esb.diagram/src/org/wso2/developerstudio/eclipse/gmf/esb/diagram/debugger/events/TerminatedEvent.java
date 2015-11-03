@@ -19,6 +19,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 
+/**
+ * {@link TerminatedEvent} represent the request event from {@link ESBDebugger}
+ * to {@link ESBDebugTarget} when {@link ESBDebugger} notify Terminated action
+ * from ESB Server
+ */
+
 public class TerminatedEvent extends AbstractEvent implements IDebuggerEvent {
 
 }

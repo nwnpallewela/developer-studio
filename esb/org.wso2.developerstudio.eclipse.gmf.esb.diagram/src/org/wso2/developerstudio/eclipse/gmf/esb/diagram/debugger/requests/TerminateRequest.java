@@ -18,5 +18,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 
+/**
+ * {@link TerminateRequest} represent the request event from
+ * {@link ESBDebugTarget} to {@link ESBDebugger} when {@link ESBDebugTarget}
+ * asks ESB Server for terminate.
+ *
+ */
 public class TerminateRequest extends AbstractEvent implements IModelRequest {
 }

@@ -17,7 +17,14 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 
+/**
+ * {@link FetchVariablesRequest} represent the request event from
+ * {@link ESBDebugTarget} to {@link ESBDebugger} when property variables are
+ * required from suspended ESB Server.
+ *
+ */
 public class FetchVariablesRequest extends AbstractEvent implements
 		IModelRequest {
 }

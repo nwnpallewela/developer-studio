@@ -23,29 +23,43 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IEventProcessor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.IModelRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
-public class EventDispatchJob extends Job {
+/**
+ * {@link InternalEventDispatcher} manages the event communication between
+ * {@link ESBDebugger} and {@link ESBDebugTarget}
+ *
+ */
+public class InternalEventDispatcher extends Job {
 
-	private final List<IDebugEvent> mEvents = new ArrayList<IDebugEvent>();
-	private boolean mTerminated = false;
+	private final List<IDebugEvent> events = new ArrayList<IDebugEvent>();
+	private boolean terminated = false;
 	private final IEventProcessor debugTarget;
 	private final IEventProcessor debugger;
 
-	public EventDispatchJob(final IEventProcessor debugTarget,
-			final IEventProcessor debugger) {
-		super("ESB Mediation Debugger event dispatcher");
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
+	public InternalEventDispatcher(final IEventProcessor debugTarget,
+			final IEventProcessor debugger) {
+
+		super(ESBDebuggerConstants.ESB_DEBUGGER_EVENT_DISPATCH_JOB);
 		this.debugTarget = debugTarget;
 		this.debugger = debugger;
-
+		this.debugTarget.setEventDispatcher(this);
+		this.debugger.setEventDispatcher(this);
 		setSystem(true);
 	}
 
 	public void addEvent(final IDebugEvent event) {
-		synchronized (mEvents) {
-			mEvents.add(event);
+		synchronized (events) {
+			events.add(event);
 		}
 
 		synchronized (this) {
@@ -56,50 +70,50 @@ public class EventDispatchJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		while (!mTerminated) {
-			// wait for new events
-			if (mEvents.isEmpty()) {
+		while (!terminated) {
+			if (events.isEmpty()) {
 				try {
 					synchronized (this) {
 						wait();
 					}
-				} catch (InterruptedException e) {
+				} catch (InterruptedException ignore) {
+					// ignore this exception. This is for break wake the Job
 				}
 			}
 
 			if (!monitor.isCanceled()) {
-
 				IDebugEvent event = null;
-				synchronized (mEvents) {
-					if (!mEvents.isEmpty())
-						event = mEvents.remove(0);
+				synchronized (events) {
+					if (!events.isEmpty()) {
+						event = events.remove(0);
+					}
 				}
 
-				if (event != null)
-					handleEvent(event);
+				handleEvent(event);
 
-			} else
+			} else {
 				terminate();
+			}
 		}
 
 		return Status.OK_STATUS;
 	}
 
 	private void handleEvent(final IDebugEvent event) {
-		// forward event handling to target
 		if (event instanceof IModelRequest) {
 			debugger.handleEvent(event);
-		} else if (event instanceof IDebugEvent) {
+		} else if (event instanceof IDebuggerEvent) {
 			debugTarget.handleEvent(event);
 		} else {
-			throw new RuntimeException("Unknown event detected: " + event);
+			log.error("Unknown event type detected: " + event.toString());
+			throw new IllegalArgumentException("Unknown event type detected: "
+					+ event);
 		}
 	}
 
 	public void terminate() {
-		mTerminated = true;
+		terminated = true;
 
-		// wake up job
 		synchronized (this) {
 			notifyAll();
 		}

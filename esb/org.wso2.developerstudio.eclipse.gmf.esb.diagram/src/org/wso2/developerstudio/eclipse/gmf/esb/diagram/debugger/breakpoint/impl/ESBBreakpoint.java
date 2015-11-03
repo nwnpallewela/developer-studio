@@ -209,13 +209,6 @@ public class ESBBreakpoint extends Breakpoint {
 						+ this);
 	}
 
-	/**
-	 * 
-	 * @param breakpoint
-	 * @return boolean : true if breakpoints are matched or false
-	 * @throws BreakpointMarkerNotFoundException
-	 * @throws CoreException
-	 */
 	public boolean equals(ESBBreakpoint breakpoint)
 			throws BreakpointMarkerNotFoundException, CoreException {
 		if (breakpoint != null) {
@@ -224,6 +217,26 @@ public class ESBBreakpoint extends Breakpoint {
 		}
 		return false;
 
+	}
+
+	/**
+	 * @param breakpoint
+	 * @return boolean : true if breakpoints are matched or false
+	 * @throws BreakpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
+	@Override
+	public boolean equals(Object breakpoint) {
+		try {
+			return equals((ESBBreakpoint)breakpoint);
+		} catch (BreakpointMarkerNotFoundException | CoreException | ClassCastException e) {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	/**

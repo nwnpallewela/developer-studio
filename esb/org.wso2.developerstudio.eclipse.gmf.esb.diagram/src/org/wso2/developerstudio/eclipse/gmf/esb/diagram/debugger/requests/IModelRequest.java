@@ -16,6 +16,13 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
+
+/**
+ * {@link IModelRequest} interface should be implemented by Requests sending
+ * from {@link ESBDebugTarget} to {@link ESBDebugger}
+ *
+ */
 public interface IModelRequest {
 
 }

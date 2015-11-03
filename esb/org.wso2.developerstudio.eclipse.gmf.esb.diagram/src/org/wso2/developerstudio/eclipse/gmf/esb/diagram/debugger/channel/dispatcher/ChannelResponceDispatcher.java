@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebuggerInterface;
+import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
+import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
-public class ResponceDispatcher extends Thread {
+/**
+ * {@link ChannelResponceDispatcher} manages the responses communication between
+ * {@link ESBDebugger} and {@link ESBDebuggerInterface}
+ *
+ */
+public class ChannelResponceDispatcher extends Thread {
 	BufferedReader fRequestReader;
 	ESBDebuggerInterface esbDebuggerInterface;
+
+	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public void init(BufferedReader fRequestReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
@@ -37,12 +47,11 @@ public class ResponceDispatcher extends Thread {
 			while (true) {
 				if (fRequestReader.ready()) {
 					String buffer = fRequestReader.readLine();
-					System.out.println("Responce : " + buffer);
 					esbDebuggerInterface.notifyResponce(buffer);
 				}
 			}
-		} catch (IOException e) {
-			
+		} catch (IOException ex) {
+			log.error("I/O error occurred", ex);
 		}
 	}
 }
