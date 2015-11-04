@@ -30,14 +30,14 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  *
  */
 public class ChannelResponceDispatcher extends Thread {
-	BufferedReader fRequestReader;
+	BufferedReader requestReader;
 	ESBDebuggerInterface esbDebuggerInterface;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public void init(BufferedReader fRequestReader,
+	public void init(BufferedReader requestReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
-		this.fRequestReader = fRequestReader;
+		this.requestReader = requestReader;
 		this.esbDebuggerInterface = esbDebuggerInterface;
 	}
 
@@ -45,8 +45,8 @@ public class ChannelResponceDispatcher extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				if (fRequestReader.ready()) {
-					String buffer = fRequestReader.readLine();
+				if (requestReader.ready()) {
+					String buffer = requestReader.readLine();
 					esbDebuggerInterface.notifyResponce(buffer);
 				}
 			}

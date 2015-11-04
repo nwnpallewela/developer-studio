@@ -28,13 +28,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
  */
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Map<String, Object> mPosition;
+	private final Map<String, Object> position;
 
 	public SuspendedEvent(Map<String, Object> event) {
-		mPosition = event;
+		position = event;
 	}
 
 	public Map<String, Object> getDetail() {
-		return mPosition;
+		return position;
 	}
 }

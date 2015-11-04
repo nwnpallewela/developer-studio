@@ -17,6 +17,10 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
+
+	public static final String ESB_DEBUGGER_EVENT_BROKER_DATA_NAME ="org.eclipse.e4.data";
+	public static final String ESBDEBUGTARGET_EVENT_TOPIC = "ESBDebugTarget_Events";
+	public static final String ESBDEBUGGER_EVENT_TOPIC = "ESBDebugger_Events";
 	// ESB Debugger launch constants
 	public static final String LAUNCH_CONFIGURATION_TYPE_ID = "org.wso2.developerstudio.eclipse.esb.debugger.launch";
 	public static final String ESB_SERVER_LOCATION = "ESB server location";
@@ -25,7 +29,7 @@ public class ESBDebuggerConstants {
 	public static final String DEFAULT_COMMAND_PORT = "6006";
 	public static final String DEFAULT_EVENT_PORT = "6007";
 	public static final String ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_MESSAGE = "Please select command and event ports.";
-	public static final String ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_TITLE ="Global";
+	public static final String ESB_Debugger_LAUNCH_CONFIGURAION_MAIN_TAB_TITLE = "Global";
 
 	public static final String ESB_MEDIATION_DEBUGGER_NAME = "ESB Mediation Debugger";
 	public static final String ERROR_MESSAGE_TAG = "Error";

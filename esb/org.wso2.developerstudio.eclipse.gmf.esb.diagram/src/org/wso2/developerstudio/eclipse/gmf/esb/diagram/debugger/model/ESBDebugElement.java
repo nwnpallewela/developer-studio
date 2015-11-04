@@ -25,9 +25,9 @@ import org.eclipse.debug.core.model.IDisconnect;
 import org.eclipse.debug.core.model.IStep;
 import org.eclipse.debug.core.model.ISuspendResume;
 import org.eclipse.debug.core.model.ITerminate;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DisconnectRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest.ResumeRequestType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -80,7 +80,7 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void resume() {
 		getDebugTarget().fireModelEvent(
-				new ResumeRequest(ResumeRequest.CONTINUE));
+				new ResumeRequest(ResumeRequestType.CONTINUE));
 	}
 
 	@Override
@@ -98,7 +98,6 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void disconnect() {
 		getDebugTarget().fireModelEvent(new DisconnectRequest());
-		getDebugTarget().handleEvent(new TerminatedEvent());
 	}
 
 	@Override
@@ -151,7 +150,7 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void stepOver() {
 		getDebugTarget().fireModelEvent(
-				new ResumeRequest(ResumeRequest.STEP_OVER));
+				new ResumeRequest(ResumeRequestType.STEP_OVER));
 	}
 
 	@Override

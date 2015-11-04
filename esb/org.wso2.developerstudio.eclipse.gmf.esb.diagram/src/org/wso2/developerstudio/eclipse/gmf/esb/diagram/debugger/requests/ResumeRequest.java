@@ -27,27 +27,28 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugge
  */
 public class ResumeRequest extends AbstractEvent implements IModelRequest {
 
-	public static final int STEP_OVER = 1;
-	public static final int CONTINUE = 2;
-
-	private final int mType;
-	private int mLineNumber;
-
-	public ResumeRequest(int type) {
-		mType = type;
-		mLineNumber = -1;
+	public enum ResumeRequestType {
+		STEP_OVER, CONTINUE
 	}
 
-	public ResumeRequest(int type, int lineNumber) {
+	private final ResumeRequestType type;
+	private int lineNumber;
+
+	public ResumeRequest(ResumeRequestType type) {
+		this.type = type;
+		lineNumber = -1;
+	}
+
+	public ResumeRequest(ResumeRequestType type, int lineNumber) {
 		this(type);
-		mLineNumber = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 
-	public int getType() {
-		return mType;
+	public ResumeRequestType getType() {
+		return type;
 	}
 
 	public int getLineNumber() {
-		return mLineNumber;
+		return lineNumber;
 	}
 }

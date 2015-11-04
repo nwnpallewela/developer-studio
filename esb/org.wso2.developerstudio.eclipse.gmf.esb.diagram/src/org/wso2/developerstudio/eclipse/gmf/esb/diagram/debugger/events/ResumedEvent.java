@@ -26,16 +26,17 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
  */
 public class ResumedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	public static final int STEPPING = 1;
-	public static final int CONTINUE = 2;
-
-	private final int mType;
-
-	public ResumedEvent(int type) {
-		mType = type;
+	public enum ResumeEventType{
+		STEPPING,CONTINUE
 	}
 
-	public int getType() {
-		return mType;
+	private final ResumeEventType type;
+
+	public ResumedEvent(ResumeEventType type) {
+		this.type = type;
+	}
+
+	public ResumeEventType getType() {
+		return type;
 	}
 }

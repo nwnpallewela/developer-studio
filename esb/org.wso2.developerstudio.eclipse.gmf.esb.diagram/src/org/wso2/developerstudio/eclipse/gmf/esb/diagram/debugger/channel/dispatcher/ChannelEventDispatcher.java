@@ -31,13 +31,13 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  */
 public class ChannelEventDispatcher extends Thread {
 
-	BufferedReader fEventReader;
+	BufferedReader eventReader;
 	ESBDebuggerInterface esbDebuggerInterface;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public void init(BufferedReader fEventReader,
+	public void init(BufferedReader eventReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
-		this.fEventReader = fEventReader;
+		this.eventReader = eventReader;
 		this.esbDebuggerInterface = esbDebuggerInterface;
 	}
 
@@ -45,8 +45,8 @@ public class ChannelEventDispatcher extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				if (fEventReader.ready()) {
-					String buffer = fEventReader.readLine();
+				if (eventReader.ready()) {
+					String buffer = eventReader.readLine();
 					esbDebuggerInterface.notifyEvent(buffer);
 				}
 			}

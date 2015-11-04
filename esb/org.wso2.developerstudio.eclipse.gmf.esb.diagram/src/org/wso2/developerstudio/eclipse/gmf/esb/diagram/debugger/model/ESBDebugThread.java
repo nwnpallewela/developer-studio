@@ -25,19 +25,19 @@ import org.eclipse.debug.core.model.IThread;
 
 public class ESBDebugThread extends ESBDebugElement implements IThread {
 
-	private final List<ESBStackFrame> mStackFrames = new ArrayList<>();
+	private final List<ESBStackFrame> stackFrames = new ArrayList<>();
 
 	public ESBDebugThread(final ESBDebugTarget debugTarget) {
 		super(debugTarget);
 	}
 
 	public void addStackFrame(ESBStackFrame stackFrame) {
-		mStackFrames.add(0, stackFrame);
+		stackFrames.add(0, stackFrame);
 	}
 
 	@Override
 	public ESBStackFrame[] getStackFrames() {
-		return mStackFrames.toArray(new ESBStackFrame[mStackFrames.size()]);
+		return stackFrames.toArray(new ESBStackFrame[stackFrames.size()]);
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public class ESBDebugThread extends ESBDebugElement implements IThread {
 
 	@Override
 	public ESBStackFrame getTopStackFrame() {
-		if (!mStackFrames.isEmpty())
-			return mStackFrames.get(0);
+		if (!stackFrames.isEmpty())
+			return stackFrames.get(0);
 
 		return null;
 	}

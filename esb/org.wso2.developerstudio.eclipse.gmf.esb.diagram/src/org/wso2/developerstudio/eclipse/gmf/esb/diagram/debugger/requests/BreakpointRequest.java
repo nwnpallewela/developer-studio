@@ -36,24 +36,24 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 		ADDED, REMOVED, MODIFIED
 	}
 
-	private final BreakpointEventAction mType;
-	private final int mLine;
+	private final BreakpointEventAction type;
+	private final int lineNumber;
 	private final Map<String, Object> breakpointAttributes;
 
 	public BreakpointRequest(ESBBreakpoint breakpoint,
 			BreakpointEventAction action)
 			throws BreakpointMarkerNotFoundException, CoreException {
-		mType = action;
-		mLine = breakpoint.getLineNumber();
+		type = action;
+		lineNumber = breakpoint.getLineNumber();
 		breakpointAttributes = breakpoint.getLocation();
 	}
 
 	public BreakpointEventAction getType() {
-		return mType;
+		return type;
 	}
 
 	public int getLine() {
-		return mLine;
+		return lineNumber;
 	}
 
 	public Map<String, Object> getBreakpointAttributes() {

@@ -32,19 +32,19 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 
 public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
-	private final IThread mThread;
-	private int mLineNumber = 1;
-	private List<IVariable> mVariables = new ArrayList<>();
+	private final IThread thread;
+	private int lineNumber = 1;
+	private List<IVariable> variables = new ArrayList<>();
 	private ESBVariable properties = null;
-	private boolean mDirtyVariables = true;
+	private boolean variablesDirty = true;
 
 	public ESBStackFrame(IDebugTarget target, IThread thread) {
 		super(target);
-		mThread = thread;
+		this.thread = thread;
 		try {
 			properties = new ESBVariable(target, "Properties",
 					"{Properties:Message properties list}");
-			mVariables = ((ESBValue) properties.getValue()).getVariableList();
+			variables = ((ESBValue) properties.getValue()).getVariableList();
 		} catch (DebugException e) {
 
 		}
@@ -52,17 +52,17 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 	@Override
 	public IThread getThread() {
-		return mThread;
+		return thread;
 	}
 
 	@Override
 	public synchronized IVariable[] getVariables() {
-		if (mDirtyVariables) {
-			mDirtyVariables = false;
+		if (variablesDirty) {
+			variablesDirty = false;
 			getDebugTarget().fireModelEvent(new FetchVariablesRequest());
 		}
 
-		return mVariables.toArray(new IVariable[mVariables.size()]);
+		return variables.toArray(new IVariable[variables.size()]);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 	@Override
 	public int getLineNumber() {
-		return mLineNumber;
+		return lineNumber;
 	}
 
 	@Override
@@ -96,16 +96,16 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 	}
 
 	public void setLineNumber(int lineNumber) {
-		mLineNumber = lineNumber;
+		this.lineNumber = lineNumber;
 	}
 
-	public synchronized void setVariables(Map<String, String> variables)
+	public synchronized void setVariables(Map<String, String> newVariables)
 			throws DebugException {
-		for (String name : variables.keySet()) {
+		for (String name : newVariables.keySet()) {
 			boolean processed = false;
-			for (IVariable variable : mVariables) {
+			for (IVariable variable : variables) {
 				if (variable.getName().equals(getPresentingName(name))) {
-					variable.setValue(variables.get(name));
+					variable.setValue(newVariables.get(name));
 					((ESBVariable) variable)
 							.fireChangeEvent(DebugEvent.CONTENT);
 					processed = true;
@@ -115,8 +115,8 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 			if (!processed) {
 				ESBVariable textVariable = new ESBVariable(getDebugTarget(),
-						getPresentingName(name), variables.get(name));
-				mVariables.add(textVariable);
+						getPresentingName(name), newVariables.get(name));
+				variables.add(textVariable);
 				textVariable.fireCreationEvent();
 			}
 		}
@@ -124,7 +124,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 
 	@Override
 	public synchronized void fireChangeEvent(int detail) {
-		mDirtyVariables = true;
+		variablesDirty = true;
 
 		super.fireChangeEvent(detail);
 	}

@@ -32,12 +32,12 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatc
 
 public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
-	private Socket fRequestSocket;
-	private PrintWriter fRequestWriter;
-	private BufferedReader fRequestReader;
+	private Socket requestSocket;
+	private PrintWriter requestWriter;
+	private BufferedReader requestReader;
 
-	private Socket fEventSocket;
-	private BufferedReader fEventReader;
+	private Socket eventSocket;
+	private BufferedReader eventReader;
 
 	private ChannelEventDispatcher eventDispatcher;
 	private ChannelResponceDispatcher responceDispatcher;
@@ -71,44 +71,44 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void setfRequestSocket(int commandPort) throws IOException {
-		this.fRequestSocket = new Socket("localhost", commandPort);
+		this.requestSocket = new Socket("localhost", commandPort);
 	}
 
 	@Override
 	public void setfRequestWriter() throws IOException {
-		this.fRequestWriter = new PrintWriter(fRequestSocket.getOutputStream());
+		this.requestWriter = new PrintWriter(requestSocket.getOutputStream());
 	}
 
 	@Override
 	public void setfRequestReader() throws IOException {
-		this.fRequestReader = new BufferedReader(new InputStreamReader(
-				fRequestSocket.getInputStream()));
+		this.requestReader = new BufferedReader(new InputStreamReader(
+				requestSocket.getInputStream()));
 	}
 
 	@Override
 	public void setfEventSocket(int eventPort) throws IOException {
-		this.fEventSocket = new Socket("localhost", eventPort);
+		this.eventSocket = new Socket("localhost", eventPort);
 	}
 
 	@Override
 	public void setfEventReader() throws IOException {
-		this.fEventReader = new BufferedReader(new InputStreamReader(
-				fEventSocket.getInputStream()));
+		this.eventReader = new BufferedReader(new InputStreamReader(
+				eventSocket.getInputStream()));
 	}
 
 	@Override
 	public PrintWriter getfRequestWriter() {
-		return fRequestWriter;
+		return requestWriter;
 	}
 
 	@Override
 	public BufferedReader getfRequestReader() {
-		return fRequestReader;
+		return requestReader;
 	}
 
 	@Override
 	public BufferedReader getfEventReader() {
-		return fEventReader;
+		return eventReader;
 	}
 
 	@Override
@@ -133,8 +133,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void sendCommand(String command) {
-		fRequestWriter.println(messageChannel.createCommand(command));
-		fRequestWriter.flush();
+		requestWriter.println(messageChannel.createCommand(command));
+		requestWriter.flush();
 	}
 
 	public void notifyEvent(String buffer) {
@@ -153,18 +153,18 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void sendGetPropertiesCommand(Map<String, Object> attributeValues) {
-		fRequestWriter.println(messageChannel
+		requestWriter.println(messageChannel
 				.createGetPropertiesCommand(attributeValues));
-		fRequestWriter.flush();
+		requestWriter.flush();
 
 	}
 
 	@Override
 	public void sendBreakpointCommand(String operation, String type,
 			Map<String, Object> attributeValues) {
-		fRequestWriter.println(messageChannel.createBreakpointCommand(
+		requestWriter.println(messageChannel.createBreakpointCommand(
 				operation, type, attributeValues));
-		fRequestWriter.flush();
+		requestWriter.flush();
 
 	}
 

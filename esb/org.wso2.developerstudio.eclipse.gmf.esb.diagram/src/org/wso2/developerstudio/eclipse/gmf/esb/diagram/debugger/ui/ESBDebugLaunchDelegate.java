@@ -29,8 +29,6 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
@@ -63,19 +61,11 @@ public class ESBDebugLaunchDelegate implements ILaunchConfigurationDelegate {
 					ESBDebuggerConstants.EVENT_PORTUI_TAG,
 					ESBDebuggerConstants.DEFAULT_COMMAND_PORT));
 
-			IESBDebugger esbDebugger = new ESBDebugger(commandPort, eventPort);
-
+			ESBDebugger esbDebugger = new ESBDebugger(commandPort, eventPort);
 			ESBDebugTarget debugTarget = new ESBDebugTarget(launch);
 
-			InternalEventDispatcher dispatcher = new InternalEventDispatcher(debugTarget,
-					esbDebugger);
-			dispatcher.schedule();
-
-			esbDebugger.setEventDispatcher(dispatcher);
-			debugTarget.setEventDispatcher(dispatcher);
-
 			launch.addDebugTarget(debugTarget);
-			debugTarget.handleEvent(new DebuggerStartedEvent());
+			esbDebugger.fireEvent(new DebuggerStartedEvent());
 
 		} catch (UnknownHostException e) {
 			log.error("IP address of the host could not be determined.", e);

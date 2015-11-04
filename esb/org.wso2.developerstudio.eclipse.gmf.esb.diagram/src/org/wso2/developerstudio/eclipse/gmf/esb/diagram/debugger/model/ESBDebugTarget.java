@@ -31,31 +31,35 @@ import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.ui.PlatformUI;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.dispatcher.InternalEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.MediationFlowCompleteEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent.ResumeEventType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IEventProcessor;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest.BreakpointEventAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
-		IEventProcessor {
+		EventHandler {
 
-	private InternalEventDispatcher dispatcher;
+	private IEventBroker debugTargetEventBroker;
 	private final ESBDebugProcess esbDebugProcess;
 	private final List<ESBDebugThread> esbDebugThreads = new ArrayList<ESBDebugThread>();
 	private final ILaunch esbDebugerLaunch;
@@ -64,6 +68,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	public ESBDebugTarget(final ILaunch launch) {
 		super(null);
+		debugTargetEventBroker = (IEventBroker) PlatformUI.getWorkbench()
+				.getService(IEventBroker.class);
+		debugTargetEventBroker.subscribe(
+				ESBDebuggerConstants.ESBDEBUGGER_EVENT_TOPIC, this);
 		esbDebugerLaunch = launch;
 		fireCreationEvent();
 		esbDebugProcess = new ESBDebugProcess(this);
@@ -71,30 +79,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	}
 
 	@Override
-	public void setEventDispatcher(final InternalEventDispatcher dispatcher) {
-		this.dispatcher = dispatcher;
-	}
-
-	/**
-	 * Pass an event to the {@link InternalEventDispatcher} where it is handled
-	 * asynchronously.
-	 * 
-	 * @param event
-	 *            event to handle
-	 */
-	void fireModelEvent(final IDebugEvent event) {
-		dispatcher.addEvent(event);
-	}
-
-	/**
-	 * Handles events sent from {@link ESBDebugger} through
-	 * {@link InternalEventDispatcher}
-	 */
-	@Override
-	public void handleEvent(final IDebugEvent event) {
-
+	public void handleEvent(Event eventFromBroker) {
 		if (!isDisconnected()) {
-
+			IDebugEvent event = (IDebugEvent) eventFromBroker
+					.getProperty(ESBDebuggerConstants.ESB_DEBUGGER_EVENT_BROKER_DATA_NAME);
 			if (event instanceof DebuggerStartedEvent) {
 				ESBDebugThread thread = new ESBDebugThread(this);
 				esbDebugThreads.add(thread);
@@ -121,7 +109,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				fireModelEvent(new FetchVariablesRequest());
 
 			} else if (event instanceof ResumedEvent) {
-				if (((ResumedEvent) event).getType() == ResumedEvent.CONTINUE) {
+				if (((ResumedEvent) event).getType() == ResumeEventType.CONTINUE) {
 					setState(ESBDebuggerState.RESUMED);
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
 				}
@@ -141,12 +129,25 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpointListener(this);
 
-				dispatcher.terminate();
+				// dispatcher.terminate();
 			} else if (event instanceof MediationFlowCompleteEvent) {
 				setState(ESBDebuggerState.RESUMED);
 				OpenEditorUtil.removeBreakpointHitStatus();
 			}
 		}
+
+	}
+
+	/**
+	 * Pass an event to the {@link InternalEventDispatcher} where it is handled
+	 * asynchronously.
+	 * 
+	 * @param event
+	 *            event to handle
+	 */
+	void fireModelEvent(final IDebugEvent event) {
+		debugTargetEventBroker.send(
+				ESBDebuggerConstants.ESBDEBUGTARGET_EVENT_TOPIC, event);
 	}
 
 	/**
@@ -199,7 +200,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public ESBDebugThread[] getThreads() {
-		return esbDebugThreads.toArray(new ESBDebugThread[esbDebugThreads.size()]);
+		return esbDebugThreads.toArray(new ESBDebugThread[esbDebugThreads
+				.size()]);
 	}
 
 	@Override

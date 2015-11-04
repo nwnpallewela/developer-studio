@@ -32,14 +32,14 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  */
 public class ESBVariable extends ESBDebugElement implements IVariable {
 
-	private final String mName;
-	private ESBValue mValue;
+	private final String variableName;
+	private ESBValue variableValue;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	protected ESBVariable(IDebugTarget target, String name, String value)
 			throws DebugException {
 		super(target);
-		mName = name;
+		variableName = name;
 		setValue(value);
 	}
 
@@ -51,7 +51,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	@Override
 	public void setValue(String expression) throws DebugException {
 		try {
-			mValue = new ESBValue(getDebugTarget(), expression);
+			variableValue = new ESBValue(getDebugTarget(), expression);
 		} catch (JSONException e) {
 			log.warn(
 					"ESBVariable values extraction from json property messages failed",
@@ -64,7 +64,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	 */
 	@Override
 	public void setValue(IValue value) {
-		mValue = (ESBValue) value;
+		variableValue = (ESBValue) value;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	 */
 	@Override
 	public IValue getValue() {
-		return mValue;
+		return variableValue;
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	 */
 	@Override
 	public String getName() {
-		return mName;
+		return variableName;
 	}
 
 	/**

@@ -28,13 +28,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
  */
 public class VariablesEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Map<String, String> mVariables;
+	private final Map<String, String> variables;
 
 	public VariablesEvent(Map<String, String> variables) {
-		mVariables = variables;
+		this.variables = variables;
 	}
 
 	public Map<String, String> getVariables() {
-		return mVariables;
+		return variables;
 	}
 }
