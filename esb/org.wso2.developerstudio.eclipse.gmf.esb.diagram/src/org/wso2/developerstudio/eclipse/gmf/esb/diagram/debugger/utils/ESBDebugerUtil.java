@@ -24,17 +24,16 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
@@ -67,6 +66,22 @@ public class ESBDebugerUtil {
 	private static final String SPACE_CHARACTER = " ";
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
+
+	public static void popUpErrorDialog(Exception e, final String message) {
+		log.error(e.getMessage(), e);
+		String simpleMessage = e.getMessage();
+		final IStatus editorStatus = new Status(IStatus.ERROR,
+				Activator.PLUGIN_ID, simpleMessage);
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				ErrorDialog.openError(Display.getDefault().getActiveShell(),
+						ESBDebuggerConstants.ERROR_MESSAGE_TAG, message,
+						editorStatus);
+
+			}
+		});
+	}
 
 	/**
 	 * Remove breakpoint from Breakpoint Manager

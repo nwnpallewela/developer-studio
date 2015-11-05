@@ -58,12 +58,11 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void intializeDispatchers() {
 
-		eventDispatcher = new ChannelEventDispatcher();
-		eventDispatcher.init(getfEventReader(), this);
+		eventDispatcher = new ChannelEventDispatcher(getfEventReader(), this);
 		eventDispatcher.start();
 
-		responceDispatcher = new ChannelResponceDispatcher();
-		responceDispatcher.init(getfRequestReader(), this);
+		responceDispatcher = new ChannelResponceDispatcher(getfRequestReader(),
+				this);
 		responceDispatcher.start();
 
 		messageChannel = new JsonJettisonMessageChannel();
@@ -127,7 +126,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void setResponceDispatcher(ChannelResponceDispatcher responceDispatcher) {
+	public void setResponceDispatcher(
+			ChannelResponceDispatcher responceDispatcher) {
 		this.responceDispatcher = responceDispatcher;
 	}
 
@@ -162,10 +162,19 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void sendBreakpointCommand(String operation, String type,
 			Map<String, Object> attributeValues) {
-		requestWriter.println(messageChannel.createBreakpointCommand(
-				operation, type, attributeValues));
+		requestWriter.println(messageChannel.createBreakpointCommand(operation,
+				type, attributeValues));
 		requestWriter.flush();
 
+	}
+
+	@Override
+	public void terminate() {
+		eventDispatcher.terminate();
+		responceDispatcher.terminate();
+		// requestSocket.shutdownInput();
+		// requestSocket.shutdownOutput();
+		// requestSocket.shutdownInput();
 	}
 
 }

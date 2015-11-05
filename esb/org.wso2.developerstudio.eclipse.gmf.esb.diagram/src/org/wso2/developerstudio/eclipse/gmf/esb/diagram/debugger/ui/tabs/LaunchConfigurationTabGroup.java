@@ -21,10 +21,17 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
-public class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
+/**
+ * {@link LaunchConfigurationTabGroup} decides the tabs to be in ESB Debugger
+ * Configuration menu
+ */
+public class LaunchConfigurationTabGroup extends
+		AbstractLaunchConfigurationTabGroup {
 
-    @Override
-    public void createTabs(final ILaunchConfigurationDialog dialog, final String mode) {
-        setTabs(new ILaunchConfigurationTab[] { new DebuggerConfigTab(), new CommonTab() });
-    }
+	@Override
+	public void createTabs(final ILaunchConfigurationDialog dialog,
+			final String mode) {
+		setTabs(new ILaunchConfigurationTab[] { new DebuggerConfigTab(),
+				new CommonTab() });
+	}
 }

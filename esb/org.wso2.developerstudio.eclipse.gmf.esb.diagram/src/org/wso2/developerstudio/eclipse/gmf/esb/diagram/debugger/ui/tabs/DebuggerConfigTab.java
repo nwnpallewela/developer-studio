@@ -29,6 +29,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
+/**
+ * {@link DebuggerConfigTab} implements the UI tab in Debugger configuration for
+ * ESB Debugger
+ */
 public class DebuggerConfigTab extends AbstractLaunchConfigurationTab implements
 		ILaunchConfigurationTab {
 	private Text commandPort;
@@ -58,8 +62,8 @@ public class DebuggerConfigTab extends AbstractLaunchConfigurationTab implements
 
 		configuration.setAttribute(ESBDebuggerConstants.COMMAND_PORT_UI_TAG,
 				commandPort.getText().toString());
-		configuration.setAttribute(ESBDebuggerConstants.EVENT_PORTUI_TAG, eventPort
-				.getText().toString());
+		configuration.setAttribute(ESBDebuggerConstants.EVENT_PORTUI_TAG,
+				eventPort.getText().toString());
 	}
 
 	@Override

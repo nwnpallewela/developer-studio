@@ -35,6 +35,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDe
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceContainer2EditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceFaultContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceSequenceAndEndpointContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SynapseAPIAPICompartmentEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
@@ -197,7 +198,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 					decreaseBreakpointPosition(breakpontList);
 				}
 			}
-		} else {
+		} else if (proxyContainer instanceof ProxyServiceFaultContainerEditPart) {
 			List<Integer> position = getMediatorPositionInFaultSeq(apiResource
 					.getContainer().getFaultContainer().getMediatorFlow()
 					.getChildren(), abstractMediator);
@@ -210,6 +211,10 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			} else {
 				decreaseBreakpointPosition(breakpontList);
 			}
+		} else {
+			throw new IllegalArgumentException(
+					"Selected Metdiator Edit Part is in a unknown position : "
+							+ proxyContainer.toString());
 		}
 	}
 }

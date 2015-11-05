@@ -61,4 +61,6 @@ public interface IESBDebuggerInterface {
 
 	public void sendGetPropertiesCommand(Map<String, Object> attributeValues);
 
+	public void terminate();
+
 }

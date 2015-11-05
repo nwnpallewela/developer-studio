@@ -110,6 +110,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	@Override
 	public void terminated() {
 		fireEvent(new TerminatedEvent());
+		debuggerInterface.terminate();
 	}
 
 	private void sendBreakpointForServer(BreakpointRequest event) {

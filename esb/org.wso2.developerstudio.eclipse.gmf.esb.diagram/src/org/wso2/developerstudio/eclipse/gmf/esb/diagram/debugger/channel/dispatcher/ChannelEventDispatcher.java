@@ -31,20 +31,22 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  */
 public class ChannelEventDispatcher extends Thread {
 
-	BufferedReader eventReader;
-	ESBDebuggerInterface esbDebuggerInterface;
+	private BufferedReader eventReader;
+	private ESBDebuggerInterface esbDebuggerInterface;
+	private boolean terminate;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public void init(BufferedReader eventReader,
+	public ChannelEventDispatcher(BufferedReader eventReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
 		this.eventReader = eventReader;
 		this.esbDebuggerInterface = esbDebuggerInterface;
+
 	}
 
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (!terminate) {
 				if (eventReader.ready()) {
 					String buffer = eventReader.readLine();
 					esbDebuggerInterface.notifyEvent(buffer);
@@ -53,6 +55,10 @@ public class ChannelEventDispatcher extends Thread {
 		} catch (IOException ex) {
 			log.error("I/O error occurred", ex);
 		}
+	}
+
+	public void terminate() {
+		terminate = true;
 	}
 
 }

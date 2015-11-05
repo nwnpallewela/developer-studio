@@ -31,6 +31,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDe
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceContainerEditPart;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceFaultContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceSequenceAndEndpointContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
@@ -71,12 +72,16 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 						ESBDebuggerConstants.PROXY_INSEQ);
 			}
-		} else {
+		} else if (container instanceof ProxyServiceFaultContainerEditPart) {
 			position = getMediatorPositionInFaultSeq(proxy.getContainer()
 					.getFaultContainer().getMediatorFlow().getChildren(),
 					selection);
 			attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 					getFaultSequenceName(proxy));
+		} else {
+			throw new IllegalArgumentException(
+					"Selected Metdiator Edit Part is in a unknown position : "
+							+ container.toString());
 		}
 		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 		return new ESBBreakpoint(resource, lineNumber, attributeMap);
