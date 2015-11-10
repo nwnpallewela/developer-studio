@@ -42,16 +42,16 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	public GridData tempConstraintPropertyValueRectangle;
 	public RoundedRectangle tempPropertyValueRectangle1;
 	private WrappingLabel propertyNameLabel;
-	private RoundedRectangle mainImageRectangle;
+	protected RoundedRectangle mainImageRectangle;
 	static int Figure_PreferredWidth = FixedSizedAbstractMediator.FigureWidth;
 	static int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20; //Additional 20 to show the editable label
 	static int Image_PreferredWidth = 75;
 	static int Image_PreferredHeight = 42;
 	static int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2; //equals to 10
 	static int marginHeight = 10;
-	private LayeredPane pane; 
-	private Layer figureLayer;
-	private Layer breakpointLayer;
+	protected LayeredPane pane; 
+	protected Layer figureLayer;
+	protected Layer breakpointLayer;
 	protected String toolTipMessage;
 	
 	public void setToolTipMessage(String message){

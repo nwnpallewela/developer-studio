@@ -17,6 +17,7 @@ import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.Shape;
@@ -510,7 +511,7 @@ public class CloudConnectorOperationEditPart extends FixedSizedAbstractMediator 
 		int Figure_PreferredWidth = FixedSizedAbstractMediator.FigureWidth;
 		int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20; //Additional 20 to show the editable label
 		int Image_PreferredWidth = 75;
-		int Image_PreferredHeight = 52;
+		int Image_PreferredHeight = 48;
 		int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2; //equals to 10
 		int marginHeight = 10;
 
@@ -558,16 +559,16 @@ public class CloudConnectorOperationEditPart extends FixedSizedAbstractMediator 
 			ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure(iconPath, Image_PreferredWidth,
 					Image_PreferredHeight);
 
-			RoundedRectangle mainImageRectangle = new RoundedRectangle();
+			mainImageRectangle = new RoundedRectangle();
 			mainImageRectangle.setCornerDimensions(new Dimension(8, 8));
 			mainImageRectangle.setOutline(false);
 			mainImageRectangle.setPreferredSize(new Dimension(Image_PreferredWidth, Image_PreferredHeight));
 			mainImageRectangle.add(iconImageFigure);
-			this.removeAll();
-			this.add(mainImageRectangle, constraintMainImageRectangle);
-			this.add(tempPropertyValueRectangle1, tempConstraintPropertyValueRectangle);
+			figureLayer.removeAll();
+			figureLayer.add(mainImageRectangle, constraintMainImageRectangle);
+			figureLayer.add(tempPropertyValueRectangle1, tempConstraintPropertyValueRectangle);
 		}
-
+		
 		/**
 		 * @generated
 		 */

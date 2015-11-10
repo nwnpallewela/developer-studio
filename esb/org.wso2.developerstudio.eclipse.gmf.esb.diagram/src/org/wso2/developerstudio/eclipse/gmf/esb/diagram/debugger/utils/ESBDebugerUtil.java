@@ -49,6 +49,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.buil
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.CloudConnectorOperationEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -149,8 +150,13 @@ public class ESBDebugerUtil {
 
 	public static void addBreakpointMark(AbstractMediator part) {
 		if (part instanceof FixedSizedAbstractMediator) {
-			((FixedSizedAbstractMediator) part).getPrimaryShape()
-					.addBreakpointMark();
+			if (part instanceof CloudConnectorOperationEditPart) {
+				((CloudConnectorOperationEditPart) part).getPrimaryShape()
+				.addBreakpointMark();
+			} else {
+				((FixedSizedAbstractMediator) part).getPrimaryShape()
+						.addBreakpointMark();
+			}
 		} else if (part instanceof complexFiguredAbstractMediator) {
 			RoundedRectangle shape = ((complexFiguredAbstractMediator) part)
 					.getPrimaryShape();
