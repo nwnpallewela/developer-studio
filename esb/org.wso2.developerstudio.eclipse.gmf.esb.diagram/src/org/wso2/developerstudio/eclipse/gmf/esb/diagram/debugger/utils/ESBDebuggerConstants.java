@@ -18,8 +18,9 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 
+	public static final String ESB_DEBUG_THREAD_NAME ="ESB Debug Thread";
 	public static final String ESB_DEBUGGER_EVENT_BROKER_DATA_NAME ="org.eclipse.e4.data";
-	public static final String ESBDEBUGTARGET_EVENT_TOPIC = "ESBDebugTarget_Events";
+	public static final String ESB_DEBUG_TARGET_EVENT_TOPIC = "ESBDebugTarget_Events";
 	public static final String ESBDEBUGGER_EVENT_TOPIC = "ESBDebugger_Events";
 	// ESB Debugger launch constants
 	public static final String LAUNCH_CONFIGURATION_TYPE_ID = "org.wso2.developerstudio.eclipse.esb.debugger.launch";

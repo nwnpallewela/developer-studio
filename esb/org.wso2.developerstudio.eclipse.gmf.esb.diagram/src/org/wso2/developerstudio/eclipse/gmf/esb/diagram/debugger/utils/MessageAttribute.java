@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * {@link MessageAttribute} is a node class in communication message model tree
+ *
+ */
 public class MessageAttribute {
 
 	private Map<String, MessageAttribute> childAttributes;
@@ -38,7 +42,7 @@ public class MessageAttribute {
 		return childAttributes.get(key);
 	}
 
-	public Set<String> getAttributes() {
+	public Set<String> getAttributeKeySet() {
 		return childAttributes.keySet();
 	}
 

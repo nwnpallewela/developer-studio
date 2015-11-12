@@ -18,13 +18,14 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
 import java.util.Map;
 
-public class JsonGsonMessageChannel implements IChannelCommunication {
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
+
+public class JsonGsonMessageChannel implements ICommunicationMessageFactory {
 
 	@Override
-	public String createCommand(String command) {
+	public String createCommand(ESBDebuggerCommands command) {
 		return null;
 	}
-
 
 	@Override
 	public String createGetPropertiesCommand(Map<String, Object> attributeValues) {
@@ -32,30 +33,22 @@ public class JsonGsonMessageChannel implements IChannelCommunication {
 		return null;
 	}
 
-
 	@Override
-	public String createBreakpointCommand(String operation, String type,
-			Map<String, Object> attributeValues) {
+	public String createBreakpointCommand(Map<String, Object> attributeValues) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
 	@Override
-	public Map<String, Object> getResponce(String responce) {
+	public Map<String, Object> convertResponseMessageToMap(String responce) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
 	@Override
-	public Map<String, Object> getEvent(String buffer) {
+	public Map<String, Object> convertEventMessageToMap(String buffer) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-	
 
 }
-

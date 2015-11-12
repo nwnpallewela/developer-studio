@@ -19,6 +19,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * This class has the message model formats defined for communicate with ESB
+ * Server Debugger
+ *
+ */
 public class DebuggerCommunicationMessageModel {
 
 	private static Map<String, MessageAttribute> messageModels;
@@ -26,47 +31,68 @@ public class DebuggerCommunicationMessageModel {
 
 	private DebuggerCommunicationMessageModel() {
 	}
-	
-	public static void populateMessageModels(){
-		if(messageModels == null){
-		messageModels = new LinkedHashMap<String, MessageAttribute>();
-		breakpointRoot = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
-		addBreakpointModels();
-		addGetContextPropertyModel();
-		addChangeContextPropertyModel();
-		addResumeModel();
+
+	/**
+	 * This method create message model formats to send ESB Server
+	 */
+	public static void populateMessageModels() {
+		if (messageModels == null) {
+			messageModels = new LinkedHashMap<String, MessageAttribute>();
+			breakpointRoot = new MessageAttribute(
+					new LinkedHashMap<String, MessageAttribute>());
+			addBreakpointModels();
+			addGetContextPropertyModel();
+			addChangeContextPropertyModel();
+			addResumeModel();
 		}
 	}
+
+	/**
+	 * This method add Get Context Property message model format to map
+	 */
 	private static void addGetContextPropertyModel() {
-		MessageAttribute structure = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute structure = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		structure.put(ESBDebuggerConstants.COMMAND, null);
 		structure.put(ESBDebuggerConstants.COMMAND_ARGUMENT, null);
 		structure.put(ESBDebuggerConstants.CONTEXT, null);
-		MessageAttribute propertyAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute propertyAttribute = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		propertyAttribute.put(ESBDebuggerConstants.PROPERTY_NAME, null);
 		structure.put(ESBDebuggerConstants.PROPERTY, propertyAttribute);
 		messageModels.put(ESBDebuggerConstants.GET_PROPERTY, structure);
 	}
-	
+
+	/**
+	 * This method add Change Context Property message model format to map
+	 */
 	private static void addChangeContextPropertyModel() {
-		MessageAttribute structure = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute structure = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		structure.put(ESBDebuggerConstants.COMMAND, null);
 		structure.put(ESBDebuggerConstants.COMMAND_ARGUMENT, null);
 		structure.put(ESBDebuggerConstants.CONTEXT, null);
-		MessageAttribute propertyAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute propertyAttribute = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		propertyAttribute.put(ESBDebuggerConstants.PROPERTY_NAME, null);
 		propertyAttribute.put(ESBDebuggerConstants.PROPERTY_VALUE, null);
 		structure.put(ESBDebuggerConstants.PROPERTY, propertyAttribute);
 		messageModels.put(ESBDebuggerConstants.CHANGE_PROPERTY, structure);
 	}
-	
+
+	/**
+	 * This method add Resume message model format to map
+	 */
 	private static void addResumeModel() {
-		MessageAttribute structure = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute structure = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		structure.put(ESBDebuggerConstants.COMMAND, null);
 		messageModels.put(ESBDebuggerConstants.RESUME, structure);
 	}
-	
-	
+
+	/**
+	 * This method invoke methods to add breakpoint models
+	 */
 	private static void addBreakpointModels() {
 		addBreakpointModel(ESBDebuggerConstants.SEQUENCE);
 		addBreakpointModel(ESBDebuggerConstants.TEMPLATE);
@@ -75,33 +101,44 @@ public class DebuggerCommunicationMessageModel {
 		addBreakpointModel(ESBDebuggerConstants.API);
 	}
 
+	/**
+	 * This method add specified breakpoint message model to map
+	 * 
+	 * @param type
+	 */
 	private static void addBreakpointModel(String type) {
 
-		MessageAttribute structure = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute structure = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		structure.put(ESBDebuggerConstants.COMMAND, null);
 		structure.put(ESBDebuggerConstants.COMMAND_ARGUMENT, null);
 		structure.put(ESBDebuggerConstants.MEDIATION_COMPONENT, null);
-		MessageAttribute specifiedAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+		MessageAttribute specifiedAttribute = new MessageAttribute(
+				new LinkedHashMap<String, MessageAttribute>());
 		switch (type) {
 		case ESBDebuggerConstants.SEQUENCE:
 			specifiedAttribute.put(ESBDebuggerConstants.SEQUENCE_KEY, null);
 			specifiedAttribute.put(ESBDebuggerConstants.SEQUENCE_TYPE, null);
-			specifiedAttribute.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
+			specifiedAttribute
+					.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
 			structure.put(ESBDebuggerConstants.SEQUENCE, specifiedAttribute);
 			break;
 		case ESBDebuggerConstants.TEMPLATE:
 			specifiedAttribute.put(ESBDebuggerConstants.TEMPLATE_KEY, null);
-			specifiedAttribute.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
+			specifiedAttribute
+					.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
 			structure.put(ESBDebuggerConstants.TEMPLATE, specifiedAttribute);
 			break;
 		case ESBDebuggerConstants.CONNECTOR:
 			specifiedAttribute.put(ESBDebuggerConstants.CONNECTOR_KEY, null);
 			specifiedAttribute.put(ESBDebuggerConstants.METHOD_NAME, null);
-			specifiedAttribute.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
+			specifiedAttribute
+					.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
 			structure.put(ESBDebuggerConstants.CONNECTOR, specifiedAttribute);
 			break;
 		case ESBDebuggerConstants.PROXY:
-			MessageAttribute proxyAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+			MessageAttribute proxyAttribute = new MessageAttribute(
+					new LinkedHashMap<String, MessageAttribute>());
 			proxyAttribute.put(ESBDebuggerConstants.PROXY_KEY, null);
 			proxyAttribute.put(ESBDebuggerConstants.SEQUENCE_TYPE, null);
 			proxyAttribute.put(ESBDebuggerConstants.MEDIATOR_POSITION, null);
@@ -109,8 +146,10 @@ public class DebuggerCommunicationMessageModel {
 			structure.put(ESBDebuggerConstants.SEQUENCE, specifiedAttribute);
 			break;
 		case ESBDebuggerConstants.API:
-			MessageAttribute apiAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
-			MessageAttribute resourceAttribute = new MessageAttribute(new LinkedHashMap<String, MessageAttribute>());
+			MessageAttribute apiAttribute = new MessageAttribute(
+					new LinkedHashMap<String, MessageAttribute>());
+			MessageAttribute resourceAttribute = new MessageAttribute(
+					new LinkedHashMap<String, MessageAttribute>());
 			apiAttribute.put(ESBDebuggerConstants.API_KEY, null);
 			resourceAttribute.put(ESBDebuggerConstants.METHOD, null);
 			resourceAttribute.put(ESBDebuggerConstants.URI_MAPPING, null);
@@ -129,10 +168,18 @@ public class DebuggerCommunicationMessageModel {
 		messageModels.put(ESBDebuggerConstants.BREAKPOINT, breakpointRoot);
 	}
 
-	public static MessageAttribute getMessageModel(String operation, String type) {
-		return messageModels.get(operation).getAttribute(type);
+	/**
+	 * This method
+	 * 
+	 * @param command
+	 * @param type
+	 * @return
+	 */
+	public static MessageAttribute getMessageModel(String command, String type) {
+		return messageModels.get(command).getAttribute(type);
 	}
-	public static MessageAttribute getPropertyMessageModel(String operation) {
-		return messageModels.get(operation);
+
+	public static MessageAttribute getMessageModel(String command) {
+		return messageModels.get(command);
 	}
 }

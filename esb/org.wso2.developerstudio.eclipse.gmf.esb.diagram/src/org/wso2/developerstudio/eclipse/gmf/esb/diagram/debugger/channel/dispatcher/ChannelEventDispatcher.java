@@ -33,7 +33,7 @@ public class ChannelEventDispatcher extends Thread {
 
 	private BufferedReader eventReader;
 	private ESBDebuggerInterface esbDebuggerInterface;
-	private boolean terminate;
+	private volatile boolean terminate;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ChannelEventDispatcher(BufferedReader eventReader,

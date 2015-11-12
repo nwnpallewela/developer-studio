@@ -56,6 +56,12 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEdito
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+/**
+ * {@link ESBDebugTarget} is the root of the ESB Mediation Debugger debug
+ * element hierarchy. It supports terminate, suspend , resume, breakpoint, skip
+ * points
+ *
+ */
 public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		EventHandler {
 
@@ -128,8 +134,8 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpointListener(this);
-
-				// dispatcher.terminate();
+				debugTargetEventBroker.unsubscribe(this);
+				this.fireTerminateEvent();
 			} else if (event instanceof MediationFlowCompleteEvent) {
 				setState(ESBDebuggerState.RESUMED);
 				OpenEditorUtil.removeBreakpointHitStatus();
@@ -147,7 +153,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	 */
 	void fireModelEvent(final IDebugEvent event) {
 		debugTargetEventBroker.send(
-				ESBDebuggerConstants.ESBDEBUGTARGET_EVENT_TOPIC, event);
+				ESBDebuggerConstants.ESB_DEBUG_TARGET_EVENT_TOPIC, event);
 	}
 
 	/**

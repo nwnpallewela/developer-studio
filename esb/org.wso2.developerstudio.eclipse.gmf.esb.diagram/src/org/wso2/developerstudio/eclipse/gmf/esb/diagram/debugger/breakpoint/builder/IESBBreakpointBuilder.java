@@ -29,10 +29,32 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDe
  */
 public interface IESBBreakpointBuilder {
 
+	/**
+	 * This method returns a {@link ESBBreakpoint} of mediatorPart which is in
+	 * file resource and esbServer.
+	 * 
+	 * @param esbServer
+	 * @param resource
+	 * @param mediatorPart
+	 * @return
+	 * @throws CoreException
+	 * @throws ESBDebuggerException
+	 */
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part) throws CoreException,
-			ESBDebuggerException;
+			IResource resource, AbstractMediator mediatorPart)
+			throws CoreException, ESBDebuggerException;
 
+	/**
+	 * This method update {@link ESBBreakpoint}'s already registered in
+	 * Breakpoint Manager which is affected by action of inserting or deleting
+	 * mentioned mediator.
+	 * 
+	 * @param resource
+	 * @param abstractMediator
+	 * @param esbServer
+	 * @param action
+	 * @throws ESBDebuggerException
+	 */
 	public void updateExistingBreakpoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws ESBDebuggerException;

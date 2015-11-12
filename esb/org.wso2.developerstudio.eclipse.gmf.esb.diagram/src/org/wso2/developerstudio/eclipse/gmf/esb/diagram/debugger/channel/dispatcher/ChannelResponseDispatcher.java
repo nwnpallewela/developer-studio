@@ -25,19 +25,18 @@ import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
 /**
- * {@link ChannelResponceDispatcher} manages the responses communication between
+ * {@link ChannelResponseDispatcher} manages the responses communication between
  * {@link ESBDebugger} and {@link ESBDebuggerInterface}
  *
  */
-public class ChannelResponceDispatcher extends Thread {
+public class ChannelResponseDispatcher extends Thread {
 	private BufferedReader requestReader;
 	private ESBDebuggerInterface esbDebuggerInterface;
-	private boolean terminate = false;
+	private volatile boolean terminate = false;
 	
-
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public ChannelResponceDispatcher(BufferedReader requestReader,
+	public ChannelResponseDispatcher(BufferedReader requestReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
 		this.requestReader = requestReader;
 		this.esbDebuggerInterface = esbDebuggerInterface;

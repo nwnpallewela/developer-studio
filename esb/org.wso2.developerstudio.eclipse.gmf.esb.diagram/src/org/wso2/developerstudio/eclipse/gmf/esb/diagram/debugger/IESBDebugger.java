@@ -15,26 +15,59 @@
  */
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
- * 
+ * ESB Debugger should implement this interface methods in the implementation
  *
  */
 public interface IESBDebugger {
 
-	public void notifyEvent(Map<String, Object> map);
+	/**
+	 * This method gets and handle Event messages from
+	 * {@link IESBDebuggerInterface} came from ESB Server Debugger
+	 * 
+	 * @param eventAttributeMap
+	 */
+	public void notifyEvent(Map<String, Object> eventAttributeMap);
 
-	public void notifyResponce(Map<String, Object> map);
+	/**
+	 * This method gets and handle command response messages from
+	 * {@link IESBDebuggerInterface} came from ESB Server Debugger
+	 * 
+	 * @param eventAttributeMap
+	 */
+	public void notifyResponce(Map<String, Object> eventAttributeMap);
 
-	public void loaded();
+	/**
+	 * This method send event for {@link IESBDebugTarget} informing ESB Server
+	 * Started for Debugging
+	 */
+	public void fireLoadedEvent();
 
-	public void terminated();
+	/**
+	 * This method send event for {@link IESBDebugTarget} informing ESB Server
+	 * Terminated
+	 * 
+	 * @throws IOException
+	 */
+	public void fireTerminatedEvent() throws IOException;
 
-	public void resumed();
+	/**
+	 * This method send event for {@link IESBDebugTarget} informing ESB Server
+	 * Resumed
+	 */
+	public void fireResumedEvent();
 
 	public IESBDebuggerInterface getESBDebuggerInterface();
 
-	public void suspended(Map<String, Object> position);
+	/**
+	 * This method send event for {@link IESBDebugTarget} informing ESB Server
+	 * Suspended
+	 * 
+	 * @param position
+	 */
+	public void fireSuspendedEvent(Map<String, Object> position);
 
 }

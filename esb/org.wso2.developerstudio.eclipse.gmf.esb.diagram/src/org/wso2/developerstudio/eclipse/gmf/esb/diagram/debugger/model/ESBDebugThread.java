@@ -22,7 +22,14 @@ import java.util.List;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IThread;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
+/**
+ * {@link ESBDebugThread} is a sequential flow of execution in a
+ * {@link ESBDebugTarget}. This contains stack frames. Stack frames are only
+ * available when the thread is suspended, and are returned in top-down order.
+ * Minimally, a thread supports the following: suspend/resume stepping terminate
+ */
 public class ESBDebugThread extends ESBDebugElement implements IThread {
 
 	private final List<ESBStackFrame> stackFrames = new ArrayList<>();
@@ -60,7 +67,7 @@ public class ESBDebugThread extends ESBDebugElement implements IThread {
 
 	@Override
 	public String getName() {
-		return "ESB Debug Thread";
+		return ESBDebuggerConstants.ESB_DEBUG_THREAD_NAME;
 	}
 
 	@Override
