@@ -29,36 +29,43 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  * {@link ESBDebugger} and {@link ESBDebuggerInterface}
  *
  */
-public class ChannelEventDispatcher extends Thread {
+public class ChannelEventDispatcher implements Runnable {
 
 	private BufferedReader eventReader;
 	private ESBDebuggerInterface esbDebuggerInterface;
-	private volatile boolean terminate;
+	private volatile Thread eventDispatcherThread;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ChannelEventDispatcher(BufferedReader eventReader,
 			ESBDebuggerInterface esbDebuggerInterface) {
 		this.eventReader = eventReader;
 		this.esbDebuggerInterface = esbDebuggerInterface;
-
 	}
 
 	@Override
 	public void run() {
+		Thread currentThread = Thread.currentThread();
 		try {
-			while (!terminate) {
+			while (currentThread == eventDispatcherThread) {
 				if (eventReader.ready()) {
 					String buffer = eventReader.readLine();
 					esbDebuggerInterface.notifyEvent(buffer);
 				}
 			}
 		} catch (IOException ex) {
-			log.error("I/O error occurred", ex);
+			log.error(
+					"Error occured during reading event message sent from ESB Server Debugger",
+					ex);
 		}
 	}
 
-	public void terminate() {
-		terminate = true;
+	public void start() {
+		eventDispatcherThread = new Thread(this);
+		eventDispatcherThread.start();
+	}
+
+	public void stop() {
+		eventDispatcherThread = null;
 	}
 
 }

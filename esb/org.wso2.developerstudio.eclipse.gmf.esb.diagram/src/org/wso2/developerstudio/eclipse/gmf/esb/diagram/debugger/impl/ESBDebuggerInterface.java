@@ -191,8 +191,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void sendGetPropertiesCommand(Map<String, Object> attributeValues)
 			throws Exception {
-		System.out.println(messageFactory
-				.createGetPropertiesCommand(attributeValues));
 		requestWriter.println(messageFactory
 				.createGetPropertiesCommand(attributeValues));
 		requestWriter.flush();
@@ -201,8 +199,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void sendBreakpointCommand(Map<String, Object> attributeValues)
 			throws Exception {
-		System.out.println(messageFactory
-				.createBreakpointCommand(attributeValues));
 		requestWriter.println(messageFactory
 				.createBreakpointCommand(attributeValues));
 		requestWriter.flush();
@@ -211,8 +207,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void terminate() throws IOException {
-		eventDispatcher.terminate();
-		responseDispatcher.terminate();
+		eventDispatcher.stop();
+		responseDispatcher.stop();
 		requestSocket.close();
 		eventSocket.close();
 		requestReader.close();

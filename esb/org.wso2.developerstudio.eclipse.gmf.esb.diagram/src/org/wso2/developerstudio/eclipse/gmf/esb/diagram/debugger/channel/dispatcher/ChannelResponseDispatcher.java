@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -29,11 +30,12 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  * {@link ESBDebugger} and {@link ESBDebuggerInterface}
  *
  */
-public class ChannelResponseDispatcher extends Thread {
+public class ChannelResponseDispatcher implements Runnable {
+
 	private BufferedReader requestReader;
 	private ESBDebuggerInterface esbDebuggerInterface;
-	private volatile boolean terminate = false;
-	
+	private volatile Thread responseDispatcherThread;
+
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	public ChannelResponseDispatcher(BufferedReader requestReader,
@@ -44,19 +46,27 @@ public class ChannelResponseDispatcher extends Thread {
 
 	@Override
 	public void run() {
+		Thread currentThread = Thread.currentThread();
 		try {
-			while (!terminate) {
+			while (currentThread == responseDispatcherThread) {
 				if (requestReader.ready()) {
 					String buffer = requestReader.readLine();
 					esbDebuggerInterface.notifyResponce(buffer);
 				}
 			}
 		} catch (IOException ex) {
-			log.error("I/O error occurred", ex);
+			log.error(
+					"Error occured during reading response message sent from ESB Server Debugger",
+					ex);
 		}
 	}
-	
-	public void terminate(){
-		terminate = true;
+
+	public void start() {
+		responseDispatcherThread = new Thread(this);
+		responseDispatcherThread.start();
+	}
+
+	public void stop() {
+		responseDispatcherThread = null;
 	}
 }

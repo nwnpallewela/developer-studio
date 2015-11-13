@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.wso2.developerstudio.eclipse.gmf.esb.diagram; singleton:=true
 Bundle-Version: 2.1.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/gson-2.4.jar
 Bundle-Activator: org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbDiagramEditorPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

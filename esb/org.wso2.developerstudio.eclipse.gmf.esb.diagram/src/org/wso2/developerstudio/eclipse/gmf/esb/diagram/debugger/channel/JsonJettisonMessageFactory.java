@@ -60,7 +60,7 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 		Map<String, Object> convertedResponseMap = new LinkedHashMap<>();
 		try {
 			JSONObject responceMessage = new JSONObject(response);
-			convertedResponseMap = convertJsonToMap(responceMessage);
+			convertedResponseMap = convertJsonResponseToMap(responceMessage);
 		} catch (JSONException e) {
 			throw new JSONException(
 					"Error while converting Response JSON message");
@@ -166,6 +166,19 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 		}
 		return jsonCommand;
 
+	}
+	
+	private Map<String, Object> convertJsonResponseToMap(JSONObject responceMessage) throws JSONException {
+		Iterator<?> keys = responceMessage.keys();
+		Map<String, Object> message = new LinkedHashMap<>();
+		String value = "";
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+				value = responceMessage.getString(key);
+			message.put(key, value);
+		}
+
+		return message;
 	}
 
 	/**
