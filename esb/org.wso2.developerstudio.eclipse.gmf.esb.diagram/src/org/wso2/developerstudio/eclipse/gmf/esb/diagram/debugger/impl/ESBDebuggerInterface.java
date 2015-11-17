@@ -22,16 +22,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Map;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.IESBDebuggerInterface;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.ICommunicationMessageFactory;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonJettisonMessageFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonGsonMessageFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponseDispatcher;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
@@ -76,7 +77,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 				this);
 		responseDispatcher.start();
 
-		messageFactory = new JsonJettisonMessageFactory();
+		messageFactory = new JsonGsonMessageFactory();
 	}
 
 	@Override
@@ -145,7 +146,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void sendCommand(ESBDebuggerCommands command) throws Exception {
+	public void sendCommand(CommandMessage command) throws Exception {
+		System.out.println("************************"+messageFactory.createCommand(command));
 		requestWriter.println(messageFactory.createCommand(command));
 		requestWriter.flush();
 	}
@@ -160,7 +162,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 		try {
 			esbDebugger.notifyEvent(messageFactory
 					.convertEventMessageToMap(eventMessage));
-		}catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			log.error(e.getMessage(), e);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -189,18 +191,20 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void sendGetPropertiesCommand(Map<String, Object> attributeValues)
+	public void sendGetPropertiesCommand(GetPropertyCommand getPropertyCommand)
 			throws Exception {
+		System.out.println("************************"+messageFactory
+				.createGetPropertiesCommand(getPropertyCommand));
 		requestWriter.println(messageFactory
-				.createGetPropertiesCommand(attributeValues));
+				.createGetPropertiesCommand(getPropertyCommand));
 		requestWriter.flush();
 	}
 
 	@Override
-	public void sendBreakpointCommand(Map<String, Object> attributeValues)
+	public void sendBreakpointCommand(ESBDebugPoint debugPoint)
 			throws Exception {
 		requestWriter.println(messageFactory
-				.createBreakpointCommand(attributeValues));
+				.createBreakpointCommand(debugPoint));
 		requestWriter.flush();
 
 	}

@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
+package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
-/**
- * {@link BreakpointMarkerNotFoundException} throws when a Breakpoint does not
- * contain a designated @ IMarker} with it.
- */
-public class BreakpointMarkerNotFoundException extends ESBDebuggerException {
+import java.util.HashMap;
+import java.util.Map;
 
-	private static final long serialVersionUID = 5253296690787550656L;
+public class ESBAPISequenceBean {
 
-	public BreakpointMarkerNotFoundException() {
+	private ESBAPIBean api;
+
+	public ESBAPISequenceBean(ESBAPIBean api) {
+		super();
+		this.setApi(api);
 	}
 
-	public BreakpointMarkerNotFoundException(String message) {
-		super(message);
+	public ESBAPIBean getApi() {
+		return api;
 	}
 
-	public BreakpointMarkerNotFoundException(Throwable cause) {
-		super(cause);
+	public void setApi(ESBAPIBean api) {
+		this.api = api;
 	}
 
-	public BreakpointMarkerNotFoundException(String message, Throwable cause) {
-		super(message, cause);
+	public Map<String, Object> deserializeToMap() {
+		Map<String, Object> attributeMap = new HashMap<>();
+		attributeMap.putAll(api.deserializeToMap());
+		return attributeMap;
 	}
 
 }

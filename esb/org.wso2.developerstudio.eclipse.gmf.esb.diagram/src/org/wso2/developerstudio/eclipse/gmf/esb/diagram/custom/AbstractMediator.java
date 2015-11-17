@@ -142,6 +142,7 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 	private AbstractMediator instance=null;
 	private boolean breakpointHitStatus = false;
 	private boolean isBreakpoint = false;
+	private boolean isSkippoint = false;
 	public int x=0;
 	public int y=0;
 	
@@ -172,12 +173,21 @@ public abstract class AbstractMediator extends AbstractBorderedShapeEditPart imp
 		return isBreakpoint;
 	}
 	
+	public boolean isSkippoint(){
+		return isSkippoint;
+	}
+	
 	/**
 	 * 
 	 * @param breakpointStatus
 	 */
-	public void setBreakpointStatus(boolean breakpointStatus){
-		this.isBreakpoint=breakpointStatus;
+	public void setBreakpointStatus(boolean breakpointStatus) {
+		isBreakpoint = breakpointStatus;
+	}
+
+	public void setSkippointStatus(boolean skippointStatus) {
+		isSkippoint = skippointStatus;
+
 	}
 	
 	/**

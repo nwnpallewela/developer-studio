@@ -16,11 +16,11 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
+import java.io.IOException;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
@@ -34,15 +34,25 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedE
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent.ResumeEventType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.PropertyRecievedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.GeneralEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.SpecialCordinationEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.CommandResponseMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.PropertyRespondMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest.ResumeRequestType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -86,8 +96,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	public ESBDebugger(IESBDebuggerInterface debuggerInterface) {
 		debuggerEventBroker = (IEventBroker) PlatformUI.getWorkbench()
 				.getService(IEventBroker.class);
-		debuggerEventBroker.subscribe(
-				ESBDebuggerConstants.ESB_DEBUG_TARGET_EVENT_TOPIC, this);
+		debuggerEventBroker.subscribe(ESB_DEBUG_TARGET_EVENT_TOPIC, this);
 		this.debuggerInterface = debuggerInterface;
 		this.debuggerInterface.attachDebugger(this);
 	}
@@ -95,16 +104,16 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	@Override
 	public void handleEvent(Event eventFromBroker) {
 		IDebugEvent event = (IDebugEvent) eventFromBroker
-				.getProperty(ESBDebuggerConstants.ESB_DEBUGGER_EVENT_BROKER_DATA_NAME);
+				.getProperty(ESB_DEBUGGER_EVENT_BROKER_DATA_NAME);
 		try {
 			if (event instanceof ResumeRequest) {
 				stepping = (((ResumeRequest) event).getType()
 						.equals(ResumeRequestType.STEP_OVER));
-				debuggerInterface
-						.sendCommand(ESBDebuggerCommands.RESUME_COMMAND);
+				debuggerInterface.sendCommand(new CommandMessage(
+						ESBDebuggerCommands.RESUME_COMMAND));
 				OpenEditorUtil.removeBreakpointHitStatus();
-			} else if (event instanceof BreakpointRequest) {
-				sendBreakpointForServer((BreakpointRequest) event);
+			} else if (event instanceof DebugPointRequest) {
+				sendBreakpointForServer((DebugPointRequest) event);
 			} else if (event instanceof FetchVariablesRequest) {
 				getPropertiesFromESB();
 			} else if (event instanceof TerminateRequest) {
@@ -124,7 +133,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	}
 
 	@Override
-	public void fireSuspendedEvent(final Map<String, Object> event) {
+	public void fireSuspendedEvent(final DebugPointEventMessage event) {
 		fireEvent(new SuspendedEvent(event));
 	}
 
@@ -135,35 +144,20 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	}
 
 	@Override
-	public void fireTerminatedEvent() throws IOException {
+	public void fireTerminatedEvent() throws Exception {
+		ESBDebugerUtil.removeAllESBBreakpointsFromBreakpointManager();
+		debuggerInterface.sendCommand(new CommandMessage(
+				ESBDebuggerCommands.RESUME_COMMAND));
 		fireEvent(new TerminatedEvent());
 		debuggerInterface.terminate();
 		debuggerEventBroker.unsubscribe(this);
 	}
 
-	private void sendBreakpointForServer(BreakpointRequest event)
+	private void sendBreakpointForServer(DebugPointRequest event)
 			throws Exception {
 
-		Map<String, Object> breakpointAttributes = event
-				.getBreakpointAttributes();
-		breakpointAttributes.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
-				ESBDebuggerConstants.BREAKPOINT);
-
-		switch (event.getType()) {
-		case ADDED:
-			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
-					ESBDebuggerCommands.SET_BREAKPOINT_SKIPPOINT.toString());
-			debuggerInterface.sendBreakpointCommand(breakpointAttributes);
-			break;
-		case REMOVED:
-			breakpointAttributes.put(ESBDebuggerConstants.COMMAND,
-					ESBDebuggerCommands.CLEAR_BREAKPOINT_SKIPPOINT.toString());
-			debuggerInterface.sendBreakpointCommand(breakpointAttributes);
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Invalid Breakpoint action reqested");
-		}
+		ESBDebugPoint debugPoint = event.getBreakpointAttributes();
+		debuggerInterface.sendBreakpointCommand(debugPoint);
 
 	}
 
@@ -175,8 +169,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	 *            event to handle
 	 */
 	public void fireEvent(final IDebugEvent event) {
-		debuggerEventBroker.send(ESBDebuggerConstants.ESBDEBUGGER_EVENT_TOPIC,
-				event);
+		debuggerEventBroker.send(ESBDEBUGGER_EVENT_TOPIC, event);
 	}
 
 	@Override
@@ -185,62 +178,52 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	}
 
 	@Override
-	public void notifyResponce(Map<String, Object> responce) {
+	public void notifyResponce(IResponseMessage responseMessage) {
 
-		if (responce.containsKey(ESBDebuggerConstants.COMMAND_RESPONSE)) {
-			if (ESBDebuggerConstants.FAILED.equals(responce
-					.get(ESBDebuggerConstants.COMMAND_RESPONSE))) {
-				log.warn((String) responce
-						.get(ESBDebuggerConstants.FAILED_REASON));
+		if (responseMessage instanceof CommandResponseMessage) {
+			CommandResponseMessage response = (CommandResponseMessage) responseMessage;
+			if (StringUtils.isNotEmpty(response.getFailedReason())) {
+				log.warn(response.getFailedReason());
 			}
-		} else {
-			if (responce.containsKey(ESBDebuggerConstants.AXIS2_PROPERTIES)) {
-				sendPropertyValuesForDebuggerEventBroker(responce,
-						ESBDebuggerConstants.AXIS2_PROPERTIES);
-			} else if (responce
-					.containsKey(ESBDebuggerConstants.SYNAPSE_PROPERTIES)) {
-				sendPropertyValuesForDebuggerEventBroker(responce,
-						ESBDebuggerConstants.SYNAPSE_PROPERTIES);
-			} else if (responce
-					.containsKey(ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES)) {
-				sendPropertyValuesForDebuggerEventBroker(responce,
-						ESBDebuggerConstants.AXIS2_CLIENT_PROPERTIES);
-			} else if (responce
-					.containsKey(ESBDebuggerConstants.OPERATION_PROPERTIES)) {
-				sendPropertyValuesForDebuggerEventBroker(responce,
-						ESBDebuggerConstants.OPERATION_PROPERTIES);
-			} else if (responce
-					.containsKey(ESBDebuggerConstants.TRANSPORT_PROPERTIES)) {
-				sendPropertyValuesForDebuggerEventBroker(responce,
-						ESBDebuggerConstants.TRANSPORT_PROPERTIES);
-			}
+		} else if (responseMessage instanceof PropertyRespondMessage) {
+			fireEvent(new PropertyRecievedEvent(
+					(PropertyRespondMessage) responseMessage));
 		}
 
 	}
 
-	/**
-	 * @param responce
-	 * @param propertyType
-	 */
-	private void sendPropertyValuesForDebuggerEventBroker(
-			Map<String, Object> responce, String propertyType) {
-		Map<String, String> mVariables = new HashMap<>();
-		mVariables.put(propertyType, (String) responce.get(propertyType));
-		fireEvent(new VariablesEvent(mVariables));
-	}
-
 	@Override
-	public void notifyEvent(Map<String, Object> event) {
+	public void notifyEvent(IEventMessage event) {
 
-		if (ESBDebuggerConstants.BREAKPOINT.equals(event
-				.get(ESBDebuggerConstants.EVENT))) {
-			fireSuspendedEvent(event);
-		} else if (ESBDebuggerConstants.TERMINATED_EVENT.equals(event
-				.get(ESBDebuggerConstants.EVENT))) {
-			mediationFlowCompleted();
-		} else if (ESBDebuggerConstants.DEBUG_INFO_LOST_EVENT.equals(event
-				.get(ESBDebuggerConstants.EVENT))) {
-			ESBDebugerUtil.repopulateESBServerBreakpoints();
+		if (event instanceof DebugPointEventMessage) {
+			if (((DebugPointEventMessage) event).getEvent() == EventMessageType.BREAKPOINT) {
+				fireSuspendedEvent((DebugPointEventMessage) event);
+			}
+
+		} else if (event instanceof SpecialCordinationEventMessage) {
+			SpecialCordinationEventMessage cordinationMessage = (SpecialCordinationEventMessage) event;
+			log.info("Event : " + cordinationMessage.getEvent().toString()
+					+ " , Message-Reciever : "
+					+ cordinationMessage.getMessageReciever()
+					+ " , Callback-Reciever : "
+					+ cordinationMessage.getCallbackReciever());
+			switch (((SpecialCordinationEventMessage) event).getEvent()) {
+			case TERMINATED:
+				mediationFlowCompleted();
+				break;
+			default:
+				break;
+			}
+		} else if (event instanceof GeneralEventMessage) {
+			GeneralEventMessage generalMessage = (GeneralEventMessage) event;
+			log.info("Event : " + generalMessage.getEvent().toString());
+			switch (((GeneralEventMessage) event).getEvent()) {
+			case DEBUG_INFO_LOST:
+				ESBDebugerUtil.repopulateESBServerBreakpoints();
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -250,26 +233,16 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	}
 
 	private void getPropertiesFromESB() throws Exception {
-		Map<String, Object> attributeValues = new LinkedHashMap<>();
-		attributeValues.put(ESBDebuggerConstants.COMMAND,
-				ESBDebuggerConstants.COMMAND_GET);
-		attributeValues.put(ESBDebuggerConstants.COMMAND_ARGUMENT,
-				ESBDebuggerConstants.PROPERTIES);
-		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.AXIS2_PROPERTY_TAG);
-		debuggerInterface.sendGetPropertiesCommand(attributeValues);
-		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.AXIS2_CLIENT_PROPERTY_TAG);
-		debuggerInterface.sendGetPropertiesCommand(attributeValues);
-		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.TRANSPORT_PROPERTY_TAG);
-		debuggerInterface.sendGetPropertiesCommand(attributeValues);
-		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.OPERATION_PROPERTY_TAG);
-		debuggerInterface.sendGetPropertiesCommand(attributeValues);
-		attributeValues.put(ESBDebuggerConstants.CONTEXT,
-				ESBDebuggerConstants.SYANPSE_PROPERTY_TAG);
-		debuggerInterface.sendGetPropertiesCommand(attributeValues);
+		debuggerInterface.sendGetPropertiesCommand(new GetPropertyCommand(
+				COMMAND_GET, PROPERTIES, AXIS2_PROPERTY_TAG));
+		debuggerInterface.sendGetPropertiesCommand(new GetPropertyCommand(
+				COMMAND_GET, PROPERTIES, AXIS2_CLIENT_PROPERTY_TAG));
+		debuggerInterface.sendGetPropertiesCommand(new GetPropertyCommand(
+				COMMAND_GET, PROPERTIES, TRANSPORT_PROPERTY_TAG));
+		debuggerInterface.sendGetPropertiesCommand(new GetPropertyCommand(
+				COMMAND_GET, PROPERTIES, OPERATION_PROPERTY_TAG));
+		debuggerInterface.sendGetPropertiesCommand(new GetPropertyCommand(
+				COMMAND_GET, PROPERTIES, SYANPSE_PROPERTY_TAG));
 	}
 
 }

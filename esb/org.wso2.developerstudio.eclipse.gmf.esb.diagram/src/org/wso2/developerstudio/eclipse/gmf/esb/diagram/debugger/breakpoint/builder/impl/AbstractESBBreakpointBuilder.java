@@ -87,7 +87,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -183,10 +183,10 @@ public abstract class AbstractESBBreakpointBuilder implements
 						.addBreakpoint(modifiedBreakpoint);
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpoint(esbBreakpoint, true);
-			} catch (BreakpointMarkerNotFoundException e) {
+			} catch (DebugpointMarkerNotFoundException e) {
 				log.error(e.getMessage(), e);
 				ESBDebugerUtil
-						.removeESBBreakpointFromBreakpointManager(esbBreakpoint);
+						.removeESBDebugpointFromBreakpointManager(esbBreakpoint);
 			} catch (CoreException e) {
 				log.error(e.getMessage(), e);
 			}
@@ -213,10 +213,10 @@ public abstract class AbstractESBBreakpointBuilder implements
 						.addBreakpoint(modifiedBreakpoint);
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpoint(esbBreakpoint, true);
-			} catch (BreakpointMarkerNotFoundException e) {
+			} catch (DebugpointMarkerNotFoundException e) {
 				log.error(e.getMessage(), e);
 				ESBDebugerUtil
-						.removeESBBreakpointFromBreakpointManager(esbBreakpoint);
+						.removeESBDebugpointFromBreakpointManager(esbBreakpoint);
 			} catch (CoreException e) {
 				log.error(e.getMessage(), e);
 			}
@@ -276,7 +276,9 @@ public abstract class AbstractESBBreakpointBuilder implements
 					String sequnceType = EMPTY_STRING;
 					if (positionList.size() > 1) {
 						listSequencePosition = EMPTY_STRING
-								+ (positionList.get(positionList.size() - 2));//before last position
+								+ (positionList.get(positionList.size() - 2));// before
+																				// last
+																				// position
 					} else {
 						sequnceType = getSequenceTypeOfBreakpoint(breakpoint);
 					}
@@ -289,14 +291,14 @@ public abstract class AbstractESBBreakpointBuilder implements
 								.equals(action)
 								&& position.get(position.size() - 1) == valueInLastPosition) {
 							ESBDebugerUtil
-									.removeESBBreakpointFromBreakpointManager(breakpoint);
+									.removeESBDebugpointFromBreakpointManager(breakpoint);
 						}
 					}
 				}
-			} catch (BreakpointMarkerNotFoundException e) {
+			} catch (DebugpointMarkerNotFoundException e) {
 				log.error(e.getMessage(), e);
 				ESBDebugerUtil
-						.removeESBBreakpointFromBreakpointManager(breakpoint);
+						.removeESBDebugpointFromBreakpointManager(breakpoint);
 			} catch (CoreException e) {
 				log.error(e.getMessage(), e);
 			}
@@ -317,7 +319,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	}
 
 	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint)
-			throws BreakpointMarkerNotFoundException, CoreException {
+			throws DebugpointMarkerNotFoundException, CoreException {
 		Map<String, Object> message = ((ESBBreakpoint) breakpoint)
 				.getLocation();
 		if (message.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
@@ -332,11 +334,11 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param breakpoint
 	 * @return String
 	 * @throws CoreException
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
 	private static List<Integer> getMediatorPositionOfBreakpoint(
-			IBreakpoint breakpoint) throws BreakpointMarkerNotFoundException,
+			IBreakpoint breakpoint) throws DebugpointMarkerNotFoundException,
 			CoreException {
 		Map<String, Object> message = ((ESBBreakpoint) breakpoint)
 				.getLocation();
@@ -351,9 +353,11 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param type
 	 * @return Map<String, String>
 	 */
-	protected Map<String, Object> setInitialAttributes(String type) {
+	protected Map<String, Object> setInitialAttributes(String type,
+			String commandArguement) {
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put(ESBDebuggerConstants.MEDIATION_COMPONENT, type);
+		attributes.put(ESBDebuggerConstants.COMMAND_ARGUMENT, commandArguement);
 		return attributes;
 	}
 
@@ -622,7 +626,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 			return ((BuilderMediator) mediator).getInputConnector();
 		} else if (mediator instanceof PublishEventMediator) {
 			return ((PublishEventMediator) mediator).getInputConnector();
-		}else if (mediator instanceof CloudConnectorOperationImpl) {
+		} else if (mediator instanceof CloudConnectorOperationImpl) {
 			return ((CloudConnectorOperationImpl) mediator).getInputConnector();
 		}
 		return null;
@@ -731,7 +735,8 @@ public abstract class AbstractESBBreakpointBuilder implements
 		} else if (mediator instanceof PublishEventMediator) {
 			return ((PublishEventMediator) mediator).getOutputConnector();
 		} else if (mediator instanceof CloudConnectorOperationImpl) {
-			return ((CloudConnectorOperationImpl) mediator).getOutputConnector();
+			return ((CloudConnectorOperationImpl) mediator)
+					.getOutputConnector();
 		}
 		return null;
 	}

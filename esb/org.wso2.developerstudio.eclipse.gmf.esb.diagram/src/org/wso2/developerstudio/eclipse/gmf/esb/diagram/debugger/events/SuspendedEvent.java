@@ -16,10 +16,12 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 
-import java.util.Map;
-
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
 
 /**
  * {@link SuspendedEvent} represent the request event from {@link ESBDebugger}
@@ -28,13 +30,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.ID
  */
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Map<String, Object> position;
+	private ESBDebugPoint debugPoint;
 
-	public SuspendedEvent(Map<String, Object> event) {
-		position = event;
+	public SuspendedEvent(DebugPointEventMessage event) {
+		debugPoint = event.getDebugPoint();
 	}
 
-	public Map<String, Object> getDetail() {
-		return position;
+	public ESBDebugPoint getDetail() {
+		return debugPoint;
 	}
 }

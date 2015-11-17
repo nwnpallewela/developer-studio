@@ -18,7 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarkerDelta;
@@ -43,12 +42,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedE
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.ResumedEvent.ResumeEventType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.SuspendedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.VariablesEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.PropertyRecievedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.BreakpointRequest.BreakpointEventAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest.DebugPointEventAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
@@ -120,11 +120,11 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					getThreads()[0].fireResumeEvent(DebugEvent.UNSPECIFIED);
 				}
 
-			} else if (event instanceof VariablesEvent) {
+			} else if (event instanceof PropertyRecievedEvent) {
 
 				try {
 					getThreads()[0].getTopStackFrame().setVariables(
-							((VariablesEvent) event).getVariables());
+							((PropertyRecievedEvent) event).getVariables());
 				} catch (DebugException e) {
 					log.error("Error while seting variable values", e);
 				}
@@ -166,7 +166,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	 */
 	private void showSource(SuspendedEvent event) throws ESBDebuggerException {
 
-		Map<String, Object> info = event.getDetail();
+		ESBDebugPoint info = event.getDetail();
 		ESBBreakpoint breakpoint = getMatchingBreakpoint(info);
 		IFile file = (IFile) breakpoint.getResource();
 		if (file.exists()) {
@@ -174,7 +174,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		}
 	}
 
-	private ESBBreakpoint getMatchingBreakpoint(Map<String, Object> info)
+	private ESBBreakpoint getMatchingBreakpoint(ESBDebugPoint info)
 			throws ESBDebuggerException {
 
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
@@ -182,10 +182,10 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		for (IBreakpoint breakpoint : breakpoints) {
 			try {
 				if (((ESBBreakpoint) breakpoint)
-						.isMatchedWithPropertiesMap(info)) {
+						.isMatchedWithPropertiesMap(info.deserializeToMap())) {
 					return (ESBBreakpoint) breakpoint;
 				}
-			} catch (CoreException | BreakpointMarkerNotFoundException e) {
+			} catch (CoreException | DebugpointMarkerNotFoundException e) {
 				log.warn(e.getMessage(), e);
 			}
 		}
@@ -250,12 +250,12 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					&& supportsBreakpoint(breakpoint)
 					&& isEnabledBreakpoint(breakpoint)) {
 
-				fireModelEvent(new BreakpointRequest(
-						(ESBBreakpoint) breakpoint, BreakpointEventAction.ADDED));
+				fireModelEvent(new DebugPointRequest(
+						(ESBBreakpoint) breakpoint, DebugPointEventAction.ADDED));
 			}
-		} catch (BreakpointMarkerNotFoundException e) {
+		} catch (DebugpointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
-			ESBDebugerUtil.removeESBBreakpointFromBreakpointManager(breakpoint);
+			ESBDebugerUtil.removeESBDebugpointFromBreakpointManager(breakpoint);
 		} catch (CoreException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -274,13 +274,13 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 					&& supportsBreakpoint(breakpoint)
 					&& isEnabledBreakpoint(breakpoint)) {
 
-				fireModelEvent(new BreakpointRequest(
+				fireModelEvent(new DebugPointRequest(
 						(ESBBreakpoint) breakpoint,
-						BreakpointEventAction.REMOVED));
+						DebugPointEventAction.REMOVED));
 			}
-		} catch (BreakpointMarkerNotFoundException e) {
+		} catch (DebugpointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
-			ESBDebugerUtil.removeESBBreakpointFromBreakpointManager(breakpoint);
+			ESBDebugerUtil.removeESBDebugpointFromBreakpointManager(breakpoint);
 		} catch (CoreException e) {
 			log.error(e.getMessage(), e);
 		}

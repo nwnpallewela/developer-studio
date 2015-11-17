@@ -42,14 +42,15 @@ public class SequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part) throws CoreException,
-			MediatorNotFoundException {
+			IResource resource, AbstractMediator part, String commandArguement)
+			throws CoreException, MediatorNotFoundException {
 
 		int lineNumber = -1;
 		SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 
-		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.SEQUENCE);
+		Map<String, Object> attributeMap = setInitialAttributes(
+				ESBDebuggerConstants.SEQUENCE, commandArguement);
 		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
 				ESBDebuggerConstants.NAMED);
 

@@ -47,8 +47,19 @@ public class ChannelEventDispatcher implements Runnable {
 		Thread currentThread = Thread.currentThread();
 		try {
 			while (currentThread == eventDispatcherThread) {
+				if (!eventReader.ready()) {
+					try {
+						synchronized (this) {
+							wait();
+						}
+					} catch (InterruptedException e) {
+					}
+				}
 				if (eventReader.ready()) {
-					String buffer = eventReader.readLine();
+					String buffer = null;
+					synchronized (eventReader) {
+						buffer = eventReader.readLine();
+					}
 					esbDebuggerInterface.notifyEvent(buffer);
 				}
 			}
@@ -66,6 +77,9 @@ public class ChannelEventDispatcher implements Runnable {
 
 	public void stop() {
 		eventDispatcherThread = null;
+		synchronized (this) {
+			notifyAll();
+		}
 	}
 
 }

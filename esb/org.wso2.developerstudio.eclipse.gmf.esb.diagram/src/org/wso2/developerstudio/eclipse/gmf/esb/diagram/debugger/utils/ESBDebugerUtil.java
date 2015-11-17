@@ -89,7 +89,7 @@ public class ESBDebugerUtil {
 	 * 
 	 * @param breakpoint
 	 */
-	public static void removeESBBreakpointFromBreakpointManager(
+	public static void removeESBDebugpointFromBreakpointManager(
 			IBreakpoint breakpoint) {
 		try {
 			DebugPlugin.getDefault().getBreakpointManager()
@@ -104,7 +104,7 @@ public class ESBDebugerUtil {
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint breakpoint : breakpoints) {
-			removeESBBreakpointFromBreakpointManager(breakpoint);
+			removeESBDebugpointFromBreakpointManager(breakpoint);
 		}
 	}
 
@@ -168,6 +168,27 @@ public class ESBDebugerUtil {
 		}
 		part.setBreakpointStatus(true);
 	}
+	
+	public static void addSkippointMark(AbstractMediator part) {
+		if (part instanceof FixedSizedAbstractMediator) {
+			if (part instanceof CloudConnectorOperationEditPart) {
+				((CloudConnectorOperationEditPart) part).getPrimaryShape()
+				.addSkippointMark();
+			} else {
+				((FixedSizedAbstractMediator) part).getPrimaryShape()
+						.addSkippointMark();
+			}
+		} else if (part instanceof complexFiguredAbstractMediator) {
+			RoundedRectangle shape = ((complexFiguredAbstractMediator) part)
+					.getPrimaryShape();
+			if (shape instanceof EsbGroupingShape) {
+				((EsbGroupingShape) shape).addSkippointMark();
+			} else if (shape instanceof FilterMediatorGraphicalShape) {
+				// ((FilterMediatorGraphicalShape)shape).addBreakpointMark();
+			}
+		}
+		part.setSkippointStatus(true);
+	}
 
 	public static void removeBreakpointMark(AbstractMediator part) {
 		if (part instanceof FixedSizedAbstractMediator) {
@@ -183,6 +204,22 @@ public class ESBDebugerUtil {
 			}
 		}
 		part.setBreakpointStatus(false);
+	}
+	
+	public static void removeSkippointMark(AbstractMediator part) {
+		if (part instanceof FixedSizedAbstractMediator) {
+			((FixedSizedAbstractMediator) part).getPrimaryShape()
+					.removeSkippointMark();
+		} else if (part instanceof complexFiguredAbstractMediator) {
+			RoundedRectangle shape = ((complexFiguredAbstractMediator) part)
+					.getPrimaryShape();
+			if (shape instanceof EsbGroupingShape) {
+				((EsbGroupingShape) shape).removeSkippointMark();
+			} else if (shape instanceof FilterMediatorGraphicalShape) {
+				// ((FilterMediatorGraphicalShape)shape).addBreakpointMark();
+			}
+		}
+		part.setSkippointStatus(false);
 	}
 
 	public static void modifyBreakpointsAfterMediatorAddition(

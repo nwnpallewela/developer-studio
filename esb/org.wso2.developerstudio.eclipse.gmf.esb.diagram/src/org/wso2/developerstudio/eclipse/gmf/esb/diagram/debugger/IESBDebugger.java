@@ -16,7 +16,10 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger;
 
 import java.io.IOException;
-import java.util.Map;
+
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
 
 /**
  * ESB Debugger should implement this interface methods in the implementation
@@ -28,17 +31,17 @@ public interface IESBDebugger {
 	 * This method gets and handle Event messages from
 	 * {@link IESBDebuggerInterface} came from ESB Server Debugger
 	 * 
-	 * @param eventAttributeMap
+	 * @param iEventMessage
 	 */
-	public void notifyEvent(Map<String, Object> eventAttributeMap);
+	public void notifyEvent(IEventMessage iEventMessage);
 
 	/**
 	 * This method gets and handle command response messages from
 	 * {@link IESBDebuggerInterface} came from ESB Server Debugger
 	 * 
-	 * @param eventAttributeMap
+	 * @param iResponseMessage
 	 */
-	public void notifyResponce(Map<String, Object> eventAttributeMap);
+	public void notifyResponce(IResponseMessage iResponseMessage);
 
 	/**
 	 * This method send event for {@link IESBDebugTarget} informing ESB Server
@@ -51,8 +54,9 @@ public interface IESBDebugger {
 	 * Terminated
 	 * 
 	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public void fireTerminatedEvent() throws IOException;
+	public void fireTerminatedEvent() throws IOException, Exception;
 
 	/**
 	 * This method send event for {@link IESBDebugTarget} informing ESB Server
@@ -66,8 +70,8 @@ public interface IESBDebugger {
 	 * This method send event for {@link IESBDebugTarget} informing ESB Server
 	 * Suspended
 	 * 
-	 * @param position
+	 * @param event
 	 */
-	public void fireSuspendedEvent(Map<String, Object> position);
+	public void fireSuspendedEvent(DebugPointEventMessage event);
 
 }

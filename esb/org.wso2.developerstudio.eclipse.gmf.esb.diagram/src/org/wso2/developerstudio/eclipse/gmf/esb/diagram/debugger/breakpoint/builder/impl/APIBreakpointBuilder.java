@@ -52,13 +52,14 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part) throws CoreException,
-			ESBDebuggerException {
+			IResource resource, AbstractMediator part, String commandArguement)
+			throws CoreException, ESBDebuggerException {
 		int lineNumber = -1;
 		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
 
-		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.API);
+		Map<String, Object> attributeMap = setInitialAttributes(
+				ESBDebuggerConstants.API, commandArguement);
 		attributeMap.put(ESBDebuggerConstants.API_KEY, api.getApiName());
 
 		EditPart proxyContainer = getContainerFromEditPart(part,

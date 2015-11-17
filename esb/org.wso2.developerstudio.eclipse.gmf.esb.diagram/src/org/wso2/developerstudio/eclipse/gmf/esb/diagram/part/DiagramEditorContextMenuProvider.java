@@ -108,6 +108,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.export.EsbModelEx
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointDeleteAllAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpointRePopulateAction;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBSkippointAction;
 
 /**
  * @generated
@@ -320,6 +321,7 @@ public class DiagramEditorContextMenuProvider extends DiagramContextMenuProvider
 									addBranchContextAction = addBranchContextActions.get(contextObj.eClass()
 											.getInstanceClass());
 									menu.appendToGroup("editGroup", new ESBBreakpointAction(part));
+									menu.appendToGroup("editGroup", new ESBSkippointAction(part));
 									menu.appendToGroup("editGroup", new ESBBreakpointRePopulateAction(part));
 									menu.appendToGroup("editGroup", new ESBBreakpointDeleteAllAction(part));
 								}

@@ -52,6 +52,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	protected LayeredPane pane; 
 	protected Layer figureLayer;
 	protected Layer breakpointLayer;
+	protected Layer skippointLayer;
 	protected String toolTipMessage;
 	
 	public void setToolTipMessage(String message){
@@ -135,6 +136,54 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	public void removeBreakpointMark() {
 		if(breakpointLayer!=null){
 			pane.remove(breakpointLayer);
+		}
+
+	}
+	
+	public void addSkippointMark() {
+		if (pane != null) {
+			skippointLayer = new Layer();
+			skippointLayer.setLayoutManager(new StackLayout());
+			GridData constraintBreakpointImageRectangle = new GridData();
+			constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.verticalSpan = 1;
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(
+							"icons/ico20debug/toggle_skippoint_green.gif", 10,
+							10);
+//			ImageFigure iconImageFigure = EditPartDrawingHelper
+//					.getIconImageFigure(
+//							"icons/ico20debug/breakpoint_16.gif", 10,
+//							10);
+
+			RoundedRectangle breakpointImageRectangle = new RoundedRectangle();
+			breakpointImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			breakpointImageRectangle.setOutline(false);
+			breakpointImageRectangle.setPreferredSize(new Dimension(10, 10));
+			breakpointImageRectangle.setAlpha(0);
+			breakpointImageRectangle.add(iconImageFigure);
+			iconImageFigure.translate((this.getSize().width / 2
+					- mainImageRectangle.getSize().width / 2 + 3), 3);
+			skippointLayer.add(breakpointImageRectangle,
+					constraintBreakpointImageRectangle);
+			/*try {
+			//	this.remove(pane);
+			} catch (NullPointerException e) {
+				log.error("Mediator icon figure does not have a layer pane", e);
+			}*/
+			pane.add(skippointLayer);
+			//this.add(pane);
+		} else {
+			log.warn("Mediator Figure layers misplaced");
+			initializeShape();
+			addSkippointMark();
+		}
+	}
+	
+	public void removeSkippointMark() {
+		if(skippointLayer!=null){
+			pane.remove(skippointLayer);
 		}
 
 	}

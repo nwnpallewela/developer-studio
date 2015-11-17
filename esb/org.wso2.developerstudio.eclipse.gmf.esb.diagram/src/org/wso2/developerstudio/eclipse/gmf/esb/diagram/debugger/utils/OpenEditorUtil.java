@@ -124,8 +124,8 @@ public class OpenEditorUtil {
 										.setSelected(EditPart.SELECTED_NONE);
 							}
 							EditPart editPart = mediatorLocator
-									.getMediatorEditPart(esbServer,
-											event.getDetail());
+									.getMediatorEditPart(esbServer, event
+											.getDetail().deserializeToMap());
 
 							if (editPart instanceof AbstractMediator) {
 								((AbstractMediator) editPart)

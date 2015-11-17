@@ -18,8 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
@@ -27,6 +25,7 @@ import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.PropertyRespondMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -97,26 +96,28 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 		this.lineNumber = lineNumber;
 	}
 
-	public synchronized void setVariables(Map<String, String> newVariables)
+	public synchronized void setVariables(
+			PropertyRespondMessage propertyRespondMessage)
 			throws DebugException {
-		for (String name : newVariables.keySet()) {
-			boolean processed = false;
-			for (IVariable variable : variables) {
-				if (variable.getName().equals(getUITableVariableName(name))) {
-					variable.setValue(newVariables.get(name));
-					((ESBVariable) variable)
-							.fireChangeEvent(DebugEvent.CONTENT);
-					processed = true;
-					break;
-				}
-			}
 
-			if (!processed) {
-				ESBVariable textVariable = new ESBVariable(getDebugTarget(),
-						getUITableVariableName(name), newVariables.get(name));
-				variables.add(textVariable);
-				textVariable.fireCreationEvent();
+		String name = propertyRespondMessage.getScope();
+		boolean processed = false;
+		for (IVariable variable : variables) {
+			if (variable.getName().equals(getUITableVariableName(name))) {
+				variable.setValue(propertyRespondMessage.getPropertyValues()
+						.toString());
+				((ESBVariable) variable).fireChangeEvent(DebugEvent.CONTENT);
+				processed = true;
+				break;
 			}
+		}
+
+		if (!processed) {
+			ESBVariable textVariable = new ESBVariable(getDebugTarget(),
+					getUITableVariableName(name), propertyRespondMessage
+							.getPropertyValues().toString());
+			variables.add(textVariable);
+			textVariable.fireCreationEvent();
 		}
 	}
 

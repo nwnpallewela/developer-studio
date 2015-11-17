@@ -45,7 +45,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part)
+			IResource resource, AbstractMediator part, String commandArguement)
 			throws MediatorNotFoundException, CoreException {
 
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
@@ -53,7 +53,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 		if (template.getChild() instanceof SequencesImpl) {
 			EsbElement sequnce = template.getChild();
-			Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.TEMPLATE);
+			Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.TEMPLATE,commandArguement);
 
 			attributeMap.put(ESBDebuggerConstants.TEMPLATE_KEY,
 					template.getName());

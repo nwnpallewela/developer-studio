@@ -16,10 +16,12 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
-import java.util.Map;
-
 import org.codehaus.jettison.json.JSONException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
 
 /**
  * Implementations for ESB Debugger Interface message communication channels
@@ -35,28 +37,28 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	String createCommand(ESBDebuggerCommands command) throws Exception;
+	String createCommand(CommandMessage command) throws Exception;
 
 	/**
 	 * This method creates the specified breakpoint command message to send to
 	 * ESB Server
 	 * 
-	 * @param attributeValues
+	 * @param debugPoint
 	 * @return
 	 * @throws JSONException
 	 */
-	String createBreakpointCommand(Map<String, Object> attributeValues)
+	String createBreakpointCommand(ESBDebugPoint debugPoint)
 			throws Exception;
 
 	/**
 	 * This method creates the specified get properties command message to send
 	 * to ESB Server
 	 * 
-	 * @param attributeValues
+	 * @param getPropertyCommand
 	 * @return
 	 * @throws JSONException
 	 */
-	String createGetPropertiesCommand(Map<String, Object> attributeValues)
+	String createGetPropertiesCommand(GetPropertyCommand getPropertyCommand)
 			throws Exception;
 
 	/**
@@ -66,7 +68,7 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	Map<String, Object> convertResponseMessageToMap(String response)
+	IResponseMessage convertResponseMessageToMap(String response)
 			throws Exception;
 
 	/**
@@ -76,7 +78,7 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	Map<String, Object> convertEventMessageToMap(String buffer)
+	IEventMessage convertEventMessageToMap(String buffer)
 			throws Exception;
 
 }

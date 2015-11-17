@@ -16,19 +16,15 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.DebuggerCommunicationMessageModel;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.MessageAttribute;
 
 /**
  * {@link JsonJettisonMessageFactory} has the implementation of functions for
@@ -37,11 +33,6 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.MessageAt
  */
 public class JsonJettisonMessageFactory implements ICommunicationMessageFactory {
 
-	private static final String MESSAGE_SEPERATOR = "}";
-	private static final String SPACE_STRING = " ";
-	private static final String JSON_MESSAGE_PREFIX = "{";
-
-	@Override
 	public String createCommand(ESBDebuggerCommands command)
 			throws JSONException {
 		try {
@@ -53,7 +44,7 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 		}
 	}
 
-	@Override
+	/*@Override
 	public Map<String, Object> convertResponseMessageToMap(String response)
 			throws JSONException {
 
@@ -110,9 +101,9 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 			throw new JSONException(
 					"Error while creating Breakpoint Command JSON message");
 		}
-	}
+	}*/
 
-	/**
+/*	*//**
 	 * This method build communication channel message to send to ESB Server
 	 * Debugger
 	 * 
@@ -120,7 +111,7 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 	 * @param attributeValues
 	 * @return
 	 * @throws JSONException
-	 */
+	 *//*
 	private JSONObject buildMessage(MessageAttribute messageModel,
 			Map<String, Object> attributeValues) throws JSONException {
 		JSONObject jsonCommand = new JSONObject();
@@ -181,14 +172,14 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 		return message;
 	}
 
-	/**
+	*//**
 	 * This method converts a JSON message to a Map with all keys as String
 	 * values
 	 * 
 	 * @param responseMessage
 	 * @return
 	 * @throws JSONException
-	 */
+	 *//*
 	private Map<String, Object> convertJsonToMap(JSONObject responseMessage)
 			throws JSONException {
 		Iterator<?> keys = responseMessage.keys();
@@ -216,6 +207,40 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 			}
 		}
 		return message;
+	}*/
+
+	@Override
+	public String createBreakpointCommand(ESBDebugPoint debugPoint)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createCommand(CommandMessage command) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createGetPropertiesCommand(
+			GetPropertyCommand getPropertyCommand) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IResponseMessage convertResponseMessageToMap(String response)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IEventMessage convertEventMessageToMap(String buffer)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

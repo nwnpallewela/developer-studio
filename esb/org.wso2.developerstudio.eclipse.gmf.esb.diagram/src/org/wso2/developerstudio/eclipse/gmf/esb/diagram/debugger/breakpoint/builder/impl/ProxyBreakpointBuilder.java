@@ -47,13 +47,14 @@ public class ProxyBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 */
 	@Override
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part) throws CoreException,
-			ESBDebuggerException {
+			IResource resource, AbstractMediator part, String commandArguement)
+			throws CoreException, ESBDebuggerException {
 
 		int lineNumber = -1;
 		ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
-		Map<String, Object> attributeMap = setInitialAttributes(ESBDebuggerConstants.PROXY);
+		Map<String, Object> attributeMap = setInitialAttributes(
+				ESBDebuggerConstants.PROXY, commandArguement);
 		attributeMap.put(ESBDebuggerConstants.PROXY_KEY, proxy.getName());
 		List<Integer> position = null;
 		EObject selection = ((View) part.getModel()).getElement();

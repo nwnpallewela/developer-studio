@@ -16,25 +16,27 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 
-import java.util.Map;
-
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.PropertyRespondMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
 
 /**
- * {@link VariablesEvent} represent the request event from {@link ESBDebugger}
- * to {@link ESBDebugTarget} when {@link ESBDebugger} notify new property
- * variables are received from ESB Server
+ * {@link PropertyRecievedEvent} represent the request event from
+ * {@link ESBDebugger} to {@link ESBDebugTarget} when {@link ESBDebugger} notify
+ * new property variables are received from ESB Server
  */
-public class VariablesEvent extends AbstractEvent implements IDebuggerEvent {
+public class PropertyRecievedEvent extends AbstractEvent implements
+		IDebuggerEvent {
 
-	private final Map<String, String> variables;
+	private final PropertyRespondMessage propertyScope;
 
-	public VariablesEvent(Map<String, String> variables) {
-		this.variables = variables;
+	public PropertyRecievedEvent(PropertyRespondMessage variables) {
+		this.propertyScope = variables;
 	}
 
-	public Map<String, String> getVariables() {
-		return variables;
+	public PropertyRespondMessage getVariables() {
+		return propertyScope;
 	}
 }

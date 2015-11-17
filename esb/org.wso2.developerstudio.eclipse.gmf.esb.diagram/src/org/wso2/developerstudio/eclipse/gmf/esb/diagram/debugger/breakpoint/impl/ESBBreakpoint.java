@@ -24,14 +24,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.core.resources.IMarker;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.BreakpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -134,14 +134,14 @@ public class ESBBreakpoint extends Breakpoint {
 	 * returns source view line number of the breakpoint
 	 * 
 	 * @return
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
-	public int getLineNumber() throws BreakpointMarkerNotFoundException {
+	public int getLineNumber() throws DebugpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
 		}
-		throw new BreakpointMarkerNotFoundException(
+		throw new DebugpointMarkerNotFoundException(
 				"Assoiciated IMarker value not found for ESBBreakpoint : "
 						+ this);
 	}
@@ -151,10 +151,10 @@ public class ESBBreakpoint extends Breakpoint {
 	 * 
 	 * @return
 	 * @throws CoreException
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
 	public Map<String, Object> getLocation() throws CoreException,
-			BreakpointMarkerNotFoundException {
+			DebugpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			String locationString = (String) marker.getAttributes().get(
@@ -163,7 +163,7 @@ public class ESBBreakpoint extends Breakpoint {
 				return convertLocationToMap(locationString);
 			}
 		}
-		throw new BreakpointMarkerNotFoundException(
+		throw new DebugpointMarkerNotFoundException(
 				"Assoiciated IMarker value not found for ESBBreakpoint : "
 						+ this);
 	}
@@ -197,20 +197,20 @@ public class ESBBreakpoint extends Breakpoint {
 	 * Returns resource file of the marker set to breakpoint
 	 * 
 	 * @return
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
-	public IResource getResource() throws BreakpointMarkerNotFoundException {
+	public IResource getResource() throws DebugpointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getResource();
 		}
-		throw new BreakpointMarkerNotFoundException(
+		throw new DebugpointMarkerNotFoundException(
 				"Assoiciated IMarker value not found for ESBBreakpoint : "
 						+ this);
 	}
 
 	public boolean equals(ESBBreakpoint breakpoint)
-			throws BreakpointMarkerNotFoundException, CoreException {
+			throws DebugpointMarkerNotFoundException, CoreException {
 		if (breakpoint != null) {
 			Map<String, Object> message = breakpoint.getLocation();
 			return isMatchedWithPropertiesMap(message);
@@ -222,14 +222,15 @@ public class ESBBreakpoint extends Breakpoint {
 	/**
 	 * @param breakpoint
 	 * @return boolean : true if breakpoints are matched or false
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 * @throws CoreException
 	 */
 	@Override
 	public boolean equals(Object breakpoint) {
 		try {
-			return equals((ESBBreakpoint)breakpoint);
-		} catch (BreakpointMarkerNotFoundException | CoreException | ClassCastException e) {
+			return equals((ESBBreakpoint) breakpoint);
+		} catch (DebugpointMarkerNotFoundException | CoreException
+				| ClassCastException e) {
 			return false;
 		}
 	}
@@ -246,17 +247,16 @@ public class ESBBreakpoint extends Breakpoint {
 	 * @param Map
 	 *            <String,Object>
 	 * @return boolean
-	 * @throws BreakpointMarkerNotFoundException
+	 * @throws DebugpointMarkerNotFoundException
 	 * @throws CoreException
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean isMatchedWithPropertiesMap(Map<String, Object> message)
-			throws BreakpointMarkerNotFoundException, CoreException {
-
-		if (message != null) {
+	public boolean isMatchedWithPropertiesMap(Map<String, Object> info)
+			throws DebugpointMarkerNotFoundException, CoreException {
+		if (info != null) {
 			Map<String, Object> breakpointMessage = getLocation();
 			if (!isBreakpointPositionMatches(
-					((List<Integer>) message
+					((List<Integer>) info
 							.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
 					((List<Integer>) breakpointMessage
 							.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
@@ -264,17 +264,17 @@ public class ESBBreakpoint extends Breakpoint {
 			}
 
 			Set<String> attributeKeys = new HashSet<String>();
-			attributeKeys.addAll(message.keySet());
+			attributeKeys.addAll(info.keySet());
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
 			attributeKeys.remove(ESBDebuggerConstants.EVENT);
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
 			for (String key : attributeKeys) {
 				if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
 						.get(key)).trim().equals(
-						((String) message.get(key)).trim())))) {
+						((String) info.get(key)).trim())))) {
 					if (!(ESBDebuggerConstants.MAPPING_URL_TYPE
 							.equalsIgnoreCase(key) && breakpointMessage
-							.containsValue(message
+							.containsValue(info
 									.get(ESBDebuggerConstants.MAPPING_URL_TYPE)))) {
 						return false;
 					}
@@ -284,6 +284,17 @@ public class ESBBreakpoint extends Breakpoint {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean isBreakpoint() throws DebugpointMarkerNotFoundException,
+			CoreException {
+		Map<String, Object> breakpointMessage = getLocation();
+		if (ESBDebuggerConstants.BREAKPOINT.equals(breakpointMessage
+				.get(ESBDebuggerConstants.COMMAND_ARGUMENT))) {
+			return true;
+		}
+		return false;
+
 	}
 
 	private boolean isBreakpointPositionMatches(

@@ -31,6 +31,7 @@ public class EsbGroupingShape extends RoundedRectangle {
 	private LayeredPane pane; 
 	private Layer figureLayer;
 	private Layer breakpointLayer;
+	private Layer skippointLayer;
 	static int Image_PreferredWidth = 75;
 	static int Image_PreferredHeight = 42;
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
@@ -92,6 +93,42 @@ public class EsbGroupingShape extends RoundedRectangle {
 			addBreakpointMark();
 		}
 	}
+	
+	public void addSkippointMark() {
+		if (pane != null) {
+			skippointLayer = new Layer();
+			skippointLayer.setLayoutManager(new StackLayout());
+			GridData constraintBreakpointImageRectangle = new GridData();
+			constraintBreakpointImageRectangle.verticalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.horizontalAlignment = GridData.BEGINNING;
+			constraintBreakpointImageRectangle.verticalSpan = 1;
+			ImageFigure iconImageFigure = EditPartDrawingHelper
+					.getIconImageFigure(
+							"icons/ico20debug/toggle_skippoint_green.gif", 10,
+							10);
+
+			RoundedRectangle mainImageRectangle = new RoundedRectangle();
+			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			mainImageRectangle.setOutline(false);
+			mainImageRectangle.setPreferredSize(new Dimension(10, 10));
+			mainImageRectangle.setAlpha(0);
+			mainImageRectangle.add(iconImageFigure);
+			iconImageFigure.translate(0, 2);
+			skippointLayer.add(mainImageRectangle,
+					constraintBreakpointImageRectangle);
+			try {
+				container.remove(pane);
+			} catch (NullPointerException e) {
+				log.error("Mediator icon figure does not have a layer pane", e);
+			}
+			pane.add(skippointLayer);
+			container.add(pane);
+		} else {
+			log.warn("Mediator Figure layers misplaced");
+		//	initializeShape();
+			addSkippointMark();
+		}
+	}
 
 	public void removeBreakpointMark() {
 		try {
@@ -102,6 +139,24 @@ public class EsbGroupingShape extends RoundedRectangle {
 
 		try {
 			pane.remove(breakpointLayer);
+		} catch (NullPointerException e) {
+			log.error(
+					"Mediator icon layer pane does not have a breakpoint layer",
+					e);
+		}
+		container.add(pane);
+
+	}
+	
+	public void removeSkippointMark() {
+		try {
+			container.remove(pane);
+		} catch (NullPointerException e) {
+			log.error("Mediator icon figure does not have a layer pane", e);
+		}
+
+		try {
+			pane.remove(skippointLayer);
 		} catch (NullPointerException e) {
 			log.error(
 					"Mediator icon layer pane does not have a breakpoint layer",

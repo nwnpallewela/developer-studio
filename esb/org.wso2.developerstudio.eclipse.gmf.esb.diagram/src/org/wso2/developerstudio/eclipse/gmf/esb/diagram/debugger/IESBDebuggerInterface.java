@@ -26,6 +26,9 @@ import org.codehaus.jettison.json.JSONException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponseDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 
 /**
  * ESB Debugger Interface should implement this interface and methods in the
@@ -97,10 +100,10 @@ public interface IESBDebuggerInterface {
 	/**
 	 * This method sends command message to ESB Server.
 	 * 
-	 * @param command
+	 * @param esbDebuggerCommandMessage
 	 * @throws Exception
 	 */
-	public void sendCommand(ESBDebuggerCommands command) throws Exception;
+	public void sendCommand(CommandMessage esbDebuggerCommandMessage) throws Exception;
 
 	/**
 	 * This method sends breakpoint message to ESB Server to register
@@ -108,10 +111,10 @@ public interface IESBDebuggerInterface {
 	 * 
 	 * @param operation
 	 * @param type
-	 * @param breakpointAttributes
+	 * @param debugPoint
 	 * @throws Exception
 	 */
-	public void sendBreakpointCommand(Map<String, Object> breakpointAttributes)
+	public void sendBreakpointCommand(ESBDebugPoint debugPoint)
 			throws Exception;
 
 	/**
@@ -124,10 +127,10 @@ public interface IESBDebuggerInterface {
 	/**
 	 * This method sends command message to ESB Server to get properties.
 	 * 
-	 * @param attributeValues
+	 * @param getPropertyCommand
 	 * @throws Exception
 	 */
-	public void sendGetPropertiesCommand(Map<String, Object> attributeValues)
+	public void sendGetPropertiesCommand(GetPropertyCommand getPropertyCommand)
 			throws Exception;
 
 	/**

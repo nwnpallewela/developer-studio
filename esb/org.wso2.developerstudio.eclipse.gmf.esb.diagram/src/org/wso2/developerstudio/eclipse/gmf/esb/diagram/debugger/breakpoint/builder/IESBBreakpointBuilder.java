@@ -36,12 +36,13 @@ public interface IESBBreakpointBuilder {
 	 * @param esbServer
 	 * @param resource
 	 * @param mediatorPart
+	 * @param commandArguement 
 	 * @return
 	 * @throws CoreException
 	 * @throws ESBDebuggerException
 	 */
 	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
-			IResource resource, AbstractMediator mediatorPart)
+			IResource resource, AbstractMediator mediatorPart, String commandArguement)
 			throws CoreException, ESBDebuggerException;
 
 	/**
