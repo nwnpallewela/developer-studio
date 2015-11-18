@@ -19,7 +19,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
@@ -61,7 +61,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 	private final int lineNumber;
 	private ESBDebugPoint debugPoint;
 
-	public DebugPointRequest(ESBBreakpoint breakpoint,
+	public DebugPointRequest(ESBDebugpoint breakpoint,
 			DebugPointEventAction action)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		type = action;
@@ -70,7 +70,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 
 	}
 
-	private ESBDebugPoint setDebugPoint(ESBBreakpoint breakpoint)
+	private ESBDebugPoint setDebugPoint(ESBDebugpoint breakpoint)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		Map<String, Object> attributeSet = breakpoint.getLocation();
 		String mediationComponent=(String) attributeSet.get(ESBDebuggerConstants.MEDIATION_COMPONENT);

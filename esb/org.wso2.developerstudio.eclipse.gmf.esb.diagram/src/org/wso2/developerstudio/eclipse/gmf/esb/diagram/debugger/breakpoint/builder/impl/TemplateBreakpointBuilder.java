@@ -29,7 +29,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
@@ -44,7 +44,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 * @throws CoreException
 	 */
 	@Override
-	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBDebugpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource, AbstractMediator part, String commandArguement)
 			throws MediatorNotFoundException, CoreException {
 
@@ -62,7 +62,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 					((SequencesImpl) sequnce).getOutputConnector(), selection);
 			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 			int lineNumber = -1;
-			return new ESBBreakpoint(resource, lineNumber, attributeMap);
+			return new ESBDebugpoint(resource, lineNumber, attributeMap);
 		} else {
 			throw new UnsupportedOperationException(
 					"Breakpoint Integration not supported for template : "
@@ -89,7 +89,7 @@ public class TemplateBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			List<Integer> position = getMediatorPosition(
 					((SequencesImpl) sequnce).getOutputConnector(),
 					abstractMediator);
-			List<ESBBreakpoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
 					resource, position, EMPTY_STRING, action);
 			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
 					.equalsIgnoreCase(action)) {

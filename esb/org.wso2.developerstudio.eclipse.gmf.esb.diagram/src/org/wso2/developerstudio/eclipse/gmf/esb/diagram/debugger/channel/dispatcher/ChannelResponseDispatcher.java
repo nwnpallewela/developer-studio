@@ -50,8 +50,10 @@ public class ChannelResponseDispatcher implements Runnable {
 		try {
 			while (currentThread == responseDispatcherThread) {
 				if (requestReader.ready()) {
-					String buffer = requestReader.readLine();
-					System.out.println("&&&&&&&&&&&&&&&&"+buffer);
+					String buffer = null;
+					synchronized (requestReader) {
+						buffer = requestReader.readLine();;
+					}
 					esbDebuggerInterface.notifyResponce(buffer);
 				}
 			}
@@ -69,5 +71,8 @@ public class ChannelResponseDispatcher implements Runnable {
 
 	public void stop() {
 		responseDispatcherThread = null;
+		synchronized (this) {
+			notifyAll();
+		}
 	}
 }

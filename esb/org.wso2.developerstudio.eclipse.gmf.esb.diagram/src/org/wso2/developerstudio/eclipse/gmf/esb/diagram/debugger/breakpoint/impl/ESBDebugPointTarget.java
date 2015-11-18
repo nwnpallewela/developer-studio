@@ -97,23 +97,16 @@ public class ESBDebugPointTarget {
 
 		if (activeEditor instanceof EsbMultiPageEditor) {
 
-			IFile file = ((FileEditorInput) (((EsbMultiPageEditor) activeEditor)
-					.getEditorInput())).getFile();
-			Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
-					.getDiagram();
-			EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
-			EsbServer esbServer = esbDiagram.getServer();
-
+			EsbServer esbServer = getESBServerFromESBMultiPageEditor(activeEditor);
 			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
-
-			IResource resource = (IResource) file.getAdapter(IResource.class);
-			ESBBreakpoint breakpoint = breakpointBuilder.getESBBreakpoint(
+			IResource resource = getFileIResourceFromESBMultiPageEditor(activeEditor);
+			ESBDebugpoint debugPoint = breakpointBuilder.getESBBreakpoint(
 					esbServer, resource, part, commandArguement);
-			ESBBreakpoint existingBreakpoint = getMatchingDebugpoint(breakpoint);
+			ESBDebugpoint existingBreakpoint = getMatchingDebugPoint(debugPoint);
 			if (existingBreakpoint == null) {
 				DebugPlugin.getDefault().getBreakpointManager()
-						.addBreakpoint(breakpoint);
+						.addBreakpoint(debugPoint);
 				if (ESBDebuggerConstants.BREAKPOINT.equals(commandArguement)) {
 					ESBDebugerUtil.addBreakpointMark(part);
 				} else {
@@ -132,20 +125,45 @@ public class ESBDebugPointTarget {
 	}
 
 	/**
+	 * @param activeEditor
+	 * @return
+	 */
+	private static IResource getFileIResourceFromESBMultiPageEditor(
+			IEditorPart activeEditor) {
+		IFile file = ((FileEditorInput) (((EsbMultiPageEditor) activeEditor)
+				.getEditorInput())).getFile();
+		IResource resource = (IResource) file.getAdapter(IResource.class);
+		return resource;
+	}
+
+	/**
+	 * @param activeEditor
+	 * @return
+	 */
+	private static EsbServer getESBServerFromESBMultiPageEditor(
+			IEditorPart activeEditor) {
+		Diagram diagram = ((EsbMultiPageEditor) (activeEditor))
+				.getDiagram();
+		EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();
+		EsbServer esbServer = esbDiagram.getServer();
+		return esbServer;
+	}
+
+	/**
 	 * This method finds similar mediator registered as a breakpoint in the
 	 * BreakpointManager and returns.
 	 * 
 	 * @param targetBreakpoint
 	 * @return ESBBreakpoint if found or null
 	 */
-	private static ESBBreakpoint getMatchingDebugpoint(
-			ESBBreakpoint targetBreakpoint) {
+	private static ESBDebugpoint getMatchingDebugPoint(
+			ESBDebugpoint targetBreakpoint) {
 		IBreakpoint[] debugpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint debugpoint : debugpoints) {
 			try {
-				ESBBreakpoint esbDebugpoint = (ESBBreakpoint) debugpoint;
+				ESBDebugpoint esbDebugpoint = (ESBDebugpoint) debugpoint;
 				if ((esbDebugpoint.getResource()).equals(targetBreakpoint
 						.getResource())) {
 

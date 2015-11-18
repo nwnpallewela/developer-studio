@@ -34,7 +34,6 @@ public class EditPartDrawingHelper {
 	public static Color FigureNormalColor = new Color(null, 255, 255, 255);
 	public static Color FigureSelectedBorderColor = new Color(null, 200, 200, 200);
 	public static Color ComplexFigureSelectedBorderColor =new Color(null, 224, 224, 224);
-	
 
 	public static Image getImage(String iconPath, int width, int height) {
 		ImageDescriptor mainImgDesc = EsbDiagramEditorPlugin

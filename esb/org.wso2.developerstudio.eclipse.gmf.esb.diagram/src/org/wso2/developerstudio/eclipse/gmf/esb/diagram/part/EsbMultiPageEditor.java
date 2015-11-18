@@ -104,7 +104,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Abst
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
@@ -584,7 +584,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								.getBreakpoints(ESBDebugModelPresentation.ID);
 						for (IBreakpoint breakpoint : breakpoints) {
 							try {
-								if (file.equals(((ESBBreakpoint) breakpoint)
+								if (file.equals(((ESBDebugpoint) breakpoint)
 										.getResource())) {
 
 									EditPart editPart = null;
@@ -592,11 +592,11 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 									editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
-													((ESBBreakpoint) breakpoint)
+													((ESBDebugpoint) breakpoint)
 															.getLocation());
 									if (editPart instanceof AbstractMediator) {
 										
-										if(((ESBBreakpoint) breakpoint).isBreakpoint()){
+										if(((ESBDebugpoint) breakpoint).isBreakpoint()){
 										ESBDebugerUtil
 												.addBreakpointMark((AbstractMediator) editPart);
 										}else{

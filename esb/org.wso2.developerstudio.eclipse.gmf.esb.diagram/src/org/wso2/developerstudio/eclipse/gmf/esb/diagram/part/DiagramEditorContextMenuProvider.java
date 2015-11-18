@@ -320,10 +320,10 @@ public class DiagramEditorContextMenuProvider extends DiagramContextMenuProvider
 									contextAction = contextActions.get(contextObj.eClass().getInstanceClass());
 									addBranchContextAction = addBranchContextActions.get(contextObj.eClass()
 											.getInstanceClass());
-									menu.appendToGroup("editGroup", new ESBBreakpointAction(part));
-									menu.appendToGroup("editGroup", new ESBSkippointAction(part));
-									menu.appendToGroup("editGroup", new ESBBreakpointRePopulateAction(part));
-									menu.appendToGroup("editGroup", new ESBBreakpointDeleteAllAction(part));
+									menu.appendToGroup("navigateGroup", new ESBBreakpointAction(part));
+									menu.appendToGroup("navigateGroup", new ESBSkippointAction(part));
+									menu.appendToGroup("navigateGroup", new ESBBreakpointRePopulateAction(part));
+									menu.appendToGroup("navigateGroup", new ESBBreakpointDeleteAllAction(part));
 								}
 
 								if (null != contextAction) {

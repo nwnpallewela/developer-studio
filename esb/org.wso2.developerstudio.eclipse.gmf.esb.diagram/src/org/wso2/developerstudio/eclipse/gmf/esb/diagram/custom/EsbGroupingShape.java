@@ -89,7 +89,6 @@ public class EsbGroupingShape extends RoundedRectangle {
 			container.add(pane);
 		} else {
 			log.warn("Mediator Figure layers misplaced");
-		//	initializeShape();
 			addBreakpointMark();
 		}
 	}
@@ -104,8 +103,8 @@ public class EsbGroupingShape extends RoundedRectangle {
 			constraintBreakpointImageRectangle.verticalSpan = 1;
 			ImageFigure iconImageFigure = EditPartDrawingHelper
 					.getIconImageFigure(
-							"icons/ico20debug/toggle_skippoint_green.gif", 10,
-							10);
+							"icons/ico20debug/greyImagealphamask.gif", this.getBounds().width,
+							this.getBounds().height);
 
 			RoundedRectangle mainImageRectangle = new RoundedRectangle();
 			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
@@ -125,7 +124,6 @@ public class EsbGroupingShape extends RoundedRectangle {
 			container.add(pane);
 		} else {
 			log.warn("Mediator Figure layers misplaced");
-		//	initializeShape();
 			addSkippointMark();
 		}
 	}

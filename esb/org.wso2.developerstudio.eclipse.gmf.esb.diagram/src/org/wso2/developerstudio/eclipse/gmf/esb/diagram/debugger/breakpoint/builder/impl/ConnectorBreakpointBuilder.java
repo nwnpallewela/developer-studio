@@ -21,19 +21,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBBreakpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
 
 public class ConnectorBreakpointBuilder extends AbstractESBBreakpointBuilder {
 
 	@Override
-	public ESBBreakpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBDebugpoint getESBBreakpoint(EsbServer esbServer,
 			IResource resource,AbstractMediator part, String commandArguement) throws CoreException {
 		int lineNumber = -1;
 		String message = "";
 		
 
 		
-		ESBBreakpoint esbBreakpoint = null;
+		ESBDebugpoint esbBreakpoint = null;
 		return esbBreakpoint;
 	}
 

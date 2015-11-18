@@ -39,7 +39,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  * This class represents the Custom Breakpoint type for ESB Breakpoints. Both
  * design view and source view ESB breakpoints is map to this type.
  */
-public class ESBBreakpoint extends Breakpoint {
+public class ESBDebugpoint extends Breakpoint {
 
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String KEY_VALUE_SEPERATOR = ":";
@@ -48,15 +48,15 @@ public class ESBBreakpoint extends Breakpoint {
 
 	// Default constructor is needed by the debug framework to restore
 	// breakpoints
-	public ESBBreakpoint() {
+	public ESBDebugpoint() {
 	}
 
-	public ESBBreakpoint(final IResource resource, final int lineNumber,
+	public ESBDebugpoint(final IResource resource, final int lineNumber,
 			final Map<String, Object> attributes) throws CoreException {
 		this(resource, lineNumber, attributes, true);
 	}
 
-	protected ESBBreakpoint(final IResource resource, final int lineNumber,
+	protected ESBDebugpoint(final IResource resource, final int lineNumber,
 			final Map<String, Object> attributes, final boolean persistent)
 			throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -209,11 +209,33 @@ public class ESBBreakpoint extends Breakpoint {
 						+ this);
 	}
 
-	public boolean equals(ESBBreakpoint breakpoint)
+	public boolean equals(ESBDebugpoint breakpoint)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		if (breakpoint != null) {
 			Map<String, Object> message = breakpoint.getLocation();
-			return isMatchedWithPropertiesMap(message);
+			return isMatchedWithPropertiesMap(message, true);
+		}
+		return false;
+
+	}
+
+	/**
+	 * This method checks whether given debugPoint matches with this debug point
+	 * with out considering the attribute debug point type
+	 * 
+	 * Eg: If you match a breakpoint and a skip point of same mediator this
+	 * method returns true
+	 * 
+	 * @param debugPoint
+	 * @return
+	 * @throws DebugpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
+	public boolean equalsIgnoreType(ESBDebugpoint debugPoint)
+			throws DebugpointMarkerNotFoundException, CoreException {
+		if (debugPoint != null) {
+			Map<String, Object> message = debugPoint.getLocation();
+			return isMatchedWithPropertiesMap(message, false);
 		}
 		return false;
 
@@ -222,13 +244,11 @@ public class ESBBreakpoint extends Breakpoint {
 	/**
 	 * @param breakpoint
 	 * @return boolean : true if breakpoints are matched or false
-	 * @throws DebugpointMarkerNotFoundException
-	 * @throws CoreException
 	 */
 	@Override
 	public boolean equals(Object breakpoint) {
 		try {
-			return equals((ESBBreakpoint) breakpoint);
+			return equals((ESBDebugpoint) breakpoint);
 		} catch (DebugpointMarkerNotFoundException | CoreException
 				| ClassCastException e) {
 			return false;
@@ -244,14 +264,20 @@ public class ESBBreakpoint extends Breakpoint {
 	 * This method check whether breakpoint attribute values are matched with @param
 	 * message attribute values.
 	 * 
-	 * @param Map
-	 *            <String,Object>
+	 * @param info
+	 *            should contains the attributes related to debug point as a key
+	 *            value map
+	 * @param shouldDebugPointTypeMatch
+	 *            true/false : (if the matching should consider debug point type
+	 *            / if matching should only consider the mediator position not
+	 *            the type)
 	 * @return boolean
 	 * @throws DebugpointMarkerNotFoundException
 	 * @throws CoreException
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean isMatchedWithPropertiesMap(Map<String, Object> info)
+	public boolean isMatchedWithPropertiesMap(Map<String, Object> info,
+			boolean shouldDebugPointTypeMatch)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		if (info != null) {
 			Map<String, Object> breakpointMessage = getLocation();
@@ -268,6 +294,9 @@ public class ESBBreakpoint extends Breakpoint {
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
 			attributeKeys.remove(ESBDebuggerConstants.EVENT);
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
+			if (!shouldDebugPointTypeMatch) {
+				attributeKeys.remove(ESBDebuggerConstants.COMMAND_ARGUMENT);
+			}
 			for (String key : attributeKeys) {
 				if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
 						.get(key)).trim().equals(
@@ -286,6 +315,14 @@ public class ESBBreakpoint extends Breakpoint {
 		return false;
 	}
 
+	/**
+	 * This method checks whether this {@link ESBDebugpoint} is a breakpoint.
+	 * 
+	 * @return boolean - true : if this is a breakpoint, false : if this is a
+	 *         skip point or any other type
+	 * @throws DebugpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
 	public boolean isBreakpoint() throws DebugpointMarkerNotFoundException,
 			CoreException {
 		Map<String, Object> breakpointMessage = getLocation();
@@ -294,7 +331,24 @@ public class ESBBreakpoint extends Breakpoint {
 			return true;
 		}
 		return false;
+	}
 
+	/**
+	 * This method checks whether this {@link ESBDebugpoint} is a skip point.
+	 * 
+	 * @return boolean - true : if this is a skip point, false : if this is a
+	 *         breakpoint or any other type
+	 * @throws DebugpointMarkerNotFoundException
+	 * @throws CoreException
+	 */
+	public boolean isSkippoint() throws DebugpointMarkerNotFoundException,
+			CoreException {
+		Map<String, Object> breakpointMessage = getLocation();
+		if (ESBDebuggerConstants.SKIP.equals(breakpointMessage
+				.get(ESBDebuggerConstants.COMMAND_ARGUMENT))) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isBreakpointPositionMatches(

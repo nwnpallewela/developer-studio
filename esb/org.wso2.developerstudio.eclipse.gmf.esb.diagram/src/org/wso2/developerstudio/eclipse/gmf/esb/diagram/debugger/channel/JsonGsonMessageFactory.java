@@ -139,28 +139,34 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 			}
 		}
 
-		switch (event) {
-		case RESUMED_CLIENT:
-			return new GeneralEventMessage(event);
-		case DEBUG_INFO_LOST:
-			return new GeneralEventMessage(event);
-		case STARTED:
-			return new SpecialCordinationEventMessage(event, messageReciever,
-					callbackReciever);
-		case CALLBACK:
-			return new SpecialCordinationEventMessage(event, messageReciever,
-					callbackReciever);
-		case TERMINATED:
-			return new SpecialCordinationEventMessage(event, messageReciever,
-					callbackReciever);
-		case BREAKPOINT:
-		case SKIPPOINT:
-			return (IEventMessage) new DebugPointEventMessage(event,
-					getESBDebugPoint(debugPointType, event,
-							recievedArtifactInfo));
-		default:
+		if (event != null) {
+			switch (event) {
+			case RESUMED_CLIENT:
+				return new GeneralEventMessage(event);
+			case DEBUG_INFO_LOST:
+				return new GeneralEventMessage(event);
+			case STARTED:
+				return new SpecialCordinationEventMessage(event,
+						messageReciever, callbackReciever);
+			case CALLBACK:
+				return new SpecialCordinationEventMessage(event,
+						messageReciever, callbackReciever);
+			case TERMINATED:
+				return new SpecialCordinationEventMessage(event,
+						messageReciever, callbackReciever);
+			case BREAKPOINT:
+			case SKIPPOINT:
+				return (IEventMessage) new DebugPointEventMessage(event,
+						getESBDebugPoint(debugPointType, event,
+								recievedArtifactInfo));
+			default:
+				throw new IllegalArgumentException(
+						"Invalid Event Message Recieved from ESB Server Debugger : "
+								+ eventMessage);
+			}
+		} else {
 			throw new IllegalArgumentException(
-					"Invalid Event Message Recieved from ESB Server Debugger "
+					"Invalid Message Recieved from ESB Server Debugger Which doesn't have an event tag : "
 							+ eventMessage);
 		}
 

@@ -47,14 +47,6 @@ public class ChannelEventDispatcher implements Runnable {
 		Thread currentThread = Thread.currentThread();
 		try {
 			while (currentThread == eventDispatcherThread) {
-				if (!eventReader.ready()) {
-					try {
-						synchronized (this) {
-							wait();
-						}
-					} catch (InterruptedException e) {
-					}
-				}
 				if (eventReader.ready()) {
 					String buffer = null;
 					synchronized (eventReader) {
