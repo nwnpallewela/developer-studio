@@ -18,8 +18,14 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.comma
 
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
+/**
+ * {@link ESBSequenceBean} holds attributes which identifies Proxy Artifact
+ * uniquely and defined in ESB Mediation Debugger communication API's
+ *
+ */
 public class ESBTemplateBean {
 
 	private String sequenceKey;

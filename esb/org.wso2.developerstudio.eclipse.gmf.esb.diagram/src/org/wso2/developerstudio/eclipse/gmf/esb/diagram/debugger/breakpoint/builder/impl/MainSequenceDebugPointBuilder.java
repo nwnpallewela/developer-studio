@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.notation.View;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
@@ -32,7 +32,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 /**
  * This class builds ESB breakpoints related to Main Sequence.
  */
-public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder {
+public class MainSequenceDebugPointBuilder extends AbstractESBDebugPointBuilder {
 
 	private static final int OUT_SEQ_POSITION = 1;
 	private static final int IN_SEQ_POSITION = 0;
@@ -43,7 +43,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	 * @throws MediatorNotFoundException
 	 */
 	@Override
-	public ESBDebugpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
 			IResource resource, AbstractMediator part, String commandArguement)
 			throws CoreException, MediatorNotFoundException {
 
@@ -71,7 +71,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 		}
 		position.add(INDEX_OF_FIRST_ELEMENT, listSeqPosition);
 		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
-		return new ESBDebugpoint(resource, lineNumber, attributeMap);
+		return new ESBDebugPoint(resource, lineNumber, attributeMap);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 	 * @throws MediatorNotFoundException
 	 */
 	@Override
-	public void updateExistingBreakpoints(IResource resource,
+	public void updateExistingDebugPoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws MediatorNotFoundException {
 
@@ -94,7 +94,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutSequenceOutputConnector(),
 					abstractMediator);
-			List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
 					resource, position, listSequenceNumber, action);
 			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
 					.equalsIgnoreCase(action)) {
@@ -106,7 +106,7 @@ public class MainSequenceBreakpointBuilder extends AbstractESBBreakpointBuilder 
 			listSequenceNumber = EMPTY_STRING + IN_SEQ_POSITION;
 			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutputConnector(), abstractMediator);
-			List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
 					resource, position, listSequenceNumber, action);
 			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
 					.equalsIgnoreCase(action)) {

@@ -19,7 +19,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
+/**
+ * {@link ESBDebugProcess} represents a IProcess for a ESB Debugger
+ *
+ */
 public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
 	public ESBDebugProcess(final ESBDebugTarget debugTarget) {
@@ -28,7 +33,7 @@ public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
 	@Override
 	public String getLabel() {
-		return "ESB Process";
+		return ESBDebuggerConstants.ESB_DEBUG_PROCESS_ID;
 	}
 
 	@Override

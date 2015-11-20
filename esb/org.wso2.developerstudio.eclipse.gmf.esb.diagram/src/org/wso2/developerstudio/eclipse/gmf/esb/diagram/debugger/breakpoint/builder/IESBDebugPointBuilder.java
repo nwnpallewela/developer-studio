@@ -20,17 +20,17 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 
 /**
  * ESB Breakpoint Builders should implement this interface
  * 
  */
-public interface IESBBreakpointBuilder {
+public interface IESBDebugPointBuilder {
 
 	/**
-	 * This method returns a {@link ESBDebugpoint} of mediatorPart which is in
+	 * This method returns a {@link ESBDebugPoint} of mediatorPart which is in
 	 * file resource and esbServer.
 	 * 
 	 * @param esbServer
@@ -41,12 +41,12 @@ public interface IESBBreakpointBuilder {
 	 * @throws CoreException
 	 * @throws ESBDebuggerException
 	 */
-	public ESBDebugpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
 			IResource resource, AbstractMediator mediatorPart, String commandArguement)
 			throws CoreException, ESBDebuggerException;
 
 	/**
-	 * This method update {@link ESBDebugpoint}'s already registered in
+	 * This method update {@link ESBDebugPoint}'s already registered in
 	 * Breakpoint Manager which is affected by action of inserting or deleting
 	 * mentioned mediator.
 	 * 
@@ -56,7 +56,7 @@ public interface IESBBreakpointBuilder {
 	 * @param action
 	 * @throws ESBDebuggerException
 	 */
-	public void updateExistingBreakpoints(IResource resource,
+	public void updateExistingDebugPoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws ESBDebuggerException;
 

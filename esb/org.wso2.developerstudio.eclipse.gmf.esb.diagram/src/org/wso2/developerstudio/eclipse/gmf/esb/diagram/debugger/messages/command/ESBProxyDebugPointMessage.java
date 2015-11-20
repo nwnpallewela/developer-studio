@@ -30,17 +30,22 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 
 import com.google.gson.JsonElement;
 
-public class ESBProxyDebugPoint extends ESBDebugPoint {
+/**
+ * {@link ESBProxyDebugPointMessage} is the bean class to represent ESB Proxy
+ * artifacts debug point message from ESB Server Debugger
+ *
+ */
+public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
 
 	private ESBProxySequenceBean sequence;
 
-	public ESBProxyDebugPoint(String command, String commandArgument,
+	public ESBProxyDebugPointMessage(String command, String commandArgument,
 			String mediationComponent, ESBProxySequenceBean sequence) {
 		super(command, commandArgument, mediationComponent);
 		this.setSeqeunce(sequence);
 	}
 
-	public ESBProxyDebugPoint(DebugPointEventAction action,
+	public ESBProxyDebugPointMessage(DebugPointEventAction action,
 			Map<String, Object> attributeSet) {
 		super(action.toString(), null, ESBDebuggerConstants.SEQUENCE);
 		setCommandArgument((String) attributeSet
@@ -60,7 +65,7 @@ public class ESBProxyDebugPoint extends ESBDebugPoint {
 
 	}
 
-	public ESBProxyDebugPoint(EventMessageType event,
+	public ESBProxyDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
 		super(null, null, PROXY);
 		setCommandArgument(event.toString());
@@ -75,13 +80,13 @@ public class ESBProxyDebugPoint extends ESBDebugPoint {
 					.getAsJsonObject().entrySet();
 			for (Entry<String, JsonElement> entry : proxyEntrySet) {
 				if (PROXY_KEY.equalsIgnoreCase(entry.getKey())) {
-					proxyKey = entry.getValue().toString().replace("\"", "");
+					proxyKey = formatJsonElementValueToString(entry.getValue());
 				} else if (MEDIATOR_POSITION.equalsIgnoreCase(entry.getKey())) {
-					mediatorPosition = convertMediatorPositionStringToList(entry
-							.getValue().toString().replace("\"", ""));
+					mediatorPosition = convertMediatorPositionStringToList(formatJsonElementValueToString(entry
+							.getValue()));
 				} else if (SEQUENCE_TYPE.equalsIgnoreCase(entry.getKey())) {
-					sequenceType = entry.getValue().toString()
-							.replace("\"", "");
+					sequenceType = formatJsonElementValueToString(entry
+							.getValue());
 				}
 			}
 
@@ -101,8 +106,7 @@ public class ESBProxyDebugPoint extends ESBDebugPoint {
 
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.put(COMMAND_ARGUMENT, commandArgument);
-		attributeMap.put(MEDIATION_COMPONENT, mediationComponent);
+		attributeMap.putAll(super.deserializeToMap());
 		attributeMap.putAll(sequence.deserializeToMap());
 		return attributeMap;
 	}

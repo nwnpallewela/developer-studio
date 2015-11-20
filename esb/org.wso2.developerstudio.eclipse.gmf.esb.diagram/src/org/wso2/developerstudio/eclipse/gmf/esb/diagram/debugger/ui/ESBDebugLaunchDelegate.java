@@ -27,7 +27,6 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.DebuggerStartedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.DebuggerCommunicationMessageModel;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
@@ -42,7 +41,6 @@ public class ESBDebugLaunchDelegate implements ILaunchConfigurationDelegate {
 			final String mode, final ILaunch launch,
 			final IProgressMonitor monitor) throws CoreException {
 
-		DebuggerCommunicationMessageModel.populateMessageModels();
 		int commandPort = 0;
 		int eventPort = 0;
 		try {

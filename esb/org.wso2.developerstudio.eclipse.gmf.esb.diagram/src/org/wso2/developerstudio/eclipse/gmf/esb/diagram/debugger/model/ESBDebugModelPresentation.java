@@ -25,10 +25,16 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
+/**
+ * {@link ESBDebugModelPresentation} is responsible for providing labels, images
+ * and editors associated with debug elements.
+ *
+ */
 public class ESBDebugModelPresentation implements IDebugModelPresentation {
 
-	public static final String ID = "org.wso2.developerstudio.eclipse.esb.debugger.model.esbDebugModelPresentation";
+	public static final String ID = ESBDebuggerConstants.ESB_DEBUG_MODEL_PRESENTATION_ID;
 
 	@Override
 	public void addListener(ILabelProviderListener listener) {
@@ -49,17 +55,18 @@ public class ESBDebugModelPresentation implements IDebugModelPresentation {
 
 	@Override
 	public IEditorInput getEditorInput(Object element) {
-		if (element instanceof IFile)
+		if (element instanceof IFile) {
 			return new FileEditorInput((IFile) element);
-
+		}
 		return null;
 	}
 
 	@Override
 	public String getEditorId(IEditorInput input, Object element) {
-		if (element instanceof IFile)
-			return PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(((IFile) element).getName()).getId();
-
+		if (element instanceof IFile) {
+			return PlatformUI.getWorkbench().getEditorRegistry()
+					.getDefaultEditor(((IFile) element).getName()).getId();
+		}
 		return null;
 	}
 

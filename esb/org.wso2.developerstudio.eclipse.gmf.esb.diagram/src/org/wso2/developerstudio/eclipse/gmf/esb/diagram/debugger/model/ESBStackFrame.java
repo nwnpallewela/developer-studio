@@ -104,8 +104,7 @@ public class ESBStackFrame extends ESBDebugElement implements IStackFrame {
 		boolean processed = false;
 		for (IVariable variable : variables) {
 			if (variable.getName().equals(getUITableVariableName(name))) {
-				variable.setValue(propertyRespondMessage.getPropertyValues()
-						.toString());
+				((ESBVariable)variable).setValue(propertyRespondMessage.getPropertyValues());
 				((ESBVariable) variable).fireChangeEvent(DebugEvent.CONTENT);
 				processed = true;
 				break;

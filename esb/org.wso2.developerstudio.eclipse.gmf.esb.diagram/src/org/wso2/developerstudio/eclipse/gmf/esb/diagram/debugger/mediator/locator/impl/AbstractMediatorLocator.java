@@ -27,7 +27,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbLink;
 import org.wso2.developerstudio.eclipse.gmf.esb.Mediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.OutputConnector;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.AbstractESBBreakpointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.AbstractESBDebugPointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
@@ -51,7 +51,7 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 				} else {
 					count++;
 					if (mediator instanceof Mediator) {
-						tempConnector = AbstractESBBreakpointBuilder
+						tempConnector = AbstractESBDebugPointBuilder
 								.getOutputConnector((Mediator) mediator);
 					}
 				}
@@ -60,7 +60,8 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 						"Mediation flow diagram error");
 			}
 		}
-		return null;
+		throw new IllegalArgumentException(
+				"tempConnector argument can not be null");
 	}
 
 	protected EditPart getMediatorInFaultSeq(EList<EsbElement> children,

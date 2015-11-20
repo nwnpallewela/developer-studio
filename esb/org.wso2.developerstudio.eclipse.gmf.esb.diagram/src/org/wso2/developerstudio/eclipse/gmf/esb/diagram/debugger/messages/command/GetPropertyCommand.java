@@ -16,11 +16,17 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
+/**
+ * {@link GetPropertyCommand} represents the message sent to ESB Server Debugger
+ * asking values of a certain property scope
+ *
+ */
 public class GetPropertyCommand {
 
 	private String command;
 	private String commandArgument;
 	private String context;
+
 	public GetPropertyCommand(String command, String commandArgument,
 			String context) {
 		super();
@@ -28,23 +34,29 @@ public class GetPropertyCommand {
 		this.commandArgument = commandArgument;
 		this.context = context;
 	}
+
 	public String getCommand() {
 		return command;
 	}
+
 	public void setCommand(String command) {
 		this.command = command;
 	}
+
 	public String getCommandArgument() {
 		return commandArgument;
 	}
+
 	public void setCommandArgument(String commandArgument) {
 		this.commandArgument = commandArgument;
 	}
+
 	public String getContext() {
 		return context;
 	}
+
 	public void setContext(String context) {
 		this.context = context;
 	}
-	
+
 }

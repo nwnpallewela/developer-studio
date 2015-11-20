@@ -20,7 +20,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
@@ -210,7 +210,7 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 	}*/
 
 	@Override
-	public String createBreakpointCommand(ESBDebugPoint debugPoint)
+	public String createBreakpointCommand(ESBDebugPointMessage debugPoint)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -230,14 +230,14 @@ public class JsonJettisonMessageFactory implements ICommunicationMessageFactory 
 	}
 
 	@Override
-	public IResponseMessage convertResponseMessageToMap(String response)
+	public IResponseMessage convertResponseToIResponseMessage(String response)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IEventMessage convertEventMessageToMap(String buffer)
+	public IEventMessage convertEventToIEventMessage(String buffer)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;

@@ -30,6 +30,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.Resume
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.ResumeRequest.ResumeRequestType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.TerminateRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 
 /**
  * This class is implementation of common function for debug elements
@@ -122,6 +123,7 @@ public abstract class ESBDebugElement extends DebugElement implements
 	@Override
 	public void terminate() {
 		getDebugTarget().fireModelEvent(new TerminateRequest());
+		OpenEditorUtil.removeBreakpointHitStatus();
 	}
 
 	@Override

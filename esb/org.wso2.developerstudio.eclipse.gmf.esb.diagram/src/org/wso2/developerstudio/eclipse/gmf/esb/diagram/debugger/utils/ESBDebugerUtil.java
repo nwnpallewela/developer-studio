@@ -44,8 +44,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EsbGroupingShape;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FilterMediatorGraphicalShape;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.complexFiguredAbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBBreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBDebugPointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBDebugPointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -234,11 +234,11 @@ public class ESBDebugerUtil {
 
 			EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
-			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
+			IESBDebugPointBuilder breakpointBuilder = ESBDebugPointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
 
 			try {
-				breakpointBuilder.updateExistingBreakpoints(resource,
+				breakpointBuilder.updateExistingDebugPoints(resource,
 						abstractMediator, esbServer,
 						ESBDebuggerConstants.MEDIATOR_INSERT_ACTION);
 			} catch (MediatorNotFoundException e) {
@@ -264,11 +264,11 @@ public class ESBDebugerUtil {
 
 				EsbServer esbServer = getESBServerFromIEditorPart(activeEditor);
 
-				IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
+				IESBDebugPointBuilder breakpointBuilder = ESBDebugPointBuilderFactory
 						.getBreakpointBuilder(esbServer.getType());
 
 				try {
-					breakpointBuilder.updateExistingBreakpoints(resource,
+					breakpointBuilder.updateExistingDebugPoints(resource,
 							getDeletedMediator(), esbServer,
 							ESBDebuggerConstants.MEDIATOR_DELETE_ACTION);
 				} catch (MediatorNotFoundException e) {

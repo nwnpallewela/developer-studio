@@ -17,28 +17,19 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.FixedSizedAbstractMediator;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.SingleCompartmentComplexFiguredAbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.CloneMediatorEditPart;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.EntitlementMediatorEditPart;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.FilterMediatorEditPart;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SwitchMediatorEditPart;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleMediatorEditPart;
+
+import com.google.gson.JsonElement;
 
 /**
  * This class object holds variable values to be shown in the variables table
@@ -46,116 +37,81 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ThrottleMedia
  */
 public class ESBValue extends ESBDebugElement implements IValue {
 
-	private static final String JASON_OBJECT_IDENTIFING_KEY = "{";
-	private static final String EMPTY_STRING = "";
 	private static final String KEY_ENVELOPE = "envelope";
+	private static final String EMPTY_STRING = "";
 
 	private final String variableValue;
 	private List<IVariable> valueChildren;
 
-	public ESBValue(IDebugTarget target, String value) throws DebugException,
-			JSONException {
+	public ESBValue(ESBDebugTarget debugTarget, String expression) {
+		super(debugTarget);
+		variableValue = expression;
+	}
+
+	public ESBValue(IDebugTarget target, JsonElement value)
+			throws DebugException {
 		super(target);
 
-		variableValue = value;
-		if (value.startsWith(JASON_OBJECT_IDENTIFING_KEY)) {
-			JSONObject responceMessage = new JSONObject(value);
-			Map<String, String> message = convertJsonToMap(responceMessage);
-			for (String name : message.keySet()) {
+		variableValue = value.toString();
+		if (!value.isJsonNull()) {
+			Set<Entry<String, JsonElement>> entrySet = value.getAsJsonObject()
+					.entrySet();
+			for (Entry<String, JsonElement> entry : entrySet) {
 				boolean processed = false;
-
 				if (valueChildren != null) {
-					for (IVariable variable : valueChildren) {
-						if (variable.getName().equals(name)) {
-							variable.setValue(message.get(name));
-							((ESBVariable) variable)
-									.fireChangeEvent(DebugEvent.CONTENT);
-							if (variable.getName().equalsIgnoreCase(
-									KEY_ENVELOPE)) {
-								AbstractMediator mediator = OpenEditorUtil
-										.getPreviousHitEditPart();
-								setToolTipMessage(message, name, mediator);
-							}
-							processed = true;
-							break;
-						}
-					}
+					processed = addValueToMatchingChildVariable(entry,
+							processed);
 				} else {
 					valueChildren = new ArrayList<>();
 				}
 
 				if (!processed) {
-					ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
-							name, message.get(name));
-					valueChildren.add(esbVariable);
-					if (name.equalsIgnoreCase(KEY_ENVELOPE)) {
-						AbstractMediator mediator = OpenEditorUtil
-								.getPreviousHitEditPart();
-						setToolTipMessage(message, name, mediator);
-					}
-					esbVariable.fireCreationEvent();
+					addNewChildVariable(entry);
 				}
 			}
 		}
 	}
 
-	private void setToolTipMessage(Map<String, String> message, String name,
-			AbstractMediator mediator) {
-		if (mediator instanceof FixedSizedAbstractMediator) {
-			((FixedSizedAbstractMediator) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
-		} else if (mediator instanceof SingleCompartmentComplexFiguredAbstractMediator) {
-
-			((SingleCompartmentComplexFiguredAbstractMediator) mediator)
-					.getPrimaryShape().setToolTipMessage(
-							formatMessageEnvelope(message.get(name)));
-
-		} else if (mediator instanceof CloneMediatorEditPart) {
-			((CloneMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
-		} else if (mediator instanceof EntitlementMediatorEditPart) {
-			((EntitlementMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
-		} else if (mediator instanceof FilterMediatorEditPart) {
-			((FilterMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
-		} else if (mediator instanceof SwitchMediatorEditPart) {
-			((SwitchMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
-		} else if (mediator instanceof ThrottleMediatorEditPart) {
-			((ThrottleMediatorEditPart) mediator).getPrimaryShape()
-					.setToolTipMessage(formatMessageEnvelope(message.get(name)));
+	/**
+	 * @param entry
+	 * @throws DebugException
+	 */
+	private void addNewChildVariable(Entry<String, JsonElement> entry)
+			throws DebugException {
+		ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
+				entry.getKey(), entry.getValue().toString()
+						.replace("\"", EMPTY_STRING));
+		valueChildren.add(esbVariable);
+		if (KEY_ENVELOPE.equalsIgnoreCase(entry.getKey())) {
+			OpenEditorUtil.setToolTipMessageOnMediator(entry.getValue()
+					.toString().replace("\"", EMPTY_STRING));
 		}
-	}
-
-	private String formatMessageEnvelope(String string) {
-		String[] envelopeAttributes = string.split("><");
-		String message = "";
-		for (String attribute : envelopeAttributes) {
-			if (attribute.startsWith("<")) {
-				message = message + attribute + ">" + "\n";
-			} else {
-				message = message + "<" + attribute + ">" + "\n";
-			}
-		}
-		return message;
+		esbVariable.fireCreationEvent();
 	}
 
 	/**
-	 * This method convert JSON Message to Map Object.
+	 * @param entry
+	 * @param processed
+	 * @return
+	 * @throws DebugException
 	 */
-	private Map<String, String> convertJsonToMap(JSONObject responceMessage)
-			throws JSONException {
-
-		Map<String, String> message = new LinkedHashMap<>();
-		String value = EMPTY_STRING;
-		Iterator<?> keys = responceMessage.keys();
-		while (keys.hasNext()) {
-			String key = (String) keys.next();
-			value = responceMessage.getString(key);
-			message.put(key, value);
+	private boolean addValueToMatchingChildVariable(
+			Entry<String, JsonElement> entry, boolean processed)
+			throws DebugException {
+		for (IVariable variable : valueChildren) {
+			if (variable.getName().equals(entry.getKey())) {
+				variable.setValue(entry.getValue().toString()
+						.replace("\"", EMPTY_STRING));
+				((ESBVariable) variable).fireChangeEvent(DebugEvent.CONTENT);
+				if (variable.getName().equalsIgnoreCase(KEY_ENVELOPE)) {
+					OpenEditorUtil.setToolTipMessageOnMediator(entry.getValue()
+							.toString().replace("\"", EMPTY_STRING));
+				}
+				processed = true;
+				break;
+			}
 		}
-		return message;
+		return processed;
 	}
 
 	@Override

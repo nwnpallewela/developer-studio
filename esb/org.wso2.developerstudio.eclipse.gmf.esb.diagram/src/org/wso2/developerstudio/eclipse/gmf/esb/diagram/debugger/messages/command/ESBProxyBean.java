@@ -21,6 +21,11 @@ import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ES
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@link ESBProxyBean} holds attributes which identifies Proxy Artifact
+ * uniquely and defined in ESB Mediation Debugger communication API's
+ *
+ */
 public class ESBProxyBean {
 
 	private String proxyKey;

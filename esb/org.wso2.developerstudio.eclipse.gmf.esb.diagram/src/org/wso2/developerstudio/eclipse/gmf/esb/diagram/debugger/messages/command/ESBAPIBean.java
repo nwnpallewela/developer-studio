@@ -21,6 +21,11 @@ import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ES
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@link ESBAPIBean} holds attributes which identifies API Artifact uniquely
+ * and defined in ESB Mediation Debugger communication API's
+ *
+ */
 public class ESBAPIBean {
 
 	private String apiKey;
@@ -69,7 +74,7 @@ public class ESBAPIBean {
 		this.mediatorPosition = mediatorPosition;
 	}
 
-	public Map< String,Object> deserializeToMap() {
+	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.put(API_KEY, apiKey);
 		attributeMap.put(SEQUENCE_TYPE, sequenceType);

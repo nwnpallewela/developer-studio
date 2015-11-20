@@ -20,11 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.ApiResourceUrlStyle;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
@@ -38,13 +41,15 @@ public class APIMediatorLocator extends AbstractMediatorLocator {
 	 * 
 	 * @throws MediatorNotFoundException
 	 * @throws MissingAttributeException
+	 * @throws CoreException 
+	 * @throws DebugpointMarkerNotFoundException 
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, Object> info) throws MediatorNotFoundException,
-			MissingAttributeException {
+			ESBDebugPoint breakpoint) throws MediatorNotFoundException,
+			MissingAttributeException, DebugpointMarkerNotFoundException, CoreException {
 		EditPart editPart = null;
-
+		Map<String,Object> info = breakpoint.getLocation();
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
 				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
 

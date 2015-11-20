@@ -29,17 +29,22 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 
 import com.google.gson.JsonElement;
 
-public class ESBSequenceDebugPoint extends ESBDebugPoint {
+/**
+ * {@link ESBSequenceDebugPointMessage} is the bean class to represent ESB
+ * Sequence artifacts debug point message from ESB Server Debugger
+ *
+ */
+public class ESBSequenceDebugPointMessage extends ESBDebugPointMessage {
 
 	private ESBSequenceBean sequence;
 
-	public ESBSequenceDebugPoint(String command, String commandArgument,
+	public ESBSequenceDebugPointMessage(String command, String commandArgument,
 			String mediationComponent, ESBSequenceBean sequence) {
 		super(command, commandArgument, mediationComponent);
 		this.sequence = sequence;
 	}
 
-	public ESBSequenceDebugPoint(DebugPointEventAction action,
+	public ESBSequenceDebugPointMessage(DebugPointEventAction action,
 			Map<String, Object> attributeSet) {
 		super(action.toString(), null, ESBDebuggerConstants.SEQUENCE);
 		setCommandArgument((String) attributeSet
@@ -57,10 +62,11 @@ public class ESBSequenceDebugPoint extends ESBDebugPoint {
 				mediatorPosition);
 	}
 
-	public ESBSequenceDebugPoint(EventMessageType event,
+	public ESBSequenceDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
 		super(null, null, SEQUENCE);
-		setCommandArgument(event.toString().replace("\"", ""));
+		setCommandArgument(event.toString().replace(QUOTATION_MARK_STRING,
+				EMPTY_STRING));
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
 		String sequenceKey = null;
@@ -68,12 +74,12 @@ public class ESBSequenceDebugPoint extends ESBDebugPoint {
 		ESBMediatorPosition mediatorPosition = null;
 		for (Entry<String, JsonElement> entry : entrySet) {
 			if (SEQUENCE_KEY.equalsIgnoreCase(entry.getKey())) {
-				sequenceKey = entry.getValue().toString().replace("\"", "");
+				sequenceKey = formatJsonElementValueToString(entry.getValue());
 			} else if (SEQUENCE_TYPE.equalsIgnoreCase(entry.getKey())) {
-				sequenceType = entry.getValue().toString().replace("\"", "");
+				sequenceType = formatJsonElementValueToString(entry.getValue());
 			} else if (MEDIATOR_POSITION.equalsIgnoreCase(entry.getKey())) {
-				mediatorPosition = convertMediatorPositionStringToList(entry
-						.getValue().toString().replace("\"", ""));
+				mediatorPosition = convertMediatorPositionStringToList(formatJsonElementValueToString(entry
+						.getValue()));
 			}
 		}
 		sequence = new ESBSequenceBean(sequenceType, sequenceKey,
@@ -90,8 +96,7 @@ public class ESBSequenceDebugPoint extends ESBDebugPoint {
 
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.put(COMMAND_ARGUMENT, commandArgument);
-		attributeMap.put(MEDIATION_COMPONENT, mediationComponent);
+		attributeMap.putAll(super.deserializeToMap());
 		attributeMap.putAll(sequence.deserializeToMap());
 		return attributeMap;
 	}

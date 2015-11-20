@@ -37,7 +37,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.PropertyRecievedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
@@ -156,7 +156,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	private void sendBreakpointForServer(DebugPointRequest event)
 			throws Exception {
 
-		ESBDebugPoint debugPoint = event.getBreakpointAttributes();
+		ESBDebugPointMessage debugPoint = event.getBreakpointAttributes();
 		debuggerInterface.sendBreakpointCommand(debugPoint);
 
 	}

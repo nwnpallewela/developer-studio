@@ -19,11 +19,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
-public class ESBSkippointAction extends ConfigureEsbNodeAction {
+public class ESBSkipPointAction extends ConfigureEsbNodeAction {
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
-	public ESBSkippointAction(IWorkbenchPart part) {
+	public ESBSkipPointAction(IWorkbenchPart part) {
 		super(part);
 		super.init();
 		setId(ESBDebuggerConstants.ESBSKIPPOINT_ACTION_ID);

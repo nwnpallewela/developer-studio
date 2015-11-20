@@ -19,15 +19,15 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 /**
@@ -59,9 +59,9 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 
 	private final DebugPointEventAction type;
 	private final int lineNumber;
-	private ESBDebugPoint debugPoint;
+	private ESBDebugPointMessage debugPoint;
 
-	public DebugPointRequest(ESBDebugpoint breakpoint,
+	public DebugPointRequest(ESBDebugPoint breakpoint,
 			DebugPointEventAction action)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		type = action;
@@ -70,23 +70,23 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 
 	}
 
-	private ESBDebugPoint setDebugPoint(ESBDebugpoint breakpoint)
+	private ESBDebugPointMessage setDebugPoint(ESBDebugPoint breakpoint)
 			throws DebugpointMarkerNotFoundException, CoreException {
 		Map<String, Object> attributeSet = breakpoint.getLocation();
 		String mediationComponent=(String) attributeSet.get(ESBDebuggerConstants.MEDIATION_COMPONENT);
 		switch(mediationComponent){
 		case ESBDebuggerConstants.PROXY:
-			debugPoint = new ESBProxyDebugPoint(type,attributeSet);
+			debugPoint = new ESBProxyDebugPointMessage(type,attributeSet);
 			break;
 		case ESBDebuggerConstants.MAIN_SEQUENCE:
 		case ESBDebuggerConstants.SEQUENCE:
-			debugPoint = new ESBSequenceDebugPoint(type,attributeSet);
+			debugPoint = new ESBSequenceDebugPointMessage(type,attributeSet);
 			break;
 		case ESBDebuggerConstants.API:
-			debugPoint = new ESBAPIDebugPoint(type,attributeSet);
+			debugPoint = new ESBAPIDebugPointMessage(type,attributeSet);
 			break;
 		case ESBDebuggerConstants.TEMPLATE:
-			debugPoint = new ESBTemplateDebugPoint(type,attributeSet);
+			debugPoint = new ESBTemplateDebugPointMessage(type,attributeSet);
 			break;
 		}
 		return debugPoint;
@@ -100,7 +100,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 		return lineNumber;
 	}
 
-	public ESBDebugPoint getBreakpointAttributes() {
+	public ESBDebugPointMessage getBreakpointAttributes() {
 		return debugPoint;
 	}
 
@@ -112,7 +112,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 				+ " , attributes : " + getBreakpointAttributes();
 	}
 
-	public ESBDebugPoint getDebugPoint() {
+	public ESBDebugPointMessage getDebugPoint() {
 		return debugPoint;
 	}
 }

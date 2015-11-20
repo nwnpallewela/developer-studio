@@ -18,7 +18,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel;
 
 import org.codehaus.jettison.json.JSONException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
@@ -47,7 +47,7 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	String createBreakpointCommand(ESBDebugPoint debugPoint)
+	String createBreakpointCommand(ESBDebugPointMessage debugPoint)
 			throws Exception;
 
 	/**
@@ -68,7 +68,7 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	IResponseMessage convertResponseMessageToMap(String response)
+	IResponseMessage convertResponseToIResponseMessage(String response)
 			throws Exception;
 
 	/**
@@ -78,7 +78,7 @@ public interface ICommunicationMessageFactory {
 	 * @return
 	 * @throws JSONException
 	 */
-	IEventMessage convertEventMessageToMap(String buffer)
+	IEventMessage convertEventToIEventMessage(String buffer)
 			throws Exception;
 
 }

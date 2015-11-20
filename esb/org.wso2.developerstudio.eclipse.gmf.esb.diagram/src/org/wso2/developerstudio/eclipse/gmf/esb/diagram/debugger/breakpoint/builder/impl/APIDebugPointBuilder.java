@@ -30,7 +30,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.ApiResourceUrlStyle;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
@@ -43,7 +43,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
 /**
  * This class builds ESB breakpoints related to API Resources.
  */
-public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
+public class APIDebugPointBuilder extends AbstractESBDebugPointBuilder {
 
 	/**
 	 * This method returns the ESBBreakpoint object for the selection
@@ -51,7 +51,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 * @throws ESBDebuggerException
 	 */
 	@Override
-	public ESBDebugpoint getESBBreakpoint(EsbServer esbServer,
+	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
 			IResource resource, AbstractMediator part, String commandArguement)
 			throws CoreException, ESBDebuggerException {
 		int lineNumber = -1;
@@ -90,7 +90,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			attributeMap = addAPIAttributesToMessage(attributeMap,
 					getFaultSequenceName(apiResource), position, apiResource);
 		}
-		return new ESBDebugpoint(resource, lineNumber, attributeMap);
+		return new ESBDebugPoint(resource, lineNumber, attributeMap);
 
 	}
 
@@ -160,7 +160,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 	 * @throws ESBDebuggerException
 	 */
 	@Override
-	public void updateExistingBreakpoints(IResource resource,
+	public void updateExistingDebugPoints(IResource resource,
 			AbstractMediator abstractMediator, EsbServer esbServer,
 			String action) throws ESBDebuggerException {
 		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
@@ -177,7 +177,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 				List<Integer> position = getMediatorPosition(
 						apiResource.getOutSequenceOutputConnector(),
 						abstractMediator);
-				List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
+				List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
 						resource, position, ESBDebuggerConstants.API_OUTSEQ,
 						action);
 				if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
@@ -189,7 +189,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			} else {
 				List<Integer> position = getMediatorPosition(
 						apiResource.getOutputConnector(), abstractMediator);
-				List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
+				List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
 						resource, position, ESBDebuggerConstants.API_INSEQ,
 						action);
 				if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
@@ -203,7 +203,7 @@ public class APIBreakpointBuilder extends AbstractESBBreakpointBuilder {
 			List<Integer> position = getMediatorPositionInFaultSeq(apiResource
 					.getContainer().getFaultContainer().getMediatorFlow()
 					.getChildren(), abstractMediator);
-			List<ESBDebugpoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
 					resource, position, getFaultSequenceName(apiResource),
 					action);
 			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION

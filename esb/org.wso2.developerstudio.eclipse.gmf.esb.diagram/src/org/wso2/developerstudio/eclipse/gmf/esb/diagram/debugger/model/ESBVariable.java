@@ -16,15 +16,12 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
-import org.codehaus.jettison.json.JSONException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
-import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
-import org.wso2.developerstudio.eclipse.logging.core.Logger;
+import com.google.gson.JsonElement;
 
 /**
  * This class represents variables to show in the variable tab.
@@ -34,7 +31,6 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 
 	private final String variableName;
 	private ESBValue variableValue;
-	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
 	protected ESBVariable(IDebugTarget target, String name, String value)
 			throws DebugException {
@@ -48,15 +44,13 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	 * 
 	 * @throws DebugException
 	 */
+	public void setValue(JsonElement expression) throws DebugException {
+		variableValue = new ESBValue(getDebugTarget(), expression);
+	}
+
 	@Override
 	public void setValue(String expression) throws DebugException {
-		try {
-			variableValue = new ESBValue(getDebugTarget(), expression);
-		} catch (JSONException e) {
-			log.warn(
-					"ESBVariable values extraction from json property messages failed",
-					e);
-		}
+		variableValue = new ESBValue(getDebugTarget(), expression);
 	}
 
 	/**
@@ -114,4 +108,5 @@ public class ESBVariable extends ESBDebugElement implements IVariable {
 	public boolean hasValueChanged() throws DebugException {
 		return false;
 	}
+
 }

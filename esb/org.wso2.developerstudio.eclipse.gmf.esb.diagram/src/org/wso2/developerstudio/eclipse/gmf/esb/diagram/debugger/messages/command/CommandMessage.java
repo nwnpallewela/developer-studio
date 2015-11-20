@@ -18,6 +18,11 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.comma
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
 
+/**
+ * {@link CommandMessage} represents the simple message sent to ESB Server
+ * Debugger with only one attribute command
+ *
+ */
 public class CommandMessage {
 
 	private String command;
@@ -33,5 +38,5 @@ public class CommandMessage {
 	public void setCommand(ESBDebuggerCommands command) {
 		this.command = command.toString();
 	}
-	
+
 }

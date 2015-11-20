@@ -19,9 +19,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locat
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbElement;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
@@ -39,13 +42,17 @@ public class TemplateMediatorLocator extends AbstractMediatorLocator {
 	 * information Map
 	 * 
 	 * @throws MediatorNotFoundException
-	 * @throws MissingAttributeException 
+	 * @throws MissingAttributeException
+	 * @throws CoreException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, Object> info) throws MediatorNotFoundException, MissingAttributeException {
+			ESBDebugPoint breakpoint) throws MediatorNotFoundException,
+			MissingAttributeException, DebugpointMarkerNotFoundException,
+			CoreException {
 		EditPart editPart = null;
-
+		Map<String, Object> info = breakpoint.getLocation();
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
 
 			@SuppressWarnings("unchecked")
@@ -66,8 +73,9 @@ public class TemplateMediatorLocator extends AbstractMediatorLocator {
 								+ template.getChild());
 			}
 
-		}else{
-			throw new MissingAttributeException("Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
+		} else {
+			throw new MissingAttributeException(
+					"Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
 		}
 		return editPart;
 	}

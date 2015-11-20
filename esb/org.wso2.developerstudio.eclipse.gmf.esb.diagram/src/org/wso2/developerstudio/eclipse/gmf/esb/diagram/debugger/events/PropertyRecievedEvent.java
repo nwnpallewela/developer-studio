@@ -30,13 +30,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugT
 public class PropertyRecievedEvent extends AbstractEvent implements
 		IDebuggerEvent {
 
-	private final PropertyRespondMessage propertyScope;
+	private final PropertyRespondMessage scopeProperties;
 
 	public PropertyRecievedEvent(PropertyRespondMessage variables) {
-		this.propertyScope = variables;
+		this.scopeProperties = variables;
 	}
 
 	public PropertyRespondMessage getVariables() {
-		return propertyScope;
+		return scopeProperties;
 	}
 }

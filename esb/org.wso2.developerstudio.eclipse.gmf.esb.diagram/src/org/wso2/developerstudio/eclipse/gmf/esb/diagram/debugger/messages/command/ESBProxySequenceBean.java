@@ -19,6 +19,12 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.comma
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@link ESBProxySequenceBean} holds {@link ESBProxyBean} which identifies
+ * Proxy Artifact uniquely and defined in ESB Mediation Debugger communication
+ * API's
+ *
+ */
 public class ESBProxySequenceBean {
 
 	private ESBProxyBean proxy;
@@ -36,7 +42,7 @@ public class ESBProxySequenceBean {
 		this.proxy = proxy;
 	}
 
-	public Map<String,Object> deserializeToMap() {
+	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.putAll(proxy.deserializeToMap());
 		return attributeMap;

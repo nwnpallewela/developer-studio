@@ -32,8 +32,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBBreakpointBuilderFactory;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBDebugPointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBDebugPointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
@@ -98,12 +98,12 @@ public class ESBDebugPointTarget {
 		if (activeEditor instanceof EsbMultiPageEditor) {
 
 			EsbServer esbServer = getESBServerFromESBMultiPageEditor(activeEditor);
-			IESBBreakpointBuilder breakpointBuilder = ESBBreakpointBuilderFactory
+			IESBDebugPointBuilder breakpointBuilder = ESBDebugPointBuilderFactory
 					.getBreakpointBuilder(esbServer.getType());
 			IResource resource = getFileIResourceFromESBMultiPageEditor(activeEditor);
-			ESBDebugpoint debugPoint = breakpointBuilder.getESBBreakpoint(
+			ESBDebugPoint debugPoint = breakpointBuilder.getESBDebugPoint(
 					esbServer, resource, part, commandArguement);
-			ESBDebugpoint existingBreakpoint = getMatchingDebugPoint(debugPoint);
+			ESBDebugPoint existingBreakpoint = getMatchingDebugPoint(debugPoint);
 			if (existingBreakpoint == null) {
 				DebugPlugin.getDefault().getBreakpointManager()
 						.addBreakpoint(debugPoint);
@@ -156,14 +156,14 @@ public class ESBDebugPointTarget {
 	 * @param targetBreakpoint
 	 * @return ESBBreakpoint if found or null
 	 */
-	private static ESBDebugpoint getMatchingDebugPoint(
-			ESBDebugpoint targetBreakpoint) {
+	private static ESBDebugPoint getMatchingDebugPoint(
+			ESBDebugPoint targetBreakpoint) {
 		IBreakpoint[] debugpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint debugpoint : debugpoints) {
 			try {
-				ESBDebugpoint esbDebugpoint = (ESBDebugpoint) debugpoint;
+				ESBDebugPoint esbDebugpoint = (ESBDebugPoint) debugpoint;
 				if ((esbDebugpoint.getResource()).equals(targetBreakpoint
 						.getResource())) {
 

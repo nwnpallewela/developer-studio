@@ -104,7 +104,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Abst
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
@@ -112,14 +112,16 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.Missi
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.impl.MediatorLocatorFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.suspend.point.ESBSuspendPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.SequenceEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.persistence.EsbModelTransformer;
 import org.wso2.developerstudio.eclipse.gmf.esb.persistence.SequenceInfo;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
 
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 /**
  * The main editor class which contains design view and source view
  * <ul>
@@ -552,7 +554,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								.getDiagram().getElement();
 						EsbServer server = diagram.getServer();
 						try {
-							addDesignViewBreakpoints(server);
+							addDesignViewDebugPoints(server);
 						} catch (MediatorNotFoundException e) {
 							log.error(e.getMessage(), e);
 						}catch (MissingAttributeException e){
@@ -560,7 +562,9 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 						}
 					}
 
-					private void addDesignViewBreakpoints(EsbServer server) throws MediatorNotFoundException, MissingAttributeException {
+					private void addDesignViewDebugPoints(EsbServer server)
+							throws MediatorNotFoundException,
+							MissingAttributeException {
 						IEditorInput editorInput = getEditorInput();
 						if (editorInput instanceof FileEditorInput) {
 							IFile file = ((FileEditorInput) editorInput)
@@ -568,40 +572,62 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 							IMediatorLocator mediatorLocator = MediatorLocatorFactory
 									.getMediatorLocator(server.getType());
 							if (mediatorLocator != null) {
-								addBreakpointMarkForExistingBreakpoints(server,
+								addDebugPointMarkForExistingDebugPoints(server,
 										file, mediatorLocator);
 							}
 						}
 					}
 
-					private void addBreakpointMarkForExistingBreakpoints(
+					private void addDebugPointMarkForExistingDebugPoints(
 							EsbServer server, IFile file,
 							IMediatorLocator mediatorLocator)
 							throws MediatorNotFoundException,
 							MissingAttributeException {
+						IBreakpoint[] suspendPoints = DebugPlugin.getDefault()
+								.getBreakpointManager()
+								.getBreakpoints(ESBDebuggerConstants.SUSPEND_POINT_MODEL_ID);
 						IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 								.getBreakpointManager()
 								.getBreakpoints(ESBDebugModelPresentation.ID);
 						for (IBreakpoint breakpoint : breakpoints) {
 							try {
-								if (file.equals(((ESBDebugpoint) breakpoint)
+								if (file.equals(((ESBDebugPoint) breakpoint)
 										.getResource())) {
-
 									EditPart editPart = null;
 
 									editPart = mediatorLocator
 											.getMediatorEditPart(
 													server,
-													((ESBDebugpoint) breakpoint)
-															.getLocation());
+													((ESBDebugPoint) breakpoint));
 									if (editPart instanceof AbstractMediator) {
 										
-										if(((ESBDebugpoint) breakpoint).isBreakpoint()){
+										if(((ESBDebugPoint) breakpoint).isBreakpoint()){
 										ESBDebugerUtil
 												.addBreakpointMark((AbstractMediator) editPart);
-										}else{
+										}else if(((ESBDebugPoint) breakpoint).isSkippoint()){
 											ESBDebugerUtil
 											.addSkippointMark((AbstractMediator) editPart);
+										}
+										
+										if(isSuspendedBreakpoint(suspendPoints,
+											breakpoint)){
+											AbstractMediator hitEditPart = OpenEditorUtil.getPreviousHitEditPart();
+											if (hitEditPart != null) {
+												hitEditPart.setBreakpointHitStatus(false);
+												hitEditPart
+														.setSelected(EditPart.SELECTED_NONE);
+											}
+												((AbstractMediator) editPart)
+														.setBreakpointHitStatus(true);
+												while (true) {
+													if (((AbstractMediator) editPart)
+															.isBreakpointHit() == true) {
+														break;
+													}
+												}
+												editPart.setSelected(EditPart.SELECTED);
+												OpenEditorUtil.setPreviousHitEditPart(((AbstractMediator) editPart));
+												OpenEditorUtil.setToolTipMessageOnMediator();
 										}
 									}
 								}
@@ -611,6 +637,23 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								log.error(e.getMessage(), e);
 							}
 						}
+					}
+
+					/**
+					 * @param suspendPoints
+					 * @param breakpoint
+					 */
+					private boolean isSuspendedBreakpoint(
+							IBreakpoint[] suspendPoints, IBreakpoint breakpoint) {
+						for (IBreakpoint suspendPoint : suspendPoints) {
+							if (breakpoint
+									.equals(((ESBSuspendPoint) suspendPoint)
+											.getSuspendedPoint())) {
+								return true;
+
+							}
+						}
+						return false;
 					}
 
 				});

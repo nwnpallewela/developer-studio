@@ -19,15 +19,19 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locat
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 
 /**
- * This class contains methods related locate and get mediators in a Sequence
+ * This class implement methods related to locate and get mediators in a
+ * Sequence Artifact
  */
 public class SequenceMediatorLocator extends AbstractMediatorLocator {
 
@@ -36,12 +40,18 @@ public class SequenceMediatorLocator extends AbstractMediatorLocator {
 	 * Map
 	 * 
 	 * @throws MediatorNotFoundException
-	 * @throws MissingAttributeException 
+	 * @throws MissingAttributeException
+	 * @throws CoreException
+	 * @throws DebugpointMarkerNotFoundException
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, Object> info) throws MediatorNotFoundException, MissingAttributeException {
+			ESBDebugPoint breakpoint) throws MediatorNotFoundException,
+			MissingAttributeException, DebugpointMarkerNotFoundException,
+			CoreException {
 		EditPart editPart = null;
+
+		Map<String, Object> info = breakpoint.getLocation();
 
 		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)) {
 			@SuppressWarnings("unchecked")
@@ -52,8 +62,9 @@ public class SequenceMediatorLocator extends AbstractMediatorLocator {
 
 			editPart = getMediatorFromMediationFlow(
 					sequence.getOutputConnector(), positionArray);
-		}else{
-			throw new MissingAttributeException("Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
+		} else {
+			throw new MissingAttributeException(
+					"Mediator Position Attribute is reqired for locate mediator in Mediation Flow");
 		}
 		return editPart;
 	}

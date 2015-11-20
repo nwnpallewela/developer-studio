@@ -18,15 +18,19 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 
-	public static final String BREAKPOINT_EVENT_TYPE ="breakpoint";
-	public static final String STARTED_EVENT_TYPE ="started";
-	public static final String CALLBACK_EVENT_TYPE ="callback";
-	public static final String RESUMED_CLIENT_EVENT_TYPE ="resumed client";
+	public static final String SUSPEND_POINT_MODEL_ID = "org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.suspend.point";
+	public static final String ESB_DEBUG_MODEL_PRESENTATION_ID = "org.wso2.developerstudio.eclipse.esb.debugger.model.esbDebugModelPresentation";
+	public static final String ESB_DEBUG_PROCESS_ID = "ESB Process";
+
+	public static final String BREAKPOINT_EVENT_TYPE = "breakpoint";
+	public static final String STARTED_EVENT_TYPE = "started";
+	public static final String CALLBACK_EVENT_TYPE = "callback";
+	public static final String RESUMED_CLIENT_EVENT_TYPE = "resumed client";
 	public static final String TERMINATED_EVENT_TYPE = "terminated";
 	public static final String DEBUG_INFO_LOST_EVENT = "synapse configuration updated-debug information lost";
 
-	public static final String ESB_DEBUG_THREAD_NAME ="ESB Debug Thread";
-	public static final String ESB_DEBUGGER_EVENT_BROKER_DATA_NAME ="org.eclipse.e4.data";
+	public static final String ESB_DEBUG_THREAD_NAME = "ESB Debug Thread";
+	public static final String ESB_DEBUGGER_EVENT_BROKER_DATA_NAME = "org.eclipse.e4.data";
 	public static final String ESB_DEBUG_TARGET_EVENT_TOPIC = "ESBDebugTarget_Events";
 	public static final String ESBDEBUGGER_EVENT_TOPIC = "ESBDebugger_Events";
 	// ESB Debugger launch constants
@@ -63,7 +67,6 @@ public class ESBDebuggerConstants {
 	public static final String VARIABLE_TYPE = "ESB Message";
 	public static final String PROPERTIES = "properties";
 
-	
 	public static final String AXIS2_PROPERTIES = "axis2-properties";
 	public static final String SYNAPSE_PROPERTIES = "synapse-properties";
 	public static final String OPERATION_PROPERTIES = "axis2Operation-properties";
@@ -82,7 +85,7 @@ public class ESBDebuggerConstants {
 	public static final String ESBSKIPPOINT_COMMAND_LABEL = "Toggle Skip Point";
 	public static final String ESBSKIPPOINT_ACTION_ID = "org.wos2.developerstudio.eclipse.esb.debugger.skippoint.action";
 	public static final String ESBSKIPPOINT_COMMAND_TOOL_TIP = "Set skip point for this mediator";
-	
+
 	public static final String EMPTY_SELECTION = "Empty selection.";
 	public static final String ESB_BREAKPOINT_MARKER = "org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.ESBBreakpointMarker";
 	public static final String TEMPLATE_SEQUENCE = "template_sequence";

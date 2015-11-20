@@ -16,16 +16,35 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator;
 
-import java.util.Map;
-
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 
+/**
+ * {@link IMediatorLocator} interface should be implemented by classes which
+ * have the implementations to locate mediator according to Debug Point Event
+ * Occurred in ESB Server Debugger
+ *
+ */
 public interface IMediatorLocator {
 
-	EditPart getMediatorEditPart(EsbServer esbServer,
-			Map<String, Object> map) throws MediatorNotFoundException, MissingAttributeException;
+	/**
+	 * This method search through ESB mediation flow diagram and give the
+	 * editPart of the matching mediator with debugpoint
+	 * 
+	 * @param esbServer
+	 * @param breakpoint
+	 * @return
+	 * @throws MediatorNotFoundException
+	 * @throws MissingAttributeException
+	 * @throws CoreException 
+	 * @throws DebugpointMarkerNotFoundException 
+	 */
+	EditPart getMediatorEditPart(EsbServer esbServer, ESBDebugPoint breakpoint)
+			throws MediatorNotFoundException, MissingAttributeException, DebugpointMarkerNotFoundException, CoreException;
 
 }

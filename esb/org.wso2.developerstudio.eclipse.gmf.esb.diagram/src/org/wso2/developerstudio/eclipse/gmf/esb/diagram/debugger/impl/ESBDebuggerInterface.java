@@ -31,7 +31,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonGso
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponseDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -161,7 +161,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	public void notifyEvent(String eventMessage) {
 		try {
 			esbDebugger.notifyEvent(messageFactory
-					.convertEventMessageToMap(eventMessage));
+					.convertEventToIEventMessage(eventMessage));
 		} catch (NumberFormatException e) {
 			log.error(e.getMessage(), e);
 		} catch (Exception e) {
@@ -183,7 +183,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	public void notifyResponce(String responceMessage) {
 		try {
 			esbDebugger.notifyResponce(messageFactory
-					.convertResponseMessageToMap(responceMessage));
+					.convertResponseToIResponseMessage(responceMessage));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -201,7 +201,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void sendBreakpointCommand(ESBDebugPoint debugPoint)
+	public void sendBreakpointCommand(ESBDebugPointMessage debugPoint)
 			throws Exception {
 		requestWriter.println(messageFactory
 				.createBreakpointCommand(debugPoint));

@@ -85,8 +85,8 @@ import org.wso2.developerstudio.eclipse.gmf.esb.XSLTMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBBreakpointBuilder;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugpoint;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBDebugPointBuilder;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
@@ -112,8 +112,8 @@ import org.wso2.developerstudio.eclipse.logging.core.Logger;
  * This class contains common methods related to ESBBreakpointBuilders
  *
  */
-public abstract class AbstractESBBreakpointBuilder implements
-		IESBBreakpointBuilder {
+public abstract class AbstractESBDebugPointBuilder implements
+		IESBDebugPointBuilder {
 
 	protected static final String EMPTY_STRING = "";
 	protected static final int INDEX_OF_FIRST_ELEMENT = 0;
@@ -170,13 +170,13 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * 
 	 * @param breakpontList
 	 */
-	protected void increaseBreakpointPosition(List<ESBDebugpoint> breakpontList) {
-		for (ESBDebugpoint esbBreakpoint : breakpontList) {
+	protected void increaseBreakpointPosition(List<ESBDebugPoint> breakpontList) {
+		for (ESBDebugPoint esbBreakpoint : breakpontList) {
 			Map<String, Object> message;
 			try {
 				message = increasePositionOfTheMessage(esbBreakpoint
 						.getLocation());
-				ESBDebugpoint modifiedBreakpoint = new ESBDebugpoint(
+				ESBDebugPoint modifiedBreakpoint = new ESBDebugPoint(
 						esbBreakpoint.getResource(),
 						esbBreakpoint.getLineNumber(), message);
 				DebugPlugin.getDefault().getBreakpointManager()
@@ -199,14 +199,14 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * 
 	 * @param breakpontList
 	 */
-	protected void decreaseBreakpointPosition(List<ESBDebugpoint> breakpontList) {
-		for (ESBDebugpoint esbBreakpoint : breakpontList) {
+	protected void decreaseBreakpointPosition(List<ESBDebugPoint> breakpontList) {
+		for (ESBDebugPoint esbBreakpoint : breakpontList) {
 
 			Map<String, Object> message;
 			try {
 				message = decreasePositionOfTheMessage(esbBreakpoint
 						.getLocation());
-				ESBDebugpoint modifiedBreakpoint = new ESBDebugpoint(
+				ESBDebugPoint modifiedBreakpoint = new ESBDebugPoint(
 						esbBreakpoint.getResource(),
 						esbBreakpoint.getLineNumber(), message);
 				DebugPlugin.getDefault().getBreakpointManager()
@@ -258,16 +258,16 @@ public abstract class AbstractESBBreakpointBuilder implements
 	 * @param position
 	 * @return
 	 */
-	protected static List<ESBDebugpoint> getBreakpointsRelatedToModification(
+	protected static List<ESBDebugPoint> getBreakpointsRelatedToModification(
 			IResource resource, List<Integer> position, String listSequence,
 			String action) {
-		List<ESBDebugpoint> breakpointList = new ArrayList<ESBDebugpoint>();
+		List<ESBDebugPoint> breakpointList = new ArrayList<ESBDebugPoint>();
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint breakpoint : breakpoints) {
 			try {
-				IResource file = ((ESBDebugpoint) breakpoint).getResource();
+				IResource file = ((ESBDebugPoint) breakpoint).getResource();
 				String listSequencePosition = EMPTY_STRING;
 				if (file.equals(resource)) {
 					List<Integer> positionList = getMediatorPositionOfBreakpoint(breakpoint);
@@ -286,7 +286,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 							|| listSequence.equalsIgnoreCase(sequnceType)) {
 						if (isBreakpointShouldInModifyingList(action, position,
 								valueInLastPosition)) {
-							breakpointList.add((ESBDebugpoint) breakpoint);
+							breakpointList.add((ESBDebugPoint) breakpoint);
 						} else if (ESBDebuggerConstants.MEDIATOR_DELETE_ACTION
 								.equals(action)
 								&& position.get(position.size() - 1) == valueInLastPosition) {
@@ -320,7 +320,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 
 	private static String getSequenceTypeOfBreakpoint(IBreakpoint breakpoint)
 			throws DebugpointMarkerNotFoundException, CoreException {
-		Map<String, Object> message = ((ESBDebugpoint) breakpoint)
+		Map<String, Object> message = ((ESBDebugPoint) breakpoint)
 				.getLocation();
 		if (message.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
 			return (String) message.get(ESBDebuggerConstants.SEQUENCE_TYPE);
@@ -340,7 +340,7 @@ public abstract class AbstractESBBreakpointBuilder implements
 	private static List<Integer> getMediatorPositionOfBreakpoint(
 			IBreakpoint breakpoint) throws DebugpointMarkerNotFoundException,
 			CoreException {
-		Map<String, Object> message = ((ESBDebugpoint) breakpoint)
+		Map<String, Object> message = ((ESBDebugPoint) breakpoint)
 				.getLocation();
 		return (List<Integer>) message
 				.get(ESBDebuggerConstants.MEDIATOR_POSITION);

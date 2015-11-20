@@ -21,6 +21,11 @@ import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ES
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * {@link ESBAPIResourceBean} holds attributes which identifies API Resource with in API
+ * artifact uniquely and defined in ESB Mediation Debugger communication API's
+ *
+ */
 public class ESBAPIResourceBean {
 
 	private String method;

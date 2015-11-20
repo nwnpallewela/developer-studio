@@ -30,17 +30,22 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
 
 import com.google.gson.JsonElement;
 
-public class ESBAPIDebugPoint extends ESBDebugPoint {
+/**
+ * {@link ESBAPIDebugPointMessage} is the bean class to represent API artifacts
+ * debug point message from ESB Server Debugger
+ *
+ */
+public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 
 	private ESBAPISequenceBean sequence;
 
-	public ESBAPIDebugPoint(String command, String commandArgument,
+	public ESBAPIDebugPointMessage(String command, String commandArgument,
 			String mediationComponent, ESBAPISequenceBean sequence) {
 		super(command, commandArgument, mediationComponent);
 		this.setSequence(sequence);
 	}
 
-	public ESBAPIDebugPoint(DebugPointEventAction action,
+	public ESBAPIDebugPointMessage(DebugPointEventAction action,
 			Map<String, Object> attributeSet) {
 		super(action.toString(), null, ESBDebuggerConstants.SEQUENCE);
 		setCommandArgument((String) attributeSet
@@ -65,7 +70,7 @@ public class ESBAPIDebugPoint extends ESBDebugPoint {
 		sequence = new ESBAPISequenceBean(api);
 	}
 
-	public ESBAPIDebugPoint(EventMessageType event,
+	public ESBAPIDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
 		super(null, null, PROXY);
 		setCommandArgument(event.toString());
@@ -84,13 +89,12 @@ public class ESBAPIDebugPoint extends ESBDebugPoint {
 					.getAsJsonObject().entrySet();
 			for (Entry<String, JsonElement> entry : apiEntrySet) {
 				if (API_KEY.equalsIgnoreCase(entry.getKey())) {
-					apiKey = entry.getValue().toString().replace("\"", "");
+					apiKey = formatJsonElementValueToString(entry.getValue());
 				} else if (MEDIATOR_POSITION.equalsIgnoreCase(entry.getKey())) {
-					mediatorPosition = convertMediatorPositionStringToList(entry
-							.getValue().toString().replace("\"", ""));
+					mediatorPosition = convertMediatorPositionStringToList(formatJsonElementValueToString(entry
+							.getValue()));
 				} else if (SEQUENCE_TYPE.equalsIgnoreCase(entry.getKey())) {
-					sequenceType = entry.getValue().toString()
-							.replace("\"", "");
+					sequenceType = formatJsonElementValueToString(entry.getValue());
 				} else if (RESOURCE.equalsIgnoreCase(entry.getKey())) {
 					resourceElement = entry.getValue();
 				}
@@ -102,9 +106,9 @@ public class ESBAPIDebugPoint extends ESBDebugPoint {
 				.getAsJsonObject().entrySet();
 		for (Entry<String, JsonElement> apiEntry : resourseEntrySet) {
 			if (METHOD.equalsIgnoreCase(apiEntry.getKey())) {
-				method = apiEntry.getValue().toString().replace("\"", "");
+				method = formatJsonElementValueToString(apiEntry.getValue());
 			} else if (MAPPING_URL_TYPE.equalsIgnoreCase(apiEntry.getKey())) {
-				uriMapping = apiEntry.getValue().toString().replace("\"", "");
+				uriMapping = formatJsonElementValueToString(apiEntry.getValue());
 				uriTemplate = uriMapping;
 			}
 		}
@@ -127,8 +131,7 @@ public class ESBAPIDebugPoint extends ESBDebugPoint {
 
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.put(COMMAND_ARGUMENT, commandArgument);
-		attributeMap.put(MEDIATION_COMPONENT, mediationComponent);
+		attributeMap.putAll(super.deserializeToMap());
 		attributeMap.putAll(sequence.deserializeToMap());
 		return attributeMap;
 	}

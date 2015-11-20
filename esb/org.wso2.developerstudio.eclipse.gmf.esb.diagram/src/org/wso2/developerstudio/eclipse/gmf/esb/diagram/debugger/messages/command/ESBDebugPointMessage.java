@@ -21,15 +21,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonElement;
+
 import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
-public class ESBDebugPoint {
+/**
+ * {@link ESBDebugPointMessage} is the root bean class to represent ESB
+ * artifacts debug point message from ESB Server Debugger. Every artifact debug
+ * point message bean class should extend this class
+ *
+ */
+public abstract class ESBDebugPointMessage {
 
+	protected static final CharSequence EMPTY_STRING = "";
+	protected static final CharSequence QUOTATION_MARK_STRING = "\"";
 	protected String command;
 	protected String commandArgument;
 	protected String mediationComponent;
 
-	public ESBDebugPoint(String command, String commandArgument,
+	public ESBDebugPointMessage(String command, String commandArgument,
 			String mediationComponent) {
 		super();
 		this.command = command;
@@ -61,8 +71,14 @@ public class ESBDebugPoint {
 		this.mediationComponent = mediationComponent;
 	}
 
+	/**
+	 * This method populate class attributes to a HashMap
+	 * 
+	 * @return
+	 */
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
+		attributeMap.put(COMMAND, command);
 		attributeMap.put(COMMAND_ARGUMENT, commandArgument);
 		attributeMap.put(MEDIATION_COMPONENT, mediationComponent);
 		return attributeMap;
@@ -76,6 +92,11 @@ public class ESBDebugPoint {
 			positionList.add(Integer.parseInt(positionValue));
 		}
 		return new ESBMediatorPosition(positionList);
+	}
+
+	protected String formatJsonElementValueToString(JsonElement value) {
+		return value.toString().replace(QUOTATION_MARK_STRING, EMPTY_STRING);
+
 	}
 
 }
