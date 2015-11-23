@@ -102,8 +102,8 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 			constraintBreakpointImageRectangle.verticalSpan = 1;
 			ImageFigure iconImageFigure = EditPartDrawingHelper
 					.getIconImageFigure(
-							"icons/ico20debug/toggle_breakpoint_red.gif", 10,
-							10);
+							"icons/ico20debug/toggle_breakpoint_red.gif", 16,
+							16);
 //			ImageFigure iconImageFigure = EditPartDrawingHelper
 //					.getIconImageFigure(
 //							"icons/ico20debug/breakpoint_16.gif", 10,
@@ -112,7 +112,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 			RoundedRectangle breakpointImageRectangle = new RoundedRectangle();
 			breakpointImageRectangle.setCornerDimensions(new Dimension(2, 2));
 			breakpointImageRectangle.setOutline(false);
-			breakpointImageRectangle.setPreferredSize(new Dimension(10, 10));
+			breakpointImageRectangle.setPreferredSize(new Dimension(16, 16));
 			breakpointImageRectangle.setAlpha(0);
 			breakpointImageRectangle.add(iconImageFigure);
 			iconImageFigure.translate((this.getSize().width / 2

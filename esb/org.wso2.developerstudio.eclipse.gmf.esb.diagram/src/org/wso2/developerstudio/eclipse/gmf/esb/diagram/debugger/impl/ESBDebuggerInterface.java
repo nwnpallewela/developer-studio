@@ -147,7 +147,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 
 	@Override
 	public void sendCommand(CommandMessage command) throws Exception {
-		System.out.println("************************"+messageFactory.createCommand(command));
 		requestWriter.println(messageFactory.createCommand(command));
 		requestWriter.flush();
 	}
@@ -193,8 +192,6 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void sendGetPropertiesCommand(GetPropertyCommand getPropertyCommand)
 			throws Exception {
-		System.out.println("************************"+messageFactory
-				.createGetPropertiesCommand(getPropertyCommand));
 		requestWriter.println(messageFactory
 				.createGetPropertiesCommand(getPropertyCommand));
 		requestWriter.flush();
@@ -203,6 +200,8 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	@Override
 	public void sendBreakpointCommand(ESBDebugPointMessage debugPoint)
 			throws Exception {
+		System.out.println("************************"+messageFactory
+				.createBreakpointCommand(debugPoint));
 		requestWriter.println(messageFactory
 				.createBreakpointCommand(debugPoint));
 		requestWriter.flush();

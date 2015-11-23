@@ -176,7 +176,7 @@ public class ESBDebugPoint extends Breakpoint {
 					.equalsIgnoreCase(keyValue[0])) {
 				attributeMap.put(keyValue[0],
 						convertStringToIntegerList(keyValue[1]));
-			} else {
+			} else if (keyValue.length == 2) {
 				attributeMap.put(keyValue[0], keyValue[1]);
 			}
 		}
@@ -304,6 +304,7 @@ public class ESBDebugPoint extends Breakpoint {
 							.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
 				return false;
 			}
+			info.put(ESBDebuggerConstants.MAPPING_URL_TYPE, info.get(ESBDebuggerConstants.URL_TEMPLATE));
 
 			Set<String> attributeKeys = new HashSet<String>();
 			attributeKeys.addAll(info.keySet());
@@ -311,6 +312,8 @@ public class ESBDebugPoint extends Breakpoint {
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
 			attributeKeys.remove(ESBDebuggerConstants.EVENT);
 			attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
+			attributeKeys.remove(ESBDebuggerConstants.URI_MAPPING);
+			attributeKeys.remove(ESBDebuggerConstants.URL_TEMPLATE);
 			if (!shouldDebugPointTypeMatch) {
 				attributeKeys.remove(ESBDebuggerConstants.COMMAND_ARGUMENT);
 			}

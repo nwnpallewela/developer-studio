@@ -15,7 +15,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.launch"
-            icon="icons/debugger/launcher.png"
+            icon="icons/debugger/DebuggerLauncherIcon.gif"
             id="org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.launch.image">
       </launchConfigurationTypeImage>
    </extension>

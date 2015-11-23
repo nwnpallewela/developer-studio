@@ -68,13 +68,13 @@ public class EsbGroupingShape extends RoundedRectangle {
 			constraintBreakpointImageRectangle.verticalSpan = 1;
 			ImageFigure iconImageFigure = EditPartDrawingHelper
 					.getIconImageFigure(
-							"icons/ico20debug/toggle_breakpoint_red.gif", 10,
-							10);
+							"icons/ico20debug/toggle_breakpoint_red.gif", 16,
+							16);
 
 			RoundedRectangle mainImageRectangle = new RoundedRectangle();
 			mainImageRectangle.setCornerDimensions(new Dimension(2, 2));
 			mainImageRectangle.setOutline(false);
-			mainImageRectangle.setPreferredSize(new Dimension(10, 10));
+			mainImageRectangle.setPreferredSize(new Dimension(16, 16));
 			mainImageRectangle.setAlpha(0);
 			mainImageRectangle.add(iconImageFigure);
 			iconImageFigure.translate(0, 2);

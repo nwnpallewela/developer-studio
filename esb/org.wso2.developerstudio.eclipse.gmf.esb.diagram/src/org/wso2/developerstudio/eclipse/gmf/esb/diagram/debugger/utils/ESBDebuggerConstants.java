@@ -132,8 +132,8 @@ public class ESBDebuggerConstants {
 	public static final String CHANGE_PROPERTY = "change-property";
 	public static final String PROPERTY_NAME = "property-name";
 	public static final String PROPERTY_VALUE = "property-value";
-	public static final String URL_TEMPLATE = "uri-template";
-	public static final String URI_MAPPING = "url-mapping";
+	public static final String URL_TEMPLATE = "url-template";
+	public static final String URI_MAPPING = "uri-mapping";
 	public static final String API_INSEQ = "api_inseq";
 	public static final String API_OUTSEQ = "api_outseq";
 	public static final String MAPPING_URL_TYPE = "mapping";

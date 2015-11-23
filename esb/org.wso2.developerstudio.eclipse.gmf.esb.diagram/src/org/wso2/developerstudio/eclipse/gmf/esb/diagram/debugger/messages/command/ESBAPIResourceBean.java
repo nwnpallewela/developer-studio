@@ -29,15 +29,15 @@ import java.util.Map;
 public class ESBAPIResourceBean {
 
 	private String method;
-	private String uriMapping;
-	private String urlTemplate;
+	private String urlMapping;
+	private String uriTemplate;
 
 	public ESBAPIResourceBean(String method, String uriMapping,
 			String uriTemplate) {
 		super();
 		this.method = method;
-		this.uriMapping = uriMapping;
-		this.urlTemplate = uriTemplate;
+		this.urlMapping = uriMapping;
+		this.uriTemplate = uriTemplate;
 	}
 
 	public String getMethod() {
@@ -49,26 +49,26 @@ public class ESBAPIResourceBean {
 	}
 
 	public String getUriMapping() {
-		return uriMapping;
+		return urlMapping;
 	}
 
 	public void setUriMapping(String uriMapping) {
-		this.uriMapping = uriMapping;
+		this.urlMapping = uriMapping;
 	}
 
 	public String getUriTemplate() {
-		return urlTemplate;
+		return uriTemplate;
 	}
 
 	public void setUriTemplate(String uriTemplate) {
-		this.urlTemplate = uriTemplate;
+		this.uriTemplate = uriTemplate;
 	}
 
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.put(METHOD, method);
-		attributeMap.put(URI_MAPPING, uriMapping);
-		attributeMap.put(URL_TEMPLATE, urlTemplate);
+		attributeMap.put(URI_MAPPING, urlMapping);
+		attributeMap.put(URL_TEMPLATE, uriTemplate);
 		return attributeMap;
 	}
 

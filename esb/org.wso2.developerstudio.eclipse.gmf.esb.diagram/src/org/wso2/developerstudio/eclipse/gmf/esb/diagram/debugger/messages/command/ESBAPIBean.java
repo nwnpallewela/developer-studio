@@ -29,7 +29,7 @@ import java.util.Map;
 public class ESBAPIBean {
 
 	private String apiKey;
-	private ESBAPIResourceBean resourse;
+	private ESBAPIResourceBean resource;
 	private String sequenceType;
 	private ESBMediatorPosition mediatorPosition;
 
@@ -37,7 +37,7 @@ public class ESBAPIBean {
 			String sequenceType, ESBMediatorPosition mediatorPosition) {
 		super();
 		this.apiKey = apiKey;
-		this.resourse = resourse;
+		this.resource = resourse;
 		this.sequenceType = sequenceType;
 		this.mediatorPosition = mediatorPosition;
 	}
@@ -51,11 +51,11 @@ public class ESBAPIBean {
 	}
 
 	public ESBAPIResourceBean getResourse() {
-		return resourse;
+		return resource;
 	}
 
 	public void setResourse(ESBAPIResourceBean resourse) {
-		this.resourse = resourse;
+		this.resource = resourse;
 	}
 
 	public String getSequenceType() {
@@ -79,7 +79,7 @@ public class ESBAPIBean {
 		attributeMap.put(API_KEY, apiKey);
 		attributeMap.put(SEQUENCE_TYPE, sequenceType);
 		attributeMap.putAll(mediatorPosition.deserializeToMap());
-		attributeMap.putAll(resourse.deserializeToMap());
+		attributeMap.putAll(resource.deserializeToMap());
 		return attributeMap;
 	}
 

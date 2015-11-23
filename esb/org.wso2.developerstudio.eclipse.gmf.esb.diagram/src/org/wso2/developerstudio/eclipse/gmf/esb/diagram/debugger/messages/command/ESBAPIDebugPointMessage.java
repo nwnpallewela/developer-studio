@@ -72,7 +72,7 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 
 	public ESBAPIDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
-		super(null, null, PROXY);
+		super(null, null, API);
 		setCommandArgument(event.toString());
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
