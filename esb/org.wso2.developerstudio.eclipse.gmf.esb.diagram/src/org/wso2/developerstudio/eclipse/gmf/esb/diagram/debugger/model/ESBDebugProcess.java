@@ -16,6 +16,9 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
@@ -27,8 +30,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  */
 public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
+	private Map<String, String> processAttributes;
+
 	public ESBDebugProcess(final ESBDebugTarget debugTarget) {
 		super(debugTarget);
+		processAttributes = new HashMap<>();
 	}
 
 	@Override
@@ -43,11 +49,16 @@ public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
 	@Override
 	public void setAttribute(final String key, final String value) {
+		processAttributes.put(key, value);
 	}
 
 	@Override
 	public String getAttribute(final String key) {
-		return null;
+		if (processAttributes.containsKey(key)) {
+			return processAttributes.get(key);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -57,6 +68,6 @@ public class ESBDebugProcess extends ESBDebugElement implements IProcess {
 
 	@Override
 	public String getModelIdentifier() {
-		return null;
+		return this.getDebugTarget().getModelIdentifier();
 	}
 }

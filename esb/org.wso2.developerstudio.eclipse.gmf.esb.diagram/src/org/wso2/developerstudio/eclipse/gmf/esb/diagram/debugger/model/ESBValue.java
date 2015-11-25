@@ -39,13 +39,14 @@ public class ESBValue extends ESBDebugElement implements IValue {
 
 	private static final String KEY_ENVELOPE = "envelope";
 	private static final String EMPTY_STRING = "";
+	private static final String QUOTATION_MARK_STRING = "\"";
 
 	private final String variableValue;
 	private List<IVariable> valueChildren;
 
-	public ESBValue(ESBDebugTarget debugTarget, String expression) {
+	public ESBValue(ESBDebugTarget debugTarget, String value) {
 		super(debugTarget);
-		variableValue = expression;
+		variableValue = value;
 	}
 
 	public ESBValue(IDebugTarget target, JsonElement value)
@@ -57,15 +58,10 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			Set<Entry<String, JsonElement>> entrySet = value.getAsJsonObject()
 					.entrySet();
 			for (Entry<String, JsonElement> entry : entrySet) {
-				boolean processed = false;
 				if (valueChildren != null) {
-					processed = addValueToMatchingChildVariable(entry,
-							processed);
+					addValueToMatchingChildVariable(entry);
 				} else {
 					valueChildren = new ArrayList<>();
-				}
-
-				if (!processed) {
 					addNewChildVariable(entry);
 				}
 			}
@@ -80,38 +76,34 @@ public class ESBValue extends ESBDebugElement implements IValue {
 			throws DebugException {
 		ESBVariable esbVariable = new ESBVariable(getDebugTarget(),
 				entry.getKey(), entry.getValue().toString()
-						.replace("\"", EMPTY_STRING));
+						.replace(QUOTATION_MARK_STRING, EMPTY_STRING));
 		valueChildren.add(esbVariable);
 		if (KEY_ENVELOPE.equalsIgnoreCase(entry.getKey())) {
 			OpenEditorUtil.setToolTipMessageOnMediator(entry.getValue()
-					.toString().replace("\"", EMPTY_STRING));
+					.toString().replace(QUOTATION_MARK_STRING, EMPTY_STRING));
 		}
 		esbVariable.fireCreationEvent();
 	}
 
 	/**
 	 * @param entry
-	 * @param processed
-	 * @return
 	 * @throws DebugException
 	 */
-	private boolean addValueToMatchingChildVariable(
-			Entry<String, JsonElement> entry, boolean processed)
-			throws DebugException {
+	private void addValueToMatchingChildVariable(
+			Entry<String, JsonElement> entry) throws DebugException {
 		for (IVariable variable : valueChildren) {
 			if (variable.getName().equals(entry.getKey())) {
 				variable.setValue(entry.getValue().toString()
-						.replace("\"", EMPTY_STRING));
+						.replace(QUOTATION_MARK_STRING, EMPTY_STRING));
 				((ESBVariable) variable).fireChangeEvent(DebugEvent.CONTENT);
 				if (variable.getName().equalsIgnoreCase(KEY_ENVELOPE)) {
 					OpenEditorUtil.setToolTipMessageOnMediator(entry.getValue()
-							.toString().replace("\"", EMPTY_STRING));
+							.toString()
+							.replace(QUOTATION_MARK_STRING, EMPTY_STRING));
 				}
-				processed = true;
 				break;
 			}
 		}
-		return processed;
 	}
 
 	@Override
@@ -140,14 +132,7 @@ public class ESBValue extends ESBDebugElement implements IValue {
 	 */
 	@Override
 	public IVariable[] getVariables() throws DebugException {
-
-		IVariable[] variables = new ESBVariable[valueChildren.size()];
-		int count = 0;
-		for (IVariable variable : valueChildren) {
-			variables[count] = variable;
-			count++;
-		}
-		return variables;
+		return valueChildren.toArray(new IVariable[valueChildren.size()]);
 	}
 
 	/**

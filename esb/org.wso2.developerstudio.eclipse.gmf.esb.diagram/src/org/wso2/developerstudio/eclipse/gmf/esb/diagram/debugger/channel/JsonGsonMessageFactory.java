@@ -48,6 +48,7 @@ import com.google.gson.JsonParser;
 
 public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 
+	private static final int NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE = 1;
 	private final String EMPTY_STRING = "";
 	private final String QUOTATION_STRING = "\"";
 
@@ -208,17 +209,19 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 
 	}
 
-	private ESBDebugPointMessage getSequenceTypeDebugPoint(EventMessageType event,
-			JsonElement recievedArtifactInfo) {
+	private ESBDebugPointMessage getSequenceTypeDebugPoint(
+			EventMessageType event, JsonElement recievedArtifactInfo) {
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
-		if (entrySet.size() == 1) {
+		if (entrySet.size() == NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE) {
 			for (Entry<String, JsonElement> entry : entrySet) {
 				if (ESBDebuggerConstants.PROXY.equalsIgnoreCase(entry.getKey())) {
-					return new ESBProxyDebugPointMessage(event, recievedArtifactInfo);
+					return new ESBProxyDebugPointMessage(event,
+							recievedArtifactInfo);
 				} else if (ESBDebuggerConstants.API.equalsIgnoreCase(entry
 						.getKey())) {
-					return new ESBAPIDebugPointMessage(event, recievedArtifactInfo);
+					return new ESBAPIDebugPointMessage(event,
+							recievedArtifactInfo);
 				}
 			}
 		} else {

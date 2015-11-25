@@ -18,7 +18,6 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
@@ -52,10 +51,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugP
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.suspend.point.ESBSuspendPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.OpenEditorUtil;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
+
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
 /**
  * {@link ESBDebugTarget} is the root of the ESB Mediation Debugger debug
@@ -77,19 +77,18 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		super(null);
 		debugTargetEventBroker = (IEventBroker) PlatformUI.getWorkbench()
 				.getService(IEventBroker.class);
-		debugTargetEventBroker.subscribe(
-				ESBDebuggerConstants.ESBDEBUGGER_EVENT_TOPIC, this);
+		debugTargetEventBroker.subscribe(ESBDEBUGGER_EVENT_TOPIC, this);
 		esbDebugerLaunch = launch;
 		fireCreationEvent();
 		esbDebugProcess = new ESBDebugProcess(this);
 		esbDebugProcess.fireCreationEvent();
 	}
-	
+
 	@Override
 	public void handleEvent(Event eventFromBroker) {
 		if (!isDisconnected()) {
 			IDebugEvent event = (IDebugEvent) eventFromBroker
-					.getProperty(ESBDebuggerConstants.ESB_DEBUGGER_EVENT_BROKER_DATA_NAME);
+					.getProperty(ESB_DEBUGGER_EVENT_BROKER_DATA_NAME);
 			if (event instanceof DebuggerStartedEvent) {
 				ESBDebugThread thread = new ESBDebugThread(this);
 				esbDebugThreads.add(thread);
@@ -104,17 +103,13 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 				resume();
 
-			} else if (event instanceof SuspendedEvent) {
+			} else if (event instanceof SuspendedEvent) { //this get called when ESB came to a breakpoint
 				setState(ESBDebuggerState.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
 				try {
-					showSource((SuspendedEvent) event);
-				} catch (ESBDebuggerException e) {
-					log.error(e.getMessage(), e);
-				} catch (DebugException e) {
-					log.error(e.getMessage(), e);
-				} catch (CoreException e) {
+					showDiagram((SuspendedEvent) event);
+				} catch (ESBDebuggerException | CoreException e) {
 					log.error(e.getMessage(), e);
 				}
 				fireModelEvent(new FetchVariablesRequest());
@@ -162,8 +157,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	 *            event to handle
 	 */
 	void fireModelEvent(final IDebugEvent event) {
-		debugTargetEventBroker.send(
-				ESBDebuggerConstants.ESB_DEBUG_TARGET_EVENT_TOPIC, event);
+		debugTargetEventBroker.send(ESB_DEBUG_TARGET_EVENT_TOPIC, event);
 	}
 
 	/**
@@ -175,7 +169,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	 * @throws ESBDebuggerException
 	 * @throws CoreException
 	 */
-	private void showSource(SuspendedEvent event) throws ESBDebuggerException,
+	private void showDiagram(SuspendedEvent event) throws ESBDebuggerException,
 			CoreException {
 
 		ESBDebugPointMessage info = event.getDetail();
@@ -197,8 +191,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	private void deletePreviousSuspendPointsFromBreakpointManager()
 			throws CoreException {
 		IBreakpoint[] suspendPoints = DebugPlugin.getDefault()
-				.getBreakpointManager()
-				.getBreakpoints(ESBDebuggerConstants.SUSPEND_POINT_MODEL_ID);
+				.getBreakpointManager().getBreakpoints(SUSPEND_POINT_MODEL_ID);
 		for (IBreakpoint suspendPoint : suspendPoints) {
 			DebugPlugin.getDefault().getBreakpointManager()
 					.removeBreakpoint(suspendPoint, false);
@@ -248,7 +241,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public String getName() {
-		return "ESB DebugTarget";
+		return "ESB DebugTarget";//TODO externalize
 	}
 
 	@Override
