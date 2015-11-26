@@ -152,14 +152,14 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 					.getIconImageFigure(
 							"icons/ico20debug/greyImagealphamask.gif", this.getBounds().width,
 							this.getBounds().height);
-			RoundedRectangle breakpointImageRectangle = new RoundedRectangle();
-			breakpointImageRectangle.setCornerDimensions(new Dimension(2, 2));
-			breakpointImageRectangle.setOutline(false);
-			breakpointImageRectangle.setPreferredSize(new Dimension(10, 10));
-			breakpointImageRectangle.setAlpha(0);
-			breakpointImageRectangle.add(iconImageFigure);
+			RoundedRectangle skipPointImageRectangle = new RoundedRectangle();
+			skipPointImageRectangle.setCornerDimensions(new Dimension(2, 2));
+			skipPointImageRectangle.setOutline(false);
+			skipPointImageRectangle.setPreferredSize(new Dimension(10, 10));
+			skipPointImageRectangle.setAlpha(0);
+			skipPointImageRectangle.add(iconImageFigure);
 			
-			skippointLayer.add(breakpointImageRectangle,
+			skippointLayer.add(skipPointImageRectangle,
 					constraintBreakpointImageRectangle);
 			/*try {
 			//	this.remove(pane);
