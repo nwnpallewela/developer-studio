@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,4 +49,23 @@ public class ESBAPISequenceBean {
 		return attributeMap;
 	}
 
+	@Override
+	public boolean equals(Object apiSeqBean) {
+		if (apiSeqBean instanceof ESBAPISequenceBean) {
+			if (api.equals(((ESBAPISequenceBean) apiSeqBean).getApi())) {
+				return true;
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + api.hashCode()
+				+ API.hashCode();
+		return result;
+	}
 }

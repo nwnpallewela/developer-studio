@@ -111,8 +111,8 @@ public class EditorUtils {
 	 * @param editPartMap
 	 * @return
 	 */
-	public static EditPart getEditpart(EObject node) {
-		 Map<EObject,ShapeNodeEditPart> editPartMap =getEditPartMap();
+	public static EditPart getActiveEditorEditpart(EObject node) {
+		 Map<EObject,ShapeNodeEditPart> editPartMap =getActiveEditorEditPartMap();
 		if(editPartMap.containsKey(node)){
 			return editPartMap.get(node);
 		}
@@ -123,20 +123,20 @@ public class EditorUtils {
 	 * This method returns EditPart map of the current active editor
 	 * @param editPartMap
 	 */
-	private static Map<EObject,ShapeNodeEditPart> getEditPartMap(){
+	private static Map<EObject,ShapeNodeEditPart> getActiveEditorEditPartMap(){
 
 		Map<EObject,ShapeNodeEditPart> editPartMap = new HashMap<>();
 		
-		EsbMultiPageEditor e =(EsbMultiPageEditor)getActiveEditor();
+		EsbMultiPageEditor esbMultiPageEditor =(EsbMultiPageEditor)getActiveEditor();
 	
 		@SuppressWarnings("rawtypes")
-		Map editPartRegistry = e.getDiagramEditPart().getViewer().getEditPartRegistry();
+		Map editPartRegistry = esbMultiPageEditor.getDiagramEditPart().getViewer().getEditPartRegistry();
 		for (Object object : editPartRegistry.keySet()) {
 			if(object instanceof Node){
 				Node nodeImpl = (Node) object;
-					Object ep = editPartRegistry.get(nodeImpl);
-					if(ep instanceof ShapeNodeEditPart){
-						editPartMap.put(nodeImpl.getElement(), (ShapeNodeEditPart)ep);
+					Object editPart = editPartRegistry.get(nodeImpl);
+					if(editPart instanceof ShapeNodeEditPart){
+						editPartMap.put(nodeImpl.getElement(), (ShapeNodeEditPart)editPart);
 					}
 			}
 		}

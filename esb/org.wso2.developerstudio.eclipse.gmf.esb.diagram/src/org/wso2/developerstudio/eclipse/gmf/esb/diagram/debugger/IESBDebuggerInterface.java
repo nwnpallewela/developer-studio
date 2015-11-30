@@ -27,7 +27,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatc
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponseDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger.ESBDebuggerCommands;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 
 /**
@@ -114,7 +114,7 @@ public interface IESBDebuggerInterface {
 	 * @param debugPoint
 	 * @throws Exception
 	 */
-	public void sendBreakpointCommand(ESBDebugPointMessage debugPoint)
+	public void sendBreakpointCommand(AbstractESBDebugPointMessage debugPoint)
 			throws Exception;
 
 	/**

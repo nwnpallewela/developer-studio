@@ -35,7 +35,7 @@ import com.google.gson.JsonElement;
  * debug point message from ESB Server Debugger
  *
  */
-public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
+public class ESBAPIDebugPointMessage extends AbstractESBDebugPointMessage {
 
 	private ESBAPISequenceBean sequence;
 
@@ -60,9 +60,9 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 
 		String method = (String) attributeSet.get(ESBDebuggerConstants.METHOD);
 		String uriMapping = (String) attributeSet
-				.get(ESBDebuggerConstants.URI_MAPPING);
+				.get(ESBDebuggerConstants.URL_MAPPING);
 		String uriTemplate = (String) attributeSet
-				.get(ESBDebuggerConstants.URL_TEMPLATE);
+				.get(ESBDebuggerConstants.URI_TEMPLATE);
 		ESBAPIResourceBean resource = new ESBAPIResourceBean(method,
 				uriMapping, uriTemplate);
 		ESBAPIBean api = new ESBAPIBean(apiKey, resource, sequenceType,
@@ -72,7 +72,7 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 
 	public ESBAPIDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
-		super(null, null, API);
+		super(null, null, SEQUENCE);
 		setCommandArgument(event.toString());
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
@@ -94,7 +94,8 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 					mediatorPosition = convertMediatorPositionStringToList(formatJsonElementValueToString(entry
 							.getValue()));
 				} else if (SEQUENCE_TYPE.equalsIgnoreCase(entry.getKey())) {
-					sequenceType = formatJsonElementValueToString(entry.getValue());
+					sequenceType = formatJsonElementValueToString(entry
+							.getValue());
 				} else if (RESOURCE.equalsIgnoreCase(entry.getKey())) {
 					resourceElement = entry.getValue();
 				}
@@ -110,6 +111,11 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 			} else if (MAPPING_URL_TYPE.equalsIgnoreCase(apiEntry.getKey())) {
 				uriMapping = formatJsonElementValueToString(apiEntry.getValue());
 				uriTemplate = uriMapping;
+			} else if (URI_TEMPLATE.equalsIgnoreCase(apiEntry.getKey())) {
+				uriTemplate = formatJsonElementValueToString(apiEntry
+						.getValue());
+			} else if (URL_MAPPING.equalsIgnoreCase(apiEntry.getKey())) {
+				uriMapping = formatJsonElementValueToString(apiEntry.getValue());
 			}
 		}
 
@@ -129,10 +135,58 @@ public class ESBAPIDebugPointMessage extends ESBDebugPointMessage {
 		this.sequence = sequence;
 	}
 
-	public Map<String, Object> deserializeToMap() {
-		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.putAll(super.deserializeToMap());
-		attributeMap.putAll(sequence.deserializeToMap());
-		return attributeMap;
+	public boolean equalsIgnoreType(ESBAPIDebugPointMessage debugPointMessage) {
+		if (mediationComponent
+				.equals(debugPointMessage.getMediationComponent())
+				&& sequence.equals(debugPointMessage.getSequence())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object debugPointMessage) {
+		if (debugPointMessage instanceof ESBAPIDebugPointMessage) {
+			ESBAPIDebugPointMessage debugPointMessageTemp = (ESBAPIDebugPointMessage) debugPointMessage;
+			if (!(mediationComponent.equals((debugPointMessageTemp)
+					.getMediationComponent())
+					&& commandArgument.equals((debugPointMessageTemp)
+							.getCommandArgument()) && sequence
+						.equals(debugPointMessageTemp.getSequence()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequence.hashCode()
+				+ SEQUENCE.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ commandArgument.hashCode() + COMMAND_ARGUMENT.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ MEDIATION_COMPONENT.hashCode()
+				+ mediationComponent.hashCode();
+		return result;
+	}
+
+	@Override
+	public ESBMediatorPosition getMediatorPosition() {
+		return sequence.getApi().getMediatorPosition();
+	}
+
+	@Override
+	public void setMediatorPosition(List<Integer> position) {
+		sequence.getApi()
+				.setMediatorPosition(new ESBMediatorPosition(position));
+	}
+
+	@Override
+	public String getSequenceType() {
+		return sequence.getApi().getSequenceType();
 	}
 }

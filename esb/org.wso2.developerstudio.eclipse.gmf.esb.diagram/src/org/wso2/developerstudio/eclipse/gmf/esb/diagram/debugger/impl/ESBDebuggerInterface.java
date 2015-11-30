@@ -31,7 +31,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.JsonGso
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelEventDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.dispatcher.ChannelResponseDispatcher;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
@@ -198,7 +198,7 @@ public class ESBDebuggerInterface implements IESBDebuggerInterface {
 	}
 
 	@Override
-	public void sendBreakpointCommand(ESBDebugPointMessage debugPoint)
+	public void sendBreakpointCommand(AbstractESBDebugPointMessage debugPoint)
 			throws Exception {
 		System.out.println("************************"+messageFactory
 				.createBreakpointCommand(debugPoint));

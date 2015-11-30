@@ -15,13 +15,19 @@
  */
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
-import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.COMMAND_ARGUMENT;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.HASHCODE_MULTIPLIER_VALUE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.INITIAL_HASHCODE_RESULT_VALUE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATION_COMPONENT;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATOR_POSITION;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.SEQUENCE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.SEQUENCE_KEY;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.SEQUENCE_TYPE;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest.DebugPointEventAction;
@@ -34,7 +40,7 @@ import com.google.gson.JsonElement;
  * Sequence artifacts debug point message from ESB Server Debugger
  *
  */
-public class ESBSequenceDebugPointMessage extends ESBDebugPointMessage {
+public class ESBSequenceDebugPointMessage extends AbstractESBDebugPointMessage {
 
 	private ESBSequenceBean sequence;
 
@@ -65,8 +71,7 @@ public class ESBSequenceDebugPointMessage extends ESBDebugPointMessage {
 	public ESBSequenceDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
 		super(null, null, SEQUENCE);
-		setCommandArgument(event.toString().replace(QUOTATION_MARK_STRING,
-				EMPTY_STRING));
+		setCommandArgument(event.toString());
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
 		String sequenceKey = null;
@@ -94,11 +99,59 @@ public class ESBSequenceDebugPointMessage extends ESBDebugPointMessage {
 		this.sequence = sequence;
 	}
 
-	public Map<String, Object> deserializeToMap() {
-		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.putAll(super.deserializeToMap());
-		attributeMap.putAll(sequence.deserializeToMap());
-		return attributeMap;
+	public boolean equalsIgnoreType(
+			ESBSequenceDebugPointMessage debugPointMessage) {
+		if (mediationComponent
+				.equals(debugPointMessage.getMediationComponent())
+				&& sequence.equals(debugPointMessage.getSequence())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object debugPointMessage) {
+		if (debugPointMessage instanceof ESBSequenceDebugPointMessage) {
+			ESBSequenceDebugPointMessage debugPointMessageTemp = (ESBSequenceDebugPointMessage) debugPointMessage;
+			if (!(mediationComponent.equals((debugPointMessageTemp)
+					.getMediationComponent())
+					&& commandArgument.equals((debugPointMessageTemp)
+							.getCommandArgument()) && sequence
+						.equals(debugPointMessageTemp.getSequence()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediationComponent.hashCode()
+				+ MEDIATION_COMPONENT.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ commandArgument.hashCode() + COMMAND_ARGUMENT.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequence.hashCode()
+				+ SEQUENCE.hashCode();
+		return result;
+	}
+
+	@Override
+	public ESBMediatorPosition getMediatorPosition() {
+		return sequence.getMediatorPosition();
+	}
+
+	@Override
+	public void setMediatorPosition(List<Integer> positionList) {
+		sequence.setMediatorPosition(new ESBMediatorPosition(positionList));
+	}
+
+	@Override
+	public String getSequenceType() {
+		return sequence.getSequenceType();
 	}
 
 }

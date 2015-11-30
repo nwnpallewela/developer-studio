@@ -16,12 +16,10 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
+
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IMarker;
@@ -31,9 +29,21 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.MediatorPositionGsonSerializer;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.channel.PojoToGsonCustomNamingStrategy;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * This class represents the Custom Breakpoint type for ESB Breakpoints. Both
@@ -41,23 +51,18 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugg
  */
 public class ESBDebugPoint extends Breakpoint {
 
-	private static final String ATTRIBUTE_SEPERATOR = ",";
-	private static final String KEY_VALUE_SEPERATOR = ":";
-	private static final String TEMP_ATTRIBUTE_SEPERATOR = " ";
-	private static final String POSITION_VALUE_SEPERATOR = "~";
-
 	// Default constructor is needed by the debug framework to restore
 	// breakpoints
 	public ESBDebugPoint() {
 	}
 
 	public ESBDebugPoint(final IResource resource, final int lineNumber,
-			final Map<String, Object> attributes) throws CoreException {
-		this(resource, lineNumber, attributes, true);
+			final AbstractESBDebugPointMessage debugPoint) throws CoreException {
+		this(resource, lineNumber, debugPoint, true);
 	}
 
 	protected ESBDebugPoint(final IResource resource, final int lineNumber,
-			final Map<String, Object> attributes, final boolean persistent)
+			final AbstractESBDebugPointMessage debugPoint, final boolean persistent)
 			throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			@Override
@@ -71,58 +76,39 @@ public class ESBDebugPoint extends Breakpoint {
 				ensureMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber);
 				ensureMarker().setAttribute(IBreakpoint.ID,
 						getModelIdentifier());
+				System.out.println(convertDebugPointToString(debugPoint));
 				ensureMarker().setAttribute(IMarker.LOCATION,
-						convertMapToString(attributes));
+						convertDebugPointToString(debugPoint));
 
-			}
-
-			private String convertMapToString(Map<String, Object> attributes) {
-				Set<String> keys = attributes.keySet();
-				StringBuilder builder = new StringBuilder();
-				for (String key : keys) {
-					if (ESBDebuggerConstants.MEDIATOR_POSITION
-							.equalsIgnoreCase(key)) {
-						@SuppressWarnings("unchecked")
-						List<Integer> position = (List<Integer>) attributes
-								.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-						builder.append(key).append(KEY_VALUE_SEPERATOR)
-								.append(buildPositionStringFromList(position))
-								.append(TEMP_ATTRIBUTE_SEPERATOR);
-					} else {
-						builder.append(key).append(KEY_VALUE_SEPERATOR)
-								.append(attributes.get(key))
-								.append(TEMP_ATTRIBUTE_SEPERATOR);
-					}
-				}
-				return builder
-						.toString()
-						.trim()
-						.replaceAll(TEMP_ATTRIBUTE_SEPERATOR,
-								ATTRIBUTE_SEPERATOR);
 			}
 
 			/**
-			 * @param position
+			 * This method converts the {@link AbstractESBDebugPointMessage} for a
+			 * <code>String</code> value using <a
+			 * href="https://sites.google.com/site/gson/gson-user-guide"
+			 * >Gson</a> library {@link GsonBuilder}
+			 * 
+			 * @param debugPoint
+			 * @return
 			 */
-			private String buildPositionStringFromList(List<Integer> position) {
-				StringBuilder positionBuilder = new StringBuilder();
-				for (Integer value : position) {
-					positionBuilder.append(value).append(
-							TEMP_ATTRIBUTE_SEPERATOR);
-				}
-				return positionBuilder
-						.toString()
-						.trim()
-						.replaceAll(TEMP_ATTRIBUTE_SEPERATOR,
-								POSITION_VALUE_SEPERATOR);
+			private String convertDebugPointToString(
+					AbstractESBDebugPointMessage debugPoint) {
+				GsonBuilder builder = new GsonBuilder();
+				builder.registerTypeAdapter(ESBMediatorPosition.class,
+						new MediatorPositionGsonSerializer());
+				builder.setFieldNamingStrategy(new PojoToGsonCustomNamingStrategy());
+				Gson debugPointMessage = builder.create();
+				System.out.println(debugPointMessage.toJson(debugPoint).toString());
+				return debugPointMessage.toJson(debugPoint).toString();
 			}
+
 		};
 		run(getMarkerRule(resource), runnable);
 	}
 
 	/**
-	 * Returns ESB breakpoint model identifier to identify this as a ESB
-	 * Breakpoint
+	 * Returns ESB breakpoint model identifier to identify this as a ESB Debug
+	 * Point
 	 */
 	@Override
 	public String getModelIdentifier() {
@@ -130,89 +116,107 @@ public class ESBDebugPoint extends Breakpoint {
 	}
 
 	/**
-	 * returns source view line number of the breakpoint
+	 * returns source view line number of the Debug Point
 	 * 
 	 * @return
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 */
-	public int getLineNumber() throws DebugpointMarkerNotFoundException {
+	public int getLineNumber() throws DebugPointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getAttribute(IMarker.LINE_NUMBER, -1);
 		}
-		throw new DebugpointMarkerNotFoundException(
-				"Assoiciated IMarker value not found for ESBBreakpoint : "
+		throw new DebugPointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESB Debug Point : "
 						+ this);
 	}
 
 	/**
-	 * Returns the map contains in ESBbreakpoint
+	 * Returns the ESBDebugPointMessage contains in Debug Point
 	 * 
 	 * @return
 	 * @throws CoreException
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 */
-	public Map<String, Object> getLocation() throws CoreException,
-			DebugpointMarkerNotFoundException {
+	public AbstractESBDebugPointMessage getLocation() throws CoreException,
+			DebugPointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
-			String locationString = (String) marker.getAttributes().get(
+			String debugPointMessage = (String) marker.getAttributes().get(
 					IMarker.LOCATION);
-			if (StringUtils.isNotEmpty(locationString)) {
-				return convertLocationToMap(locationString);
+			if (StringUtils.isNotEmpty(debugPointMessage)) {
+				return convertLocationToDebugPointMessage(debugPointMessage);
 			}
 		}
-		throw new DebugpointMarkerNotFoundException(
-				"Assoiciated IMarker value not found for ESBBreakpoint : "
+		throw new DebugPointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESB Debug Point : "
 						+ this);
 	}
 
-	private Map<String, Object> convertLocationToMap(String locationString) {
-		String[] locationArray = locationString.split(ATTRIBUTE_SEPERATOR);
-		Map<String, Object> attributeMap = new HashMap<>();
-		for (String attribute : locationArray) {
-			String[] keyValue = attribute.split(KEY_VALUE_SEPERATOR);
-			if (ESBDebuggerConstants.MEDIATOR_POSITION
-					.equalsIgnoreCase(keyValue[0])) {
-				attributeMap.put(keyValue[0],
-						convertStringToIntegerList(keyValue[1]));
-			} else if (keyValue.length == 2) {
-				attributeMap.put(keyValue[0], keyValue[1]);
+	private AbstractESBDebugPointMessage convertLocationToDebugPointMessage(
+			String locationString) {
+		JsonElement jsonElement = new JsonParser().parse(locationString);
+		Set<Entry<String, JsonElement>> entrySet = jsonElement
+				.getAsJsonObject().entrySet();
+
+		EventMessageType commandArgument = null;
+		JsonElement recievedArtifactInfo = null;
+		ArtifactType debugPointType = null;
+
+		for (Entry<String, JsonElement> entry : entrySet) {
+
+			switch (entry.getKey()) {
+			case COMMAND_ARGUMENT:
+				commandArgument = getDebugPointType(ESBDebugerUtil
+						.formatEntryValueToString(entry));
+				break;
+			case SEQUENCE:
+				recievedArtifactInfo = entry.getValue();
+				debugPointType = ArtifactType.SEQUENCE;
+				break;
+			case TEMPLATE:
+				recievedArtifactInfo = entry.getValue();
+				debugPointType = ArtifactType.TEMPLATE;
+				break;
 			}
 		}
-		return attributeMap;
+		return ESBDebugerUtil.getESBDebugPoint(debugPointType, commandArgument,
+				recievedArtifactInfo);
 	}
 
-	private List<Integer> convertStringToIntegerList(String position) {
-		String[] positionArray = position.split(POSITION_VALUE_SEPERATOR);
-		List<Integer> positionList = new ArrayList<>();
-		for (String value : positionArray) {
-			positionList.add(Integer.parseInt(value));
+	private EventMessageType getDebugPointType(String debuPointType) {
+		switch (debuPointType) {
+		case BREAKPOINT:
+			return EventMessageType.BREAKPOINT;
+		case SKIP:
+			return EventMessageType.SKIPPOINT;
+		default:
+			throw new IllegalArgumentException("Invalid Debug Point Type : "
+					+ debuPointType);
 		}
-		return positionList;
 	}
 
 	/**
 	 * Returns resource file of the marker set to breakpoint
 	 * 
 	 * @return
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 */
-	public IResource getResource() throws DebugpointMarkerNotFoundException {
+	public IResource getResource() throws DebugPointMarkerNotFoundException {
 		IMarker marker = getMarker();
 		if (marker != null) {
 			return marker.getResource();
 		}
-		throw new DebugpointMarkerNotFoundException(
-				"Assoiciated IMarker value not found for ESBBreakpoint : "
+		throw new DebugPointMarkerNotFoundException(
+				"Assoiciated IMarker value not found for ESB Debug Point : "
 						+ this);
 	}
 
 	public boolean equals(ESBDebugPoint breakpoint)
-			throws DebugpointMarkerNotFoundException, CoreException {
+			throws DebugPointMarkerNotFoundException, CoreException {
 		if (breakpoint != null) {
-			Map<String, Object> message = breakpoint.getLocation();
-			return isMatchedWithPropertiesMap(message, true);
+			AbstractESBDebugPointMessage debugPointMessage = breakpoint.getLocation();
+			return isMatchedWithDebugPoint(debugPointMessage, true);
 		}
 		return false;
 
@@ -227,14 +231,14 @@ public class ESBDebugPoint extends Breakpoint {
 	 * 
 	 * @param debugPoint
 	 * @return
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 * @throws CoreException
 	 */
 	public boolean equalsIgnoreType(ESBDebugPoint debugPoint)
-			throws DebugpointMarkerNotFoundException, CoreException {
+			throws DebugPointMarkerNotFoundException, CoreException {
 		if (debugPoint != null) {
-			Map<String, Object> message = debugPoint.getLocation();
-			return isMatchedWithPropertiesMap(message, false);
+			AbstractESBDebugPointMessage debugPointMessage = debugPoint.getLocation();
+			return isMatchedWithDebugPoint(debugPointMessage, false);
 		}
 		return false;
 
@@ -248,7 +252,7 @@ public class ESBDebugPoint extends Breakpoint {
 	public boolean equals(Object breakpoint) {
 		try {
 			return equals((ESBDebugPoint) breakpoint);
-		} catch (DebugpointMarkerNotFoundException | CoreException
+		} catch (DebugPointMarkerNotFoundException | CoreException
 				| ClassCastException e) {
 			return false;
 		}
@@ -256,31 +260,19 @@ public class ESBDebugPoint extends Breakpoint {
 
 	@Override
 	public int hashCode() {
-		int result = 17;
 		try {
-
-			Map<String, Object> breakpointMessage = getLocation();
-			Set<String> keySet = breakpointMessage.keySet();
-			for (String attribute : keySet) {
-				if (breakpointMessage.get(attribute) != null) {
-					result = 37 * result + attribute.hashCode()
-							+ breakpointMessage.get(attribute).hashCode();
-				} else {
-					result = 37 * result + attribute.hashCode();
-				}
-			}
-		} catch (DebugpointMarkerNotFoundException | CoreException e) {
+			AbstractESBDebugPointMessage debugPointMessage = getLocation();
+			return debugPointMessage.hashCode();
+		} catch (DebugPointMarkerNotFoundException | CoreException e) {
 			return 0;
 		}
-
-		return result;
 	}
 
 	/**
 	 * This method check whether breakpoint attribute values are matched with @param
 	 * message attribute values.
 	 * 
-	 * @param info
+	 * @param debugPointMessage
 	 *            should contains the attributes related to debug point as a key
 	 *            value map
 	 * @param shouldDebugPointTypeMatch
@@ -288,51 +280,20 @@ public class ESBDebugPoint extends Breakpoint {
 	 *            / if matching should only consider the mediator position not
 	 *            the type)
 	 * @return boolean
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 * @throws CoreException
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean isMatchedWithPropertiesMap(Map<String, Object> info,
+	public boolean isMatchedWithDebugPoint(
+			AbstractESBDebugPointMessage debugPointMessage,
 			boolean shouldDebugPointTypeMatch)
-			throws DebugpointMarkerNotFoundException, CoreException {
-		if (info != null) {
-			Map<String, Object> breakpointMessage = getLocation();
-			if (!isBreakpointPositionMatch(
-					((List<Integer>) info
-							.get(ESBDebuggerConstants.MEDIATOR_POSITION)),
-					((List<Integer>) breakpointMessage
-							.get(ESBDebuggerConstants.MEDIATOR_POSITION)))) {
-				return false;
-			}
-			info.put(ESBDebuggerConstants.MAPPING_URL_TYPE, info.get(ESBDebuggerConstants.URL_TEMPLATE));
-
-			Set<String> attributeKeys = new HashSet<String>();
-			attributeKeys.addAll(info.keySet());
-			attributeKeys.remove(ESBDebuggerConstants.COMMAND);
-			attributeKeys.remove(ESBDebuggerConstants.MEDIATION_COMPONENT);
-			attributeKeys.remove(ESBDebuggerConstants.EVENT);
-			attributeKeys.remove(ESBDebuggerConstants.MEDIATOR_POSITION);
-			attributeKeys.remove(ESBDebuggerConstants.URI_MAPPING);
-			attributeKeys.remove(ESBDebuggerConstants.URL_TEMPLATE);
-			if (!shouldDebugPointTypeMatch) {
-				attributeKeys.remove(ESBDebuggerConstants.COMMAND_ARGUMENT);
-			}
-			for (String key : attributeKeys) {
-				if (!((breakpointMessage.containsKey(key) && ((String) breakpointMessage
-						.get(key)).trim().equals(
-						((String) info.get(key)).trim())))) {
-					if (!(ESBDebuggerConstants.MAPPING_URL_TYPE
-							.equalsIgnoreCase(key) && breakpointMessage
-							.containsValue(info
-									.get(ESBDebuggerConstants.MAPPING_URL_TYPE)))) {
-						return false;
-					}
-
-				}
-			}
-			return true;
+			throws DebugPointMarkerNotFoundException, CoreException {
+		AbstractESBDebugPointMessage debugPointMessageOfThisDebugPoint = getLocation();
+		if (shouldDebugPointTypeMatch) {
+			return debugPointMessage.equals(debugPointMessageOfThisDebugPoint);
+		} else {
+			return debugPointMessage
+					.equalsIgnoreType(debugPointMessageOfThisDebugPoint);
 		}
-		return false;
 	}
 
 	/**
@@ -340,14 +301,13 @@ public class ESBDebugPoint extends Breakpoint {
 	 * 
 	 * @return boolean - true : if this is a breakpoint, false : if this is a
 	 *         skip point or any other type
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 * @throws CoreException
 	 */
-	public boolean isBreakpoint() throws DebugpointMarkerNotFoundException,
+	public boolean isBreakpoint() throws DebugPointMarkerNotFoundException,
 			CoreException {
-		Map<String, Object> breakpointMessage = getLocation();
-		if (ESBDebuggerConstants.BREAKPOINT.equals(breakpointMessage
-				.get(ESBDebuggerConstants.COMMAND_ARGUMENT))) {
+		AbstractESBDebugPointMessage debugPoint = getLocation();
+		if (BREAKPOINT.equals(debugPoint.getCommandArgument())) {
 			return true;
 		}
 		return false;
@@ -358,23 +318,15 @@ public class ESBDebugPoint extends Breakpoint {
 	 * 
 	 * @return boolean - true : if this is a skip point, false : if this is a
 	 *         breakpoint or any other type
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 * @throws CoreException
 	 */
-	public boolean isSkippoint() throws DebugpointMarkerNotFoundException,
+	public boolean isSkippoint() throws DebugPointMarkerNotFoundException,
 			CoreException {
-		Map<String, Object> breakpointMessage = getLocation();
-		if (ESBDebuggerConstants.SKIP.equals(breakpointMessage
-				.get(ESBDebuggerConstants.COMMAND_ARGUMENT))) {
+		AbstractESBDebugPointMessage debugPoint = getLocation();
+		if (SKIP.equals(debugPoint.getCommandArgument())) {
 			return true;
 		}
 		return false;
 	}
-
-	private boolean isBreakpointPositionMatch(
-			List<Integer> messagePositionArray,
-			List<Integer> breakpointPositionArray) {
-		return messagePositionArray.equals(breakpointPositionArray);
-	}
-
 }

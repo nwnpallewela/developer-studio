@@ -19,6 +19,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.comma
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
 public class ESBMediatorPosition {
@@ -41,6 +42,27 @@ public class ESBMediatorPosition {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.put(MEDIATOR_POSITION, position);
 		return attributeMap;
+	}
+
+	@Override
+	public boolean equals(Object mediatorPosition) {
+		if (mediatorPosition instanceof ESBMediatorPosition) {
+			if (position.equals(((ESBMediatorPosition) mediatorPosition)
+					.getPosition())) {
+				return true;
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + position.hashCode()
+				+ MEDIATOR_POSITION.hashCode();
+		return result;
 	}
 
 }

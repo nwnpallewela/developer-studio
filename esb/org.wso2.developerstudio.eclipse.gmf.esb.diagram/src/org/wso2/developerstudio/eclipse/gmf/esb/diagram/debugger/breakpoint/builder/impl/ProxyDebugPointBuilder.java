@@ -17,8 +17,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.core.resources.IResource;
@@ -29,11 +27,16 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyBean;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxySequenceBean;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceFaultContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.ProxyServiceSequenceAndEndpointContainerEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
+
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
 /**
  * This class builds ESB breakpoints related to Proxy Services.
@@ -47,45 +50,44 @@ public class ProxyDebugPointBuilder extends AbstractESBDebugPointBuilder {
 	 */
 	@Override
 	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part, String commandArguement)
+			IResource resource, AbstractMediator part, String commandArgument)
 			throws CoreException, ESBDebuggerException {
 
 		int lineNumber = -1;
 		ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
-		Map<String, Object> attributeMap = setInitialAttributes(
-				ESBDebuggerConstants.PROXY, commandArguement);
-		attributeMap.put(ESBDebuggerConstants.PROXY_KEY, proxy.getName());
 		List<Integer> position = null;
 		EObject selection = ((View) part.getModel()).getElement();
-
+		String sequenceType = "";
 		EditPart container = getContainerFromEditPart(part,
 				ProxyServiceContainerEditPart.class);
 		if (container instanceof ProxyServiceSequenceAndEndpointContainerEditPart) {
 			if (part.reversed) {
 				position = getMediatorPosition(
 						proxy.getOutSequenceOutputConnector(), selection);
-				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-						ESBDebuggerConstants.PROXY_OUTSEQ);
+				sequenceType = PROXY_OUTSEQ;
 			} else {
 				position = getMediatorPosition(proxy.getOutputConnector(),
 						selection);
-				attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-						ESBDebuggerConstants.PROXY_INSEQ);
+				sequenceType = PROXY_INSEQ;
 			}
 		} else if (container instanceof ProxyServiceFaultContainerEditPart) {
 			position = getMediatorPositionInFaultSeq(proxy.getContainer()
 					.getFaultContainer().getMediatorFlow().getChildren(),
 					selection);
-			attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-					getFaultSequenceName(proxy));
+			sequenceType = getFaultSequenceName(proxy);
 		} else {
 			throw new IllegalArgumentException(
 					"Selected Metdiator Edit Part is in a unknown position : "
 							+ container.toString());
 		}
-		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
-		return new ESBDebugPoint(resource, lineNumber, attributeMap);
+
+		ESBProxyBean proxyBean = new ESBProxyBean(proxy.getName(),
+				sequenceType, new ESBMediatorPosition(position));
+		ESBProxyDebugPointMessage proxyDebugPoint = new ESBProxyDebugPointMessage(
+				null, commandArgument, SEQUENCE, new ESBProxySequenceBean(
+						proxyBean));
+		return new ESBDebugPoint(resource, lineNumber, proxyDebugPoint);
 	}
 
 	/**
@@ -104,11 +106,9 @@ public class ProxyDebugPointBuilder extends AbstractESBDebugPointBuilder {
 		if (abstractMediator.reversed) {
 			List<Integer> position = getMediatorPosition(
 					proxy.getOutSequenceOutputConnector(), abstractMediator);
-			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
-					resource, position, ESBDebuggerConstants.PROXY_OUTSEQ,
-					action);
-			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-					.equalsIgnoreCase(action)) {
+			List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
+					resource, position, PROXY_OUTSEQ, action);
+			if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 				increaseBreakpointPosition(breakpontList);
 			} else {
 				decreaseBreakpointPosition(breakpontList);
@@ -116,11 +116,9 @@ public class ProxyDebugPointBuilder extends AbstractESBDebugPointBuilder {
 		} else {
 			List<Integer> position = getMediatorPosition(
 					proxy.getOutputConnector(), abstractMediator);
-			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
-					resource, position, ESBDebuggerConstants.PROXY_INSEQ,
-					action);
-			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-					.equalsIgnoreCase(action)) {
+			List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
+					resource, position, PROXY_INSEQ, action);
+			if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 				increaseBreakpointPosition(breakpontList);
 			} else {
 				decreaseBreakpointPosition(breakpontList);

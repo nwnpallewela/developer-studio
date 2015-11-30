@@ -72,4 +72,31 @@ public class ESBSequenceBean {
 		return attributeMap;
 	}
 
+	@Override
+	public boolean equals(Object sequenceBean) {
+		if (sequenceBean instanceof ESBSequenceBean) {
+			ESBSequenceBean seqBeanTemp = (ESBSequenceBean) sequenceBean;
+			if (!(sequenceKey.equals((seqBeanTemp).getSequenceKey())
+					&& sequenceType.equals((seqBeanTemp).getSequenceType()) && mediatorPosition
+						.equals(seqBeanTemp.getMediatorPosition()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequenceKey.hashCode()
+				+ SEQUENCE_KEY.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequenceType.hashCode()
+				+ SEQUENCE_TYPE.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediatorPosition.hashCode() + MEDIATOR_POSITION.hashCode();
+		return result;
+	}
+
 }

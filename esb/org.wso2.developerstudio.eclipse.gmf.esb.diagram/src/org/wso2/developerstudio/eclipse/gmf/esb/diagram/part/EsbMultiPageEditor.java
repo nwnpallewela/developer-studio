@@ -105,7 +105,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Dese
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.MediatorFactoryUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.utils.UpdateGMFPlugin;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
@@ -633,7 +633,7 @@ public class EsbMultiPageEditor extends MultiPageEditorPart implements
 								}
 							} catch (CoreException e) {
 								log.error(e.getMessage(), e);
-							} catch (DebugpointMarkerNotFoundException e) {
+							} catch (DebugPointMarkerNotFoundException e) {
 								log.error(e.getMessage(), e);
 							}
 						}

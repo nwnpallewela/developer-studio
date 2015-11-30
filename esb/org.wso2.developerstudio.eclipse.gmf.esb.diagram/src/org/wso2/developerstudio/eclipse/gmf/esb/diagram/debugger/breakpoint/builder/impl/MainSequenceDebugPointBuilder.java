@@ -15,8 +15,12 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MAIN;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MAIN_SEQUENCE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATOR_INSERT_ACTION;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.NAMED;
+
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -26,7 +30,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceBean;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
 /**
@@ -44,19 +50,13 @@ public class MainSequenceDebugPointBuilder extends AbstractESBDebugPointBuilder 
 	 */
 	@Override
 	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part, String commandArguement)
+			IResource resource, AbstractMediator part, String commandArgument)
 			throws CoreException, MediatorNotFoundException {
 
 		int lineNumber = -1;
 		ProxyServiceImpl mainSequence = (ProxyServiceImpl) esbServer
 				.eContents().get(INDEX_OF_FIRST_ELEMENT);
 
-		Map<String, Object> attributeMap = setInitialAttributes(
-				ESBDebuggerConstants.MAIN_SEQUENCE, commandArguement);
-		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-				ESBDebuggerConstants.NAMED);
-		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY,
-				ESBDebuggerConstants.MAIN);
 		int listSeqPosition;
 		List<Integer> position = null;
 		EObject selection = ((View) part.getModel()).getElement();
@@ -70,8 +70,11 @@ public class MainSequenceDebugPointBuilder extends AbstractESBDebugPointBuilder 
 					selection);
 		}
 		position.add(INDEX_OF_FIRST_ELEMENT, listSeqPosition);
-		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
-		return new ESBDebugPoint(resource, lineNumber, attributeMap);
+		ESBSequenceBean mainSequenceBean = new ESBSequenceBean(NAMED, MAIN,
+				new ESBMediatorPosition(position));
+		ESBSequenceDebugPointMessage mainSeqDebugPoint = new ESBSequenceDebugPointMessage(
+				null, commandArgument, MAIN_SEQUENCE, mainSequenceBean);
+		return new ESBDebugPoint(resource, lineNumber, mainSeqDebugPoint);
 	}
 
 	/**
@@ -94,10 +97,9 @@ public class MainSequenceDebugPointBuilder extends AbstractESBDebugPointBuilder 
 			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutSequenceOutputConnector(),
 					abstractMediator);
-			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
 					resource, position, listSequenceNumber, action);
-			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-					.equalsIgnoreCase(action)) {
+			if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 				increaseBreakpointPosition(breakpontList);
 			} else {
 				decreaseBreakpointPosition(breakpontList);
@@ -106,10 +108,9 @@ public class MainSequenceDebugPointBuilder extends AbstractESBDebugPointBuilder 
 			listSequenceNumber = EMPTY_STRING + IN_SEQ_POSITION;
 			List<Integer> position = getMediatorPosition(
 					mainSequence.getOutputConnector(), abstractMediator);
-			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
 					resource, position, listSequenceNumber, action);
-			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-					.equalsIgnoreCase(action)) {
+			if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 				increaseBreakpointPosition(breakpontList);
 			} else {
 				decreaseBreakpointPosition(breakpontList);

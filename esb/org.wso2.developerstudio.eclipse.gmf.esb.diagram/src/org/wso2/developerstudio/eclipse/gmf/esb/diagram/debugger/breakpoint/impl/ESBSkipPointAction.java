@@ -13,7 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.configure.ConfigureEsbNodeAction;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
@@ -92,7 +92,7 @@ public class ESBSkipPointAction extends ConfigureEsbNodeAction {
 							ESBDebuggerConstants.SKIP);
 				} catch (CoreException e) {
 					log.error("Error while registering the breakpoint", e);
-				} catch (DebugpointMarkerNotFoundException e) {
+				} catch (DebugPointMarkerNotFoundException e) {
 					log.error(e.getMessage(), e);
 				} catch (ESBDebuggerException e) {
 					log.error(e.getMessage(), e);

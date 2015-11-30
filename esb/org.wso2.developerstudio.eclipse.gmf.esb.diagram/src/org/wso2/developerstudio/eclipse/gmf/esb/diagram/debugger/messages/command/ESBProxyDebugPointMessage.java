@@ -16,13 +16,19 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
-import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.COMMAND_ARGUMENT;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.HASHCODE_MULTIPLIER_VALUE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.INITIAL_HASHCODE_RESULT_VALUE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATION_COMPONENT;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATOR_POSITION;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.PROXY_KEY;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.SEQUENCE;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.SEQUENCE_TYPE;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest.DebugPointEventAction;
@@ -35,7 +41,7 @@ import com.google.gson.JsonElement;
  * artifacts debug point message from ESB Server Debugger
  *
  */
-public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
+public class ESBProxyDebugPointMessage extends AbstractESBDebugPointMessage {
 
 	private ESBProxySequenceBean sequence;
 
@@ -47,7 +53,7 @@ public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
 
 	public ESBProxyDebugPointMessage(DebugPointEventAction action,
 			Map<String, Object> attributeSet) {
-		super(action.toString(), null, ESBDebuggerConstants.SEQUENCE);
+		super(action.toString(), null, SEQUENCE);
 		setCommandArgument((String) attributeSet
 				.get(ESBDebuggerConstants.COMMAND_ARGUMENT));
 		String proxyKey = (String) attributeSet
@@ -67,7 +73,7 @@ public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
 
 	public ESBProxyDebugPointMessage(EventMessageType event,
 			JsonElement recievedArtifactInfo) {
-		super(null, null, PROXY);
+		super(null, null, SEQUENCE);
 		setCommandArgument(event.toString());
 		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
 				.getAsJsonObject().entrySet();
@@ -96,7 +102,7 @@ public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
 		sequence = new ESBProxySequenceBean(proxy);
 	}
 
-	public ESBProxySequenceBean getSeqeunce() {
+	public ESBProxySequenceBean getSequence() {
 		return sequence;
 	}
 
@@ -104,11 +110,59 @@ public class ESBProxyDebugPointMessage extends ESBDebugPointMessage {
 		this.sequence = seqeunce;
 	}
 
-	public Map<String, Object> deserializeToMap() {
-		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.putAll(super.deserializeToMap());
-		attributeMap.putAll(sequence.deserializeToMap());
-		return attributeMap;
+	public boolean equalsIgnoreType(ESBProxyDebugPointMessage debugPointMessage) {
+		if (mediationComponent
+				.equals(debugPointMessage.getMediationComponent())
+				&& sequence.equals(debugPointMessage.getSequence())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object debugPointMessage) {
+		if (debugPointMessage instanceof ESBProxyDebugPointMessage) {
+			ESBProxyDebugPointMessage debugPointMessageTemp = (ESBProxyDebugPointMessage) debugPointMessage;
+			if (!(mediationComponent.equals((debugPointMessageTemp)
+					.getMediationComponent())
+					&& commandArgument.equals((debugPointMessageTemp)
+							.getCommandArgument()) && sequence
+						.equals(debugPointMessageTemp.getSequence()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediationComponent.hashCode()
+				+ MEDIATION_COMPONENT.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ commandArgument.hashCode() + COMMAND_ARGUMENT.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequence.hashCode()
+				+ SEQUENCE.hashCode();
+		return result;
+	}
+
+	@Override
+	public ESBMediatorPosition getMediatorPosition() {
+		return sequence.getProxy().getMediatorPosition();
+	}
+
+	@Override
+	public void setMediatorPosition(List<Integer> positionList) {
+		sequence.getProxy().setMediatorPosition(
+				new ESBMediatorPosition(positionList));
+	}
+
+	@Override
+	public String getSequenceType() {
+		return sequence.getProxy().getSequenceType();
 	}
 
 }

@@ -72,4 +72,31 @@ public class ESBProxyBean {
 		return attributeMap;
 	}
 
+	@Override
+	public boolean equals(Object proxyBean) {
+		if (proxyBean instanceof ESBProxyBean) {
+			ESBProxyBean apiBeanTemp = (ESBProxyBean) proxyBean;
+			if (!(proxyKey.equals((apiBeanTemp).getProxyKey())
+					&& sequenceType.equals((apiBeanTemp).getSequenceType()) && mediatorPosition
+						.equals(apiBeanTemp.getMediatorPosition()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + proxyKey.hashCode()
+				+ PROXY_KEY.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequenceType.hashCode()
+				+ SEQUENCE_TYPE.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediatorPosition.hashCode() + MEDIATOR_POSITION.hashCode();
+		return result;
+	}
+
 }

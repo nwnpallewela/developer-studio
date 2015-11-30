@@ -36,7 +36,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.SingleCompartment
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.AbstractEsbNodeDeserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.deserializer.Deserializer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.mediator.locator.IMediatorLocator;
@@ -210,13 +210,13 @@ public class OpenEditorUtil {
 	 * @param multipageEitor
 	 * @throws MediatorNotFoundException
 	 * @throws MissingAttributeException
-	 * @throws DebugpointMarkerNotFoundException
+	 * @throws DebugPointMarkerNotFoundException
 	 * @throws CoreException
 	 */
 	private static void drawSuspendedBreakpointMark(
 			final ESBDebugPoint breakpoint, EsbMultiPageEditor multipageEitor)
 			throws MediatorNotFoundException, MissingAttributeException,
-			DebugpointMarkerNotFoundException, CoreException {
+			DebugPointMarkerNotFoundException, CoreException {
 
 		Diagram diagram = multipageEitor.getDiagram();
 		EsbDiagram esbDiagram = (EsbDiagram) diagram.getElement();

@@ -27,9 +27,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
 import org.wso2.developerstudio.eclipse.gmf.esb.ApiResourceUrlStyle;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SynapseAPIImpl;
@@ -41,92 +43,73 @@ public class APIMediatorLocator extends AbstractMediatorLocator {
 	 * 
 	 * @throws MediatorNotFoundException
 	 * @throws MissingAttributeException
-	 * @throws CoreException 
-	 * @throws DebugpointMarkerNotFoundException 
+	 * @throws CoreException
+	 * @throws DebugPointMarkerNotFoundException
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
 			ESBDebugPoint breakpoint) throws MediatorNotFoundException,
-			MissingAttributeException, DebugpointMarkerNotFoundException, CoreException {
+			MissingAttributeException, DebugPointMarkerNotFoundException,
+			CoreException {
 		EditPart editPart = null;
-		Map<String,Object> info = breakpoint.getLocation();
-		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
-				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
+		ESBAPIDebugPointMessage debugPointMessage = (ESBAPIDebugPointMessage) breakpoint
+				.getLocation();
+		List<Integer> positionArray = debugPointMessage.getSequence().getApi()
+				.getMediatorPosition().getPosition();
+		String sequenceType = debugPointMessage.getSequence().getApi()
+				.getSequenceType();
+		SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
+				INDEX_OF_FIRST_ELEMENT);
+		APIResource apiResource = getMatchingAPIResource(api, debugPointMessage);
+		if (sequenceType == null
+				|| sequenceType.equals(getFaultSequenceName(apiResource))) {
+			editPart = getMediatorInFaultSeq(apiResource.getContainer()
+					.getFaultContainer().getMediatorFlow().getChildren(),
+					positionArray);
+		} else if (sequenceType.equals(ESBDebuggerConstants.API_INSEQ)) {
 
-			@SuppressWarnings("unchecked")
-			List<Integer> positionArray = (List<Integer>) info
-					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-			String sequenceType = (String) info
-					.get(ESBDebuggerConstants.SEQUENCE_TYPE);
-			SynapseAPIImpl api = (SynapseAPIImpl) esbServer.eContents().get(
-					INDEX_OF_FIRST_ELEMENT);
-			APIResource apiResource = getMatchingAPIResource(api, info);
-			if (sequenceType == null
-					|| sequenceType.equals(getFaultSequenceName(apiResource))) {
-				editPart = getMediatorInFaultSeq(apiResource.getContainer()
-						.getFaultContainer().getMediatorFlow().getChildren(),
-						positionArray);
-			} else if (sequenceType.equals(ESBDebuggerConstants.API_INSEQ)) {
+			editPart = getMediatorFromMediationFlow(
+					apiResource.getOutputConnector(), positionArray);
 
-				editPart = getMediatorFromMediationFlow(
-						apiResource.getOutputConnector(), positionArray);
+		} else if (sequenceType.equals(ESBDebuggerConstants.API_OUTSEQ)) {
 
-			} else if (sequenceType.equals(ESBDebuggerConstants.API_OUTSEQ)) {
-
-				editPart = getMediatorFromMediationFlow(
-						apiResource.getOutSequenceOutputConnector(),
-						positionArray);
-			}
-		} else {
-			throw new MissingAttributeException(
-					"Breakpoint Attribute list missing reqired attributes");
+			editPart = getMediatorFromMediationFlow(
+					apiResource.getOutSequenceOutputConnector(), positionArray);
 		}
 		return editPart;
 	}
 
 	private APIResource getMatchingAPIResource(SynapseAPIImpl api,
-			Map<String, Object> info) {
+			ESBAPIDebugPointMessage debugPointMessage)
+			throws MediatorNotFoundException {
 		EList<APIResource> apiResources = api.getResources();
 		for (APIResource apiResource : apiResources) {
 			String urlValue = "";
-			String urlStyle = "";
-			switch (apiResource.getUrlStyle().getValue()) {
-			case ApiResourceUrlStyle.URI_TEMPLATE_VALUE:
-				urlValue = apiResource.getUriTemplate();
-				urlStyle = ESBDebuggerConstants.URL_TEMPLATE;
-				break;
-			case ApiResourceUrlStyle.URL_MAPPING_VALUE:
-				urlValue = apiResource.getUrlMapping();
-				urlStyle = ESBDebuggerConstants.URI_MAPPING;
-				break;
-			default:
-				break;
-			}
-			if (isMethodEqual(apiResource,
-					((String) info.get(ESBDebuggerConstants.METHOD)))) {
-				if ((info.containsKey(urlStyle) && urlValue.equals(info
-						.get(urlStyle)))
-						|| (StringUtils.isEmpty(urlStyle) && !(info
-								.containsKey(ESBDebuggerConstants.URI_MAPPING) || info
-								.containsKey(ESBDebuggerConstants.URL_TEMPLATE)))
-						|| isMappingEqualWithBreakpointEvent(info, urlStyle,
-								urlValue)) {
+			String urlValueOfMessage = "";
+			if (isMethodEqual(apiResource, debugPointMessage.getSequence()
+					.getApi().getResourse().getMethod())) {
+				switch (apiResource.getUrlStyle().getValue()) {
+				case ApiResourceUrlStyle.URI_TEMPLATE_VALUE:
+					urlValue = apiResource.getUriTemplate();
+					urlValueOfMessage = debugPointMessage.getSequence()
+							.getApi().getResourse().getUriTemplate();
+					break;
+				case ApiResourceUrlStyle.URL_MAPPING_VALUE:
+					urlValue = apiResource.getUrlMapping();
+					urlValueOfMessage = debugPointMessage.getSequence()
+							.getApi().getResourse().getUrlMapping();
+					break;
+				default:
+					break;
+				}
+				if (urlValueOfMessage != null
+						&& urlValueOfMessage.endsWith(urlValue)) {
 					return apiResource;
 				}
 			}
 		}
-		return null;
-	}
-
-	private boolean isMappingEqualWithBreakpointEvent(Map<String, Object> info,
-			String urlStyle, String urlValue) {
-		if (info.containsKey(ESBDebuggerConstants.MAPPING_URL_TYPE) && (urlValue
-				.equals(info.get(ESBDebuggerConstants.MAPPING_URL_TYPE)) || (StringUtils
-				.isEmpty(urlStyle) && !(info
-				.containsKey(ESBDebuggerConstants.MAPPING_URL_TYPE))))) {
-			return true;
-		}
-		return false;
+		throw new MediatorNotFoundException(
+				"Matching API Resource not found for the specific location of mediator: ");
 	}
 
 	private boolean isMethodEqual(APIResource apiResource, String methodValue) {

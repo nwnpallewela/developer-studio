@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@link ESBAPIResourceBean} holds attributes which identifies API Resource with in API
- * artifact uniquely and defined in ESB Mediation Debugger communication API's
+ * {@link ESBAPIResourceBean} holds attributes which identifies API Resource
+ * with in API artifact uniquely and defined in ESB Mediation Debugger
+ * communication API's
  *
  */
 public class ESBAPIResourceBean {
@@ -48,11 +49,11 @@ public class ESBAPIResourceBean {
 		this.method = method;
 	}
 
-	public String getUriMapping() {
+	public String getUrlMapping() {
 		return urlMapping;
 	}
 
-	public void setUriMapping(String uriMapping) {
+	public void setUrlMapping(String uriMapping) {
 		this.urlMapping = uriMapping;
 	}
 
@@ -67,9 +68,30 @@ public class ESBAPIResourceBean {
 	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.put(METHOD, method);
-		attributeMap.put(URI_MAPPING, urlMapping);
-		attributeMap.put(URL_TEMPLATE, uriTemplate);
+		attributeMap.put(URL_MAPPING, urlMapping);
+		attributeMap.put(URI_TEMPLATE, uriTemplate);
 		return attributeMap;
+	}
+
+	@Override
+	public boolean equals(Object apiBean) {
+		if (apiBean instanceof ESBAPIResourceBean) {
+			ESBAPIResourceBean apiBeanTemp = (ESBAPIResourceBean) apiBean;
+			if (!(method.equals((apiBeanTemp).getMethod()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + method.hashCode()
+				+ METHOD.hashCode();
+		return result;
 	}
 
 }

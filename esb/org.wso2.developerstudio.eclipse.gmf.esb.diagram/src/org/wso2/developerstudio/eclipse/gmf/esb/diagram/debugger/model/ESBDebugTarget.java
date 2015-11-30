@@ -43,9 +43,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Suspende
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.TerminatedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.PropertyRecievedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.DebugPointRequest.DebugPointEventAction;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.requests.FetchVariablesRequest;
@@ -103,7 +103,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 				resume();
 
-			} else if (event instanceof SuspendedEvent) { //this get called when ESB came to a breakpoint
+			} else if (event instanceof SuspendedEvent) { // this get called
+															// when ESB came to
+															// a breakpoint
 				setState(ESBDebuggerState.SUSPENDED);
 				fireSuspendEvent(0);
 				getThreads()[0].fireSuspendEvent(DebugEvent.BREAKPOINT);
@@ -172,7 +174,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 	private void showDiagram(SuspendedEvent event) throws ESBDebuggerException,
 			CoreException {
 
-		ESBDebugPointMessage info = event.getDetail();
+		AbstractESBDebugPointMessage info = event.getDetail();
 		ESBDebugPoint breakpoint = getMatchingBreakpoint(info);
 		IFile file = (IFile) breakpoint.getResource();
 		deletePreviousSuspendPointsFromBreakpointManager();
@@ -198,18 +200,18 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 		}
 	}
 
-	private ESBDebugPoint getMatchingBreakpoint(ESBDebugPointMessage info)
+	private ESBDebugPoint getMatchingBreakpoint(AbstractESBDebugPointMessage info)
 			throws ESBDebuggerException {
 
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault()
 				.getBreakpointManager().getBreakpoints(getModelIdentifier());
 		for (IBreakpoint breakpoint : breakpoints) {
 			try {
-				if (((ESBDebugPoint) breakpoint).isMatchedWithPropertiesMap(
-						info.deserializeToMap(), true)) {
+				if (((ESBDebugPoint) breakpoint).isMatchedWithDebugPoint(info,
+						true)) {
 					return (ESBDebugPoint) breakpoint;
 				}
-			} catch (CoreException | DebugpointMarkerNotFoundException e) {
+			} catch (CoreException | DebugPointMarkerNotFoundException e) {
 				log.warn(e.getMessage(), e);
 			}
 		}
@@ -241,7 +243,7 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 
 	@Override
 	public String getName() {
-		return "ESB DebugTarget";//TODO externalize
+		return "ESB DebugTarget";// TODO externalize
 	}
 
 	@Override
@@ -277,9 +279,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 				fireModelEvent(new DebugPointRequest(
 						(ESBDebugPoint) breakpoint, DebugPointEventAction.ADDED));
 			}
-		} catch (DebugpointMarkerNotFoundException e) {
+		} catch (DebugPointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
-			ESBDebugerUtil.removeESBDebugpointFromBreakpointManager(breakpoint);
+			ESBDebugerUtil.removeESBDebugPointFromBreakpointManager(breakpoint);
 		} catch (CoreException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -302,9 +304,9 @@ public class ESBDebugTarget extends ESBDebugElement implements IDebugTarget,
 						(ESBDebugPoint) breakpoint,
 						DebugPointEventAction.REMOVED));
 			}
-		} catch (DebugpointMarkerNotFoundException e) {
+		} catch (DebugPointMarkerNotFoundException e) {
 			log.error(e.getMessage(), e);
-			ESBDebugerUtil.removeESBDebugpointFromBreakpointManager(breakpoint);
+			ESBDebugerUtil.removeESBDebugPointFromBreakpointManager(breakpoint);
 		} catch (CoreException e) {
 			log.error(e.getMessage(), e);
 		}

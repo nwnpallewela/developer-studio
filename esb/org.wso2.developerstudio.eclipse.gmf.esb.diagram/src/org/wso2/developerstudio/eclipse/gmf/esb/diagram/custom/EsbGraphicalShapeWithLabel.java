@@ -27,6 +27,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.RoundedRectangleBorder;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -44,29 +45,28 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	private WrappingLabel propertyNameLabel;
 	protected RoundedRectangle mainImageRectangle;
 	static int Figure_PreferredWidth = FixedSizedAbstractMediator.FigureWidth;
-	static int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20; //Additional 20 to show the editable label
+	static int Figure_PreferredHeight = FixedSizedAbstractMediator.FigureHeight + 20;
 	static int Image_PreferredWidth = 75;
 	static int Image_PreferredHeight = 42;
-	static int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2; //equals to 10
+	static int marginWidth = (Figure_PreferredWidth - Image_PreferredWidth) / 2;
 	static int marginHeight = 10;
-	protected LayeredPane pane; 
+	protected LayeredPane pane;
 	protected Layer figureLayer;
 	protected Layer breakpointLayer;
 	protected Layer skippointLayer;
 	protected String toolTipMessage;
-	
-	public void setToolTipMessage(String message){
+
+	public void setToolTipMessage(String message) {
 		toolTipMessage = message;
 	}
-	
+
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
-	
 
 	public EsbGraphicalShapeWithLabel() {
 		initializeShape();
 	}
-	
-	private void initializeShape(){
+
+	private void initializeShape() {
 		pane = new LayeredPane();
 		pane.setLayoutManager(new StackLayout());
 		GridLayout layoutThis = new GridLayout();
@@ -84,14 +84,13 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		RoundedRectangleBorder border = new RoundedRectangleBorder(8, 8);
 		border.setColor(EditPartDrawingHelper.FigureNormalColor);
 		border.setWidth(0);
-        this.setBorder(border);
-        
-        
+		this.setBorder(border);
+
 		createContents();
 		pane.add(figureLayer);
 		this.add(pane);
 	}
-	
+
 	public void addBreakpointMark() {
 		if (pane != null) {
 			breakpointLayer = new Layer();
@@ -104,10 +103,10 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 					.getIconImageFigure(
 							"icons/ico20debug/toggle_breakpoint_red.gif", 16,
 							16);
-//			ImageFigure iconImageFigure = EditPartDrawingHelper
-//					.getIconImageFigure(
-//							"icons/ico20debug/breakpoint_16.gif", 10,
-//							10);
+			// ImageFigure iconImageFigure = EditPartDrawingHelper
+			// .getIconImageFigure(
+			// "icons/ico20debug/breakpoint_16.gif", 10,
+			// 10);
 
 			RoundedRectangle breakpointImageRectangle = new RoundedRectangle();
 			breakpointImageRectangle.setCornerDimensions(new Dimension(2, 2));
@@ -119,13 +118,13 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 					- mainImageRectangle.getSize().width / 2 + 3), 3);
 			breakpointLayer.add(breakpointImageRectangle,
 					constraintBreakpointImageRectangle);
-			/*try {
-			//	this.remove(pane);
-			} catch (NullPointerException e) {
-				log.error("Mediator icon figure does not have a layer pane", e);
-			}*/
+			/*
+			 * try { // this.remove(pane); } catch (NullPointerException e) {
+			 * log.error("Mediator icon figure does not have a layer pane", e);
+			 * }
+			 */
 			pane.add(breakpointLayer);
-			//this.add(pane);
+			// this.add(pane);
 		} else {
 			log.warn("Mediator Figure layers misplaced");
 			initializeShape();
@@ -134,12 +133,13 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 	}
 
 	public void removeBreakpointMark() {
-		if(breakpointLayer!=null){
+		if (breakpointLayer != null) {
 			pane.remove(breakpointLayer);
+			breakpointLayer = null;
 		}
 
 	}
-	
+
 	public void addSkippointMark() {
 		if (pane != null) {
 			skippointLayer = new Layer();
@@ -150,50 +150,50 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 			constraintBreakpointImageRectangle.verticalSpan = 1;
 			ImageFigure iconImageFigure = EditPartDrawingHelper
 					.getIconImageFigure(
-							"icons/ico20debug/greyImagealphamask.gif", this.getBounds().width,
-							this.getBounds().height);
+							"icons/ico20debug/greyImagealphamask.gif",
+							this.getBounds().width, this.getBounds().height);
 			RoundedRectangle skipPointImageRectangle = new RoundedRectangle();
 			skipPointImageRectangle.setCornerDimensions(new Dimension(2, 2));
 			skipPointImageRectangle.setOutline(false);
 			skipPointImageRectangle.setPreferredSize(new Dimension(10, 10));
 			skipPointImageRectangle.setAlpha(0);
 			skipPointImageRectangle.add(iconImageFigure);
-			
+
 			skippointLayer.add(skipPointImageRectangle,
 					constraintBreakpointImageRectangle);
-			/*try {
-			//	this.remove(pane);
-			} catch (NullPointerException e) {
-				log.error("Mediator icon figure does not have a layer pane", e);
-			}*/
+			/*
+			 * try { // this.remove(pane); } catch (NullPointerException e) {
+			 * log.error("Mediator icon figure does not have a layer pane", e);
+			 * }
+			 */
 			pane.add(skippointLayer);
-			//this.add(pane);
+			// this.add(pane);
 		} else {
 			log.warn("Mediator Figure layers misplaced");
 			initializeShape();
 			addSkippointMark();
 		}
 	}
-	
+
 	public void removeSkippointMark() {
-		if(skippointLayer!=null){
+		if (skippointLayer != null) {
 			pane.remove(skippointLayer);
+			skippointLayer = null;
 		}
 
 	}
-	
 
 	private void createContents() {
 
 		/* main image grid data */
-		figureLayer=new Layer();
+		figureLayer = new Layer();
 		figureLayer.setLayoutManager(new GridLayout());
 		GridData constraintMainImageRectangle = new GridData();
 		constraintMainImageRectangle.verticalAlignment = GridData.BEGINNING;
 		constraintMainImageRectangle.horizontalAlignment = GridData.CENTER;
 		constraintMainImageRectangle.verticalSpan = 1;
-		ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure(getIconPath(),
-				Image_PreferredWidth, Image_PreferredHeight);
+		ImageFigure iconImageFigure = EditPartDrawingHelper.getIconImageFigure(
+				getIconPath(), Image_PreferredWidth, Image_PreferredHeight);
 
 		mainImageRectangle = new RoundedRectangle();
 		mainImageRectangle.setCornerDimensions(new Dimension(8, 8));
@@ -206,7 +206,7 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		RoundedRectangle propertyValueRectangle1 = new RoundedRectangle();
 		propertyValueRectangle1.setCornerDimensions(new Dimension(0, 0));
 		propertyValueRectangle1.setOutline(false);
-	
+
 		GridData constraintPropertyValueRectangle = new GridData();
 		constraintPropertyValueRectangle.verticalAlignment = GridData.BEGINNING;
 		constraintPropertyValueRectangle.horizontalAlignment = GridData.FILL;
@@ -215,21 +215,24 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		constraintPropertyValueRectangle.verticalSpan = 1;
 		constraintPropertyValueRectangle.grabExcessHorizontalSpace = true;
 		constraintPropertyValueRectangle.grabExcessVerticalSpace = true;
-		
+
 		propertyValueRectangle1.setLayoutManager(new StackLayout());
 
 		// Label to display description.
 		propertyNameLabel = new WrappingLabel();
 		propertyNameLabel.setText(getNodeName());
 		propertyNameLabel.setForegroundColor(new Color(null, 46, 46, 46));
-		propertyNameLabel.setFont(new Font(null, new FontData("Courier", 8, SWT.NONE)));
+		propertyNameLabel.setFont(new Font(null, new FontData("Courier", 8,
+				SWT.NONE)));
 		propertyNameLabel.setAlignment(SWT.CENTER);
-		propertyNameLabel.setPreferredSize(new Dimension(FixedSizedAbstractMediator.maxFigureWidth, 20));
-		
+		propertyNameLabel.setPreferredSize(new Dimension(
+				FixedSizedAbstractMediator.maxFigureWidth, 20));
+
 		propertyValueRectangle1.add(propertyNameLabel);
-		figureLayer.add(propertyValueRectangle1, constraintPropertyValueRectangle);
-		tempPropertyValueRectangle1=propertyValueRectangle1;
-		tempConstraintPropertyValueRectangle=constraintPropertyValueRectangle;
+		figureLayer.add(propertyValueRectangle1,
+				constraintPropertyValueRectangle);
+		tempPropertyValueRectangle1 = propertyValueRectangle1;
+		tempConstraintPropertyValueRectangle = constraintPropertyValueRectangle;
 	}
 
 	protected WrappingLabel getPropertyNameLabel() {
@@ -248,5 +251,4 @@ public class EsbGraphicalShapeWithLabel extends RoundedRectangle {
 		return this.getBackgroundColor();
 	}
 
-	
 }

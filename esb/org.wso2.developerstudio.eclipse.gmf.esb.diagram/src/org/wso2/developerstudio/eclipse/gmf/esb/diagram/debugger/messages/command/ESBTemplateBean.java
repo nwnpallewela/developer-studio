@@ -28,22 +28,22 @@ import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ES
  */
 public class ESBTemplateBean {
 
-	private String sequenceKey;
+	private String templateKey;
 	private ESBMediatorPosition mediatorPosition;
 
 	public ESBTemplateBean(String sequenceKey,
 			ESBMediatorPosition mediatorPosition) {
 		super();
-		this.sequenceKey = sequenceKey;
+		this.templateKey = sequenceKey;
 		this.mediatorPosition = mediatorPosition;
 	}
 
-	public String getSequenceKey() {
-		return sequenceKey;
+	public String getTemplateKey() {
+		return templateKey;
 	}
 
-	public void setSequenceKey(String sequenceKey) {
-		this.sequenceKey = sequenceKey;
+	public void setTemplateKey(String sequenceKey) {
+		this.templateKey = sequenceKey;
 	}
 
 	public ESBMediatorPosition getMediatorPosition() {
@@ -54,11 +54,35 @@ public class ESBTemplateBean {
 		this.mediatorPosition = mediatorPosition;
 	}
 
-	public Map<String,Object> deserializeToMap() {
+	public Map<String, Object> deserializeToMap() {
 		Map<String, Object> attributeMap = new HashMap<>();
-		attributeMap.put(SEQUENCE_KEY, sequenceKey);
+		attributeMap.put(TEMPLATE_KEY, templateKey);
 		attributeMap.putAll(mediatorPosition.deserializeToMap());
 		return attributeMap;
+	}
+
+	@Override
+	public boolean equals(Object templateBean) {
+		if (templateBean instanceof ESBTemplateBean) {
+			ESBTemplateBean templateBeanTemp = (ESBTemplateBean) templateBean;
+			if (!(templateKey.equals((templateBeanTemp).getTemplateKey()) && mediatorPosition
+					.equals(templateBeanTemp.getMediatorPosition()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + templateKey.hashCode()
+				+ TEMPLATE_KEY.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediatorPosition.hashCode() + MEDIATOR_POSITION.hashCode();
+		return result;
 	}
 
 }

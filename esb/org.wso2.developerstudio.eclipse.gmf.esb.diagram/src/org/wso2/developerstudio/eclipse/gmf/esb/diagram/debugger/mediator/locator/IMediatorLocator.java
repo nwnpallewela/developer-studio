@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
 
@@ -42,9 +42,9 @@ public interface IMediatorLocator {
 	 * @throws MediatorNotFoundException
 	 * @throws MissingAttributeException
 	 * @throws CoreException 
-	 * @throws DebugpointMarkerNotFoundException 
+	 * @throws DebugPointMarkerNotFoundException 
 	 */
 	EditPart getMediatorEditPart(EsbServer esbServer, ESBDebugPoint breakpoint)
-			throws MediatorNotFoundException, MissingAttributeException, DebugpointMarkerNotFoundException, CoreException;
+			throws MediatorNotFoundException, MissingAttributeException, DebugPointMarkerNotFoundException, CoreException;
 
 }

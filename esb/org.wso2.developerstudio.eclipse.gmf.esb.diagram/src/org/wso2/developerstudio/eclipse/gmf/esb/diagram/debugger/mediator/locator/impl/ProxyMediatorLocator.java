@@ -23,9 +23,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.EditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MissingAttributeException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.ProxyServiceImpl;
 
@@ -41,43 +43,37 @@ public class ProxyMediatorLocator extends AbstractMediatorLocator {
 	 * 
 	 * @throws MediatorNotFoundException
 	 * @throws MissingAttributeException
-	 * @throws CoreException 
-	 * @throws DebugpointMarkerNotFoundException 
+	 * @throws CoreException
+	 * @throws DebugPointMarkerNotFoundException
 	 */
 	@Override
 	public EditPart getMediatorEditPart(EsbServer esbServer,
-			ESBDebugPoint breakpoint) throws MediatorNotFoundException,
-			MissingAttributeException, DebugpointMarkerNotFoundException, CoreException {
+			ESBDebugPoint debugPoint) throws MediatorNotFoundException,
+			MissingAttributeException, DebugPointMarkerNotFoundException,
+			CoreException {
 		EditPart editPart = null;
-		
-		Map<String,Object> info = breakpoint.getLocation();
-		if (info.containsKey(ESBDebuggerConstants.MEDIATOR_POSITION)
-				&& info.containsKey(ESBDebuggerConstants.SEQUENCE_TYPE)) {
-			@SuppressWarnings("unchecked")
-			List<Integer> positionArray = (List<Integer>) info
-					.get(ESBDebuggerConstants.MEDIATOR_POSITION);
-			String sequenceType = (String) info
-					.get(ESBDebuggerConstants.SEQUENCE_TYPE);
-			ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents()
-					.get(INDEX_OF_FIRST_ELEMENT);
-			if (sequenceType == null
-					|| sequenceType.equals(getFaultSequenceName(proxy))) {
-				editPart = getMediatorInFaultSeq(proxy.getContainer()
-						.getFaultContainer().getMediatorFlow().getChildren(),
-						positionArray);
-			} else if (sequenceType.equals(ESBDebuggerConstants.PROXY_INSEQ)) {
 
-				editPart = getMediatorFromMediationFlow(
-						proxy.getOutputConnector(), positionArray);
+		ESBProxyDebugPointMessage debugPointMessage = (ESBProxyDebugPointMessage) debugPoint
+				.getLocation();
+		List<Integer> positionArray = debugPointMessage.getSequence().getProxy()
+				.getMediatorPosition().getPosition();
+		String sequenceType = debugPointMessage.getSequence().getProxy().getSequenceType();
+		ProxyServiceImpl proxy = (ProxyServiceImpl) esbServer.eContents().get(
+				INDEX_OF_FIRST_ELEMENT);
+		if (sequenceType == null
+				|| sequenceType.equals(getFaultSequenceName(proxy))) {
+			editPart = getMediatorInFaultSeq(proxy.getContainer()
+					.getFaultContainer().getMediatorFlow().getChildren(),
+					positionArray);
+		} else if (sequenceType.equals(ESBDebuggerConstants.PROXY_INSEQ)) {
 
-			} else if (sequenceType.equals(ESBDebuggerConstants.PROXY_OUTSEQ)) {
+			editPart = getMediatorFromMediationFlow(proxy.getOutputConnector(),
+					positionArray);
 
-				editPart = getMediatorFromMediationFlow(
-						proxy.getOutSequenceOutputConnector(), positionArray);
-			}
-		} else {
-			throw new MissingAttributeException(
-					"Breakpoint Attribute list missing reqired attributes");
+		} else if (sequenceType.equals(ESBDebuggerConstants.PROXY_OUTSEQ)) {
+
+			editPart = getMediatorFromMediationFlow(
+					proxy.getOutSequenceOutputConnector(), positionArray);
 		}
 		return editPart;
 	}

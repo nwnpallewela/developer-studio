@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPointMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
@@ -35,10 +35,11 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.GeneralEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.SpecialCordinationEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.SpecialCoordinationEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.CommandResponseMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.PropertyRespondMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
 
 import com.google.gson.Gson;
@@ -47,10 +48,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
-
-	private static final int NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE = 1;
-	private final String EMPTY_STRING = "";
-	private final String QUOTATION_STRING = "\"";
 
 	@Override
 	public String createCommand(CommandMessage command) {
@@ -79,9 +76,10 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 		JsonElement propertyValues = null;
 		for (Entry<String, JsonElement> entry : entrySet) {
 			if (COMMAND_RESPONSE.equals(entry.getKey())) {
-				commandResponse = formatEntryValueToString(entry);
+				commandResponse = ESBDebugerUtil
+						.formatEntryValueToString(entry);
 			} else if (FAILED_REASON.equals(entry.getKey())) {
-				failedReason = formatEntryValueToString(entry);
+				failedReason = ESBDebugerUtil.formatEntryValueToString(entry);
 			} else {
 				scope = entry.getKey();
 				propertyValues = entry.getValue();
@@ -94,7 +92,7 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 			return new PropertyRespondMessage(scope, propertyValues);
 		}
 		throw new IllegalArgumentException(
-				"Invalid Responce message Recieved from ESB Server Debugger "
+				"Invalid Response message Recieved from ESB Server Debugger "
 						+ response);
 	}
 
@@ -115,13 +113,16 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 
 			switch (entry.getKey()) {
 			case EVENT:
-				event = getEventMessageType(formatEntryValueToString(entry));
+				event = getEventMessageType(ESBDebugerUtil
+						.formatEntryValueToString(entry));
 				break;
 			case CALLBACK_RECIEVER:
-				callbackReciever = formatEntryValueToString(entry);
+				callbackReciever = ESBDebugerUtil
+						.formatEntryValueToString(entry);
 				break;
 			case MESSAGE_RECIEVER:
-				messageReciever = formatEntryValueToString(entry);
+				messageReciever = ESBDebugerUtil
+						.formatEntryValueToString(entry);
 				break;
 			case SEQUENCE:
 				recievedArtifactInfo = entry.getValue();
@@ -146,15 +147,6 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 	}
 
 	/**
-	 * @param entry
-	 * @return
-	 */
-	private String formatEntryValueToString(Entry<String, JsonElement> entry) {
-		return entry.getValue().toString()
-				.replace(QUOTATION_STRING, EMPTY_STRING);
-	}
-
-	/**
 	 * @param eventMessage
 	 * @param event
 	 * @param callbackReciever
@@ -174,67 +166,24 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 		case DEBUG_INFO_LOST:
 			return new GeneralEventMessage(event);
 		case STARTED:
-			return new SpecialCordinationEventMessage(event, messageReciever,
+			return new SpecialCoordinationEventMessage(event, messageReciever,
 					callbackReciever);
 		case CALLBACK:
-			return new SpecialCordinationEventMessage(event, messageReciever,
+			return new SpecialCoordinationEventMessage(event, messageReciever,
 					callbackReciever);
 		case TERMINATED:
-			return new SpecialCordinationEventMessage(event, messageReciever,
+			return new SpecialCoordinationEventMessage(event, messageReciever,
 					callbackReciever);
 		case BREAKPOINT:
 		case SKIPPOINT:
 			return (IEventMessage) new DebugPointEventMessage(event,
-					getESBDebugPoint(debugPointType, event,
+					ESBDebugerUtil.getESBDebugPoint(debugPointType, event,
 							recievedArtifactInfo));
 		default:
 			throw new IllegalArgumentException(
 					"Invalid Event Message Recieved from ESB Server Debugger : "
 							+ eventMessage);
 		}
-	}
-
-	private ESBDebugPointMessage getESBDebugPoint(ArtifactType debugPointType,
-			EventMessageType event, JsonElement recievedArtifactInfo) {
-		switch (debugPointType) {
-		case TEMPLATE:
-			return getTemplateDebugPoint(event, recievedArtifactInfo);
-		case SEQUENCE:
-			return getSequenceTypeDebugPoint(event, recievedArtifactInfo);
-		default:
-			throw new IllegalArgumentException(
-					"Illegal Artifacr type for create debug point "
-							+ debugPointType);
-		}
-
-	}
-
-	private ESBDebugPointMessage getSequenceTypeDebugPoint(
-			EventMessageType event, JsonElement recievedArtifactInfo) {
-		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
-				.getAsJsonObject().entrySet();
-		if (entrySet.size() == NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE) {
-			for (Entry<String, JsonElement> entry : entrySet) {
-				if (ESBDebuggerConstants.PROXY.equalsIgnoreCase(entry.getKey())) {
-					return new ESBProxyDebugPointMessage(event,
-							recievedArtifactInfo);
-				} else if (ESBDebuggerConstants.API.equalsIgnoreCase(entry
-						.getKey())) {
-					return new ESBAPIDebugPointMessage(event,
-							recievedArtifactInfo);
-				}
-			}
-		} else {
-			return new ESBSequenceDebugPointMessage(event, recievedArtifactInfo);
-		}
-		throw new IllegalArgumentException(
-				"Illegal sequence artifact type recived.Artifact should be sequence, proxy or api : "
-						+ recievedArtifactInfo.toString());
-	}
-
-	private ESBDebugPointMessage getTemplateDebugPoint(EventMessageType event,
-			JsonElement recievedArtifactInfo) {
-		return new ESBTemplateDebugPointMessage(event, recievedArtifactInfo);
 	}
 
 	private EventMessageType getEventMessageType(String event) {
@@ -261,7 +210,7 @@ public class JsonGsonMessageFactory implements ICommunicationMessageFactory {
 	}
 
 	@Override
-	public String createBreakpointCommand(ESBDebugPointMessage debugPoint)
+	public String createBreakpointCommand(AbstractESBDebugPointMessage debugPoint)
 			throws Exception {
 		GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(ESBMediatorPosition.class,

@@ -18,6 +18,9 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils;
 
 public class ESBDebuggerConstants {
 
+	public static final int INITIAL_HASHCODE_RESULT_VALUE = 17;
+	public static final int HASHCODE_MULTIPLIER_VALUE = 37;
+
 	public static final String SUSPEND_POINT_MODEL_ID = "org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.suspend.point";
 	public static final String ESB_DEBUG_MODEL_PRESENTATION_ID = "org.wso2.developerstudio.eclipse.esb.debugger.model.esbDebugModelPresentation";
 	public static final String ESB_DEBUG_PROCESS_ID = "ESB Process";
@@ -132,8 +135,8 @@ public class ESBDebuggerConstants {
 	public static final String CHANGE_PROPERTY = "change-property";
 	public static final String PROPERTY_NAME = "property-name";
 	public static final String PROPERTY_VALUE = "property-value";
-	public static final String URL_TEMPLATE = "url-template";
-	public static final String URI_MAPPING = "uri-mapping";
+	public static final String URI_TEMPLATE = "uri-template";
+	public static final String URL_MAPPING = "url-mapping";
 	public static final String API_INSEQ = "api_inseq";
 	public static final String API_OUTSEQ = "api_outseq";
 	public static final String MAPPING_URL_TYPE = "mapping";

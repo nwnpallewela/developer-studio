@@ -16,6 +16,8 @@
 
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command;
 
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,27 @@ public class ESBProxySequenceBean {
 		Map<String, Object> attributeMap = new HashMap<>();
 		attributeMap.putAll(proxy.deserializeToMap());
 		return attributeMap;
+	}
+
+	@Override
+	public boolean equals(Object proxySeqBean) {
+		if (proxySeqBean instanceof ESBProxySequenceBean) {
+			if (proxy.equals(((ESBProxySequenceBean) proxySeqBean).getProxy())) {
+				return true;
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + proxy.hashCode()
+				+ PROXY.hashCode();
+
+		return result;
 	}
 
 }

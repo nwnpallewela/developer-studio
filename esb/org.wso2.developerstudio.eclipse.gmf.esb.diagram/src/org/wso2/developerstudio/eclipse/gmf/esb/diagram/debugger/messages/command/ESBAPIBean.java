@@ -83,4 +83,34 @@ public class ESBAPIBean {
 		return attributeMap;
 	}
 
+	@Override
+	public boolean equals(Object apiBean) {
+		if (apiBean instanceof ESBAPIBean) {
+			ESBAPIBean apiBeanTemp = (ESBAPIBean) apiBean;
+			if (!(apiKey.equals((apiBeanTemp).getApiKey())
+					&& resource.equals((apiBeanTemp).getResourse())
+					&& sequenceType.equals((apiBeanTemp).getSequenceType()) && mediatorPosition
+						.equals(apiBeanTemp.getMediatorPosition()))) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = INITIAL_HASHCODE_RESULT_VALUE;
+		result = HASHCODE_MULTIPLIER_VALUE * result + apiKey.hashCode()
+				+ API_KEY.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + resource.hashCode()
+				+ RESOURCE.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result
+				+ mediatorPosition.hashCode() + MEDIATOR_POSITION.hashCode();
+		result = HASHCODE_MULTIPLIER_VALUE * result + sequenceType.hashCode()
+				+ SEQUENCE_TYPE.hashCode();
+		return result;
+
+	}
 }

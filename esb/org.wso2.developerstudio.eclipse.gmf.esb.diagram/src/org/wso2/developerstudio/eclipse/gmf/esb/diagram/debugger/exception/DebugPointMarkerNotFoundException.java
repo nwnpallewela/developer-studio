@@ -17,25 +17,25 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception;
 
 /**
- * {@link DebugpointMarkerNotFoundException} throws when a Breakpoint does not
+ * {@link DebugPointMarkerNotFoundException} throws when a Breakpoint does not
  * contain a designated @ IMarker} with it.
  */
-public class DebugpointMarkerNotFoundException extends ESBDebuggerException {
+public class DebugPointMarkerNotFoundException extends ESBDebuggerException {
 
 	private static final long serialVersionUID = 5253296690787550656L;
 
-	public DebugpointMarkerNotFoundException() {
+	public DebugPointMarkerNotFoundException() {
 	}
 
-	public DebugpointMarkerNotFoundException(String message) {
+	public DebugPointMarkerNotFoundException(String message) {
 		super(message);
 	}
 
-	public DebugpointMarkerNotFoundException(Throwable cause) {
+	public DebugPointMarkerNotFoundException(Throwable cause) {
 		super(cause);
 	}
 
-	public DebugpointMarkerNotFoundException(String message, Throwable cause) {
+	public DebugPointMarkerNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

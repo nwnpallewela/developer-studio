@@ -19,7 +19,7 @@ package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebuggerEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugTarget;
 
@@ -30,13 +30,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugT
  */
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private ESBDebugPointMessage debugPoint;
+	private AbstractESBDebugPointMessage debugPoint;
 
 	public SuspendedEvent(DebugPointEventMessage event) {
 		debugPoint = event.getDebugPoint();
 	}
 
-	public ESBDebugPointMessage getDetail() {
+	public AbstractESBDebugPointMessage getDetail() {
 		return debugPoint;
 	}
 }

@@ -1,11 +1,11 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event;
 
-public class SpecialCordinationEventMessage extends GeneralEventMessage {
+public class SpecialCoordinationEventMessage extends GeneralEventMessage {
 
 	private String messageReciever;
 	private String callbackReciever;
 
-	public SpecialCordinationEventMessage(EventMessageType event,
+	public SpecialCoordinationEventMessage(EventMessageType event,
 			String messageReciever, String callbackReciever) {
 		super(event);
 		this.messageReciever = messageReciever;

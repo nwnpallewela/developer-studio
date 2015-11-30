@@ -34,7 +34,7 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.EditorUtils;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.IESBDebugPointBuilder;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBDebugPointBuilderFactory;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebugerUtil;
@@ -91,7 +91,7 @@ public class ESBDebugPointTarget {
 	 * @throws ESBDebuggerException
 	 */
 	public static void toggleDiagramDebugpoints(AbstractMediator part,
-			String commandArguement) throws CoreException, ESBDebuggerException {
+			String commandArgument) throws CoreException, ESBDebuggerException {
 
 		IEditorPart activeEditor = EditorUtils.getActiveEditor();
 
@@ -102,12 +102,12 @@ public class ESBDebugPointTarget {
 					.getBreakpointBuilder(esbServer.getType());
 			IResource resource = getFileIResourceFromESBMultiPageEditor(activeEditor);
 			ESBDebugPoint debugPoint = breakpointBuilder.getESBDebugPoint(
-					esbServer, resource, part, commandArguement);
+					esbServer, resource, part, commandArgument);
 			ESBDebugPoint existingBreakpoint = getMatchingDebugPoint(debugPoint);
 			if (existingBreakpoint == null) {
 				DebugPlugin.getDefault().getBreakpointManager()
 						.addBreakpoint(debugPoint);
-				if (ESBDebuggerConstants.BREAKPOINT.equals(commandArguement)) {
+				if (ESBDebuggerConstants.BREAKPOINT.equals(commandArgument)) {
 					ESBDebugerUtil.addBreakpointMark(part);
 				} else {
 					ESBDebugerUtil.addSkippointMark(part);
@@ -115,7 +115,7 @@ public class ESBDebugPointTarget {
 			} else {
 				DebugPlugin.getDefault().getBreakpointManager()
 						.removeBreakpoint(existingBreakpoint, true);
-				if (ESBDebuggerConstants.BREAKPOINT.equals(commandArguement)) {
+				if (ESBDebuggerConstants.BREAKPOINT.equals(commandArgument)) {
 					ESBDebugerUtil.removeBreakpointMark(part);
 				} else {
 					ESBDebugerUtil.removeSkippointMark(part);
@@ -171,10 +171,10 @@ public class ESBDebugPointTarget {
 						return esbDebugpoint;
 					}
 				}
-			} catch (DebugpointMarkerNotFoundException e) {
+			} catch (DebugPointMarkerNotFoundException e) {
 				log.error(e.getMessage(), e);
 				ESBDebugerUtil
-						.removeESBDebugpointFromBreakpointManager(debugpoint);
+						.removeESBDebugPointFromBreakpointManager(debugpoint);
 			} catch (CoreException e) {
 				log.error(e.getMessage(), e);
 			}

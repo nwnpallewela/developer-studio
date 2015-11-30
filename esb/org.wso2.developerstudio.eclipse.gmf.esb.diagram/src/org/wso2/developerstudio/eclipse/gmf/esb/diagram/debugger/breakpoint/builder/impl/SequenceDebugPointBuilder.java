@@ -17,8 +17,6 @@
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.ecore.EObject;
@@ -27,8 +25,12 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceBean;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
+
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.*;
 
 /**
  * This class builds ESB breakpoints related to Sequences.
@@ -42,24 +44,20 @@ public class SequenceDebugPointBuilder extends AbstractESBDebugPointBuilder {
 	 */
 	@Override
 	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part, String commandArguement)
+			IResource resource, AbstractMediator part, String commandArgument)
 			throws CoreException, MediatorNotFoundException {
 
 		int lineNumber = -1;
 		SequencesImpl sequence = (SequencesImpl) esbServer.eContents().get(
 				INDEX_OF_FIRST_ELEMENT);
-
-		Map<String, Object> attributeMap = setInitialAttributes(
-				ESBDebuggerConstants.SEQUENCE, commandArguement);
-		attributeMap.put(ESBDebuggerConstants.SEQUENCE_TYPE,
-				ESBDebuggerConstants.NAMED);
-
-		attributeMap.put(ESBDebuggerConstants.SEQUENCE_KEY, sequence.getName());
 		EObject selection = ((View) part.getModel()).getElement();
 		List<Integer> position = getMediatorPosition(
 				sequence.getOutputConnector(), selection);
-		attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
-		return new ESBDebugPoint(resource, lineNumber, attributeMap);
+		ESBSequenceBean sequenceBean = new ESBSequenceBean(NAMED,
+				sequence.getName(), new ESBMediatorPosition(position));
+		ESBSequenceDebugPointMessage sequenceDebugPoint = new ESBSequenceDebugPointMessage(
+				null, commandArgument, SEQUENCE, sequenceBean);
+		return new ESBDebugPoint(resource, lineNumber, sequenceDebugPoint);
 	}
 
 	/**
@@ -79,10 +77,9 @@ public class SequenceDebugPointBuilder extends AbstractESBDebugPointBuilder {
 
 		List<Integer> position = getMediatorPosition(
 				sequence.getOutputConnector(), abstractMediator);
-		List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
+		List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
 				resource, position, EMPTY_STRING, action);
-		if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-				.equalsIgnoreCase(action)) {
+		if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 			increaseBreakpointPosition(breakpontList);
 		} else {
 			decreaseBreakpointPosition(breakpontList);

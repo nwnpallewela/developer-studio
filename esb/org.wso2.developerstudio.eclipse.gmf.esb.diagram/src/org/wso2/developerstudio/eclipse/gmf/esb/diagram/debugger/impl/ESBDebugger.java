@@ -37,13 +37,13 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.Terminat
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.PropertyRecievedEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.IDebugEvent;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.CommandMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.GetPropertyCommand;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.DebugPointEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.GeneralEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.IEventMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.SpecialCordinationEventMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.SpecialCoordinationEventMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.CommandResponseMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.IResponseMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.respond.PropertyRespondMessage;
@@ -156,7 +156,7 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 	private void sendBreakpointForServer(DebugPointRequest event)
 			throws Exception {
 
-		ESBDebugPointMessage debugPoint = event.getBreakpointAttributes();
+		AbstractESBDebugPointMessage debugPoint = event.getBreakpointAttributes();
 		debuggerInterface.sendBreakpointCommand(debugPoint);
 
 	}
@@ -200,14 +200,14 @@ public class ESBDebugger implements IESBDebugger, EventHandler {
 				fireSuspendedEvent((DebugPointEventMessage) event);
 			}
 
-		} else if (event instanceof SpecialCordinationEventMessage) {
-			SpecialCordinationEventMessage cordinationMessage = (SpecialCordinationEventMessage) event;
+		} else if (event instanceof SpecialCoordinationEventMessage) {
+			SpecialCoordinationEventMessage cordinationMessage = (SpecialCoordinationEventMessage) event;
 			log.info("Event : " + cordinationMessage.getEvent().toString()
 					+ " , Message-Reciever : "
 					+ cordinationMessage.getMessageReciever()
 					+ " , Callback-Reciever : "
 					+ cordinationMessage.getCallbackReciever());
-			switch (((SpecialCordinationEventMessage) event).getEvent()) {
+			switch (((SpecialCoordinationEventMessage) event).getEvent()) {
 			case TERMINATED:
 				mediationFlowCompleted();
 				break;

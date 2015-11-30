@@ -19,8 +19,10 @@
  */
 package org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl;
 
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.MEDIATOR_INSERT_ACTION;
+import static org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants.TEMPLATE;
+
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -31,7 +33,9 @@ import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.custom.AbstractMediator;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.utils.ESBDebuggerConstants;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBMediatorPosition;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateBean;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.SequencesImpl;
 import org.wso2.developerstudio.eclipse.gmf.esb.impl.TemplateImpl;
 
@@ -46,7 +50,7 @@ public class TemplateDebugPointBuilder extends AbstractESBDebugPointBuilder {
 	 */
 	@Override
 	public ESBDebugPoint getESBDebugPoint(EsbServer esbServer,
-			IResource resource, AbstractMediator part, String commandArguement)
+			IResource resource, AbstractMediator part, String commandArgument)
 			throws MediatorNotFoundException, CoreException {
 
 		TemplateImpl template = (TemplateImpl) esbServer.eContents().get(
@@ -54,20 +58,18 @@ public class TemplateDebugPointBuilder extends AbstractESBDebugPointBuilder {
 
 		if (template.getChild() instanceof SequencesImpl) {
 			EsbElement sequnce = template.getChild();
-			Map<String, Object> attributeMap = setInitialAttributes(
-					ESBDebuggerConstants.TEMPLATE, commandArguement);
-
-			attributeMap.put(ESBDebuggerConstants.TEMPLATE_KEY,
-					template.getName());
 			EObject selection = ((View) part.getModel()).getElement();
 			List<Integer> position = getMediatorPosition(
 					((SequencesImpl) sequnce).getOutputConnector(), selection);
-			attributeMap.put(ESBDebuggerConstants.MEDIATOR_POSITION, position);
 			int lineNumber = -1;
-			return new ESBDebugPoint(resource, lineNumber, attributeMap);
+			ESBTemplateBean templateBean = new ESBTemplateBean(
+					template.getName(), new ESBMediatorPosition(position));
+			ESBTemplateDebugPointMessage templateDebugPoint = new ESBTemplateDebugPointMessage(
+					null, commandArgument, TEMPLATE, templateBean);
+			return new ESBDebugPoint(resource, lineNumber, templateDebugPoint);
 		} else {
 			throw new UnsupportedOperationException(
-					"Breakpoint Integration not supported for template : "
+					"Debug Point Integration not supported for template : "
 							+ template.getChild());
 		}
 	}
@@ -91,10 +93,9 @@ public class TemplateDebugPointBuilder extends AbstractESBDebugPointBuilder {
 			List<Integer> position = getMediatorPosition(
 					((SequencesImpl) sequnce).getOutputConnector(),
 					abstractMediator);
-			List<ESBDebugPoint> breakpontList = getBreakpointsRelatedToModification(
+			List<ESBDebugPoint> breakpontList = getDebugPointsRelatedToModification(
 					resource, position, EMPTY_STRING, action);
-			if (ESBDebuggerConstants.MEDIATOR_INSERT_ACTION
-					.equalsIgnoreCase(action)) {
+			if (MEDIATOR_INSERT_ACTION.equalsIgnoreCase(action)) {
 				increaseBreakpointPosition(breakpontList);
 			} else {
 				decreaseBreakpointPosition(breakpontList);

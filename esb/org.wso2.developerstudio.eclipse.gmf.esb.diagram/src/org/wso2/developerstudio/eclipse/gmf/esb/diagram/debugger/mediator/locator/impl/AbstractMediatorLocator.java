@@ -47,7 +47,7 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 			if (outgoingLink != null && outgoingLink.getTarget() != null) {
 				EObject mediator = outgoingLink.getTarget().eContainer();
 				if (count == mediatorPosition.get(INDEX_OF_FIRST_ELEMENT)) {
-					return EditorUtils.getEditpart(mediator);
+					return EditorUtils.getActiveEditorEditpart(mediator);
 				} else {
 					count++;
 					if (mediator instanceof Mediator) {
@@ -70,7 +70,7 @@ public abstract class AbstractMediatorLocator implements IMediatorLocator {
 		int position = positionList.get(INDEX_OF_FIRST_ELEMENT);
 		for (EsbElement mediator : children) {
 			if (count == position) {
-				return EditorUtils.getEditpart(mediator);
+				return EditorUtils.getActiveEditorEditpart(mediator);
 			} else {
 				count++;
 			}

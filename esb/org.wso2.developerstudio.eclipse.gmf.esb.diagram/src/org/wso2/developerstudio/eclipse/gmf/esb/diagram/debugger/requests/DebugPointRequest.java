@@ -21,10 +21,10 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.impl.ESBDebugPoint;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.events.model.AbstractEvent;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugpointMarkerNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.DebugPointMarkerNotFoundException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.impl.ESBDebugger;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPointMessage;
-import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateDebugPointMessage;
@@ -40,7 +40,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 
 	public enum DebugPointEventAction {
 		ADDED("set"), REMOVED("clear");
-		
+
 		private final String action;
 
 		private DebugPointEventAction(String actionValue) {
@@ -59,37 +59,14 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 
 	private final DebugPointEventAction type;
 	private final int lineNumber;
-	private ESBDebugPointMessage debugPoint;
+	private AbstractESBDebugPointMessage debugPoint;
 
-	public DebugPointRequest(ESBDebugPoint breakpoint,
+	public DebugPointRequest(ESBDebugPoint debugPoint,
 			DebugPointEventAction action)
-			throws DebugpointMarkerNotFoundException, CoreException {
+			throws DebugPointMarkerNotFoundException, CoreException {
 		type = action;
-		lineNumber = breakpoint.getLineNumber();
-		debugPoint = setDebugPoint(breakpoint);
-
-	}
-
-	private ESBDebugPointMessage setDebugPoint(ESBDebugPoint breakpoint)
-			throws DebugpointMarkerNotFoundException, CoreException {
-		Map<String, Object> attributeSet = breakpoint.getLocation();
-		String mediationComponent=(String) attributeSet.get(ESBDebuggerConstants.MEDIATION_COMPONENT);
-		switch(mediationComponent){
-		case ESBDebuggerConstants.PROXY:
-			debugPoint = new ESBProxyDebugPointMessage(type,attributeSet);
-			break;
-		case ESBDebuggerConstants.MAIN_SEQUENCE:
-		case ESBDebuggerConstants.SEQUENCE:
-			debugPoint = new ESBSequenceDebugPointMessage(type,attributeSet);
-			break;
-		case ESBDebuggerConstants.API:
-			debugPoint = new ESBAPIDebugPointMessage(type,attributeSet);
-			break;
-		case ESBDebuggerConstants.TEMPLATE:
-			debugPoint = new ESBTemplateDebugPointMessage(type,attributeSet);
-			break;
-		}
-		return debugPoint;
+		lineNumber = debugPoint.getLineNumber();
+		this.debugPoint = debugPoint.getLocation();
 	}
 
 	public DebugPointEventAction getType() {
@@ -100,7 +77,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 		return lineNumber;
 	}
 
-	public ESBDebugPointMessage getBreakpointAttributes() {
+	public AbstractESBDebugPointMessage getBreakpointAttributes() {
 		return debugPoint;
 	}
 
@@ -112,7 +89,7 @@ public class DebugPointRequest extends AbstractEvent implements IModelRequest {
 				+ " , attributes : " + getBreakpointAttributes();
 	}
 
-	public ESBDebugPointMessage getDebugPoint() {
+	public AbstractESBDebugPointMessage getDebugPoint() {
 		return debugPoint;
 	}
 }

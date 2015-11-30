@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.wso2.developerstudio.eclipse.gmf.esb.APIResource;
+import org.wso2.developerstudio.eclipse.gmf.esb.ArtifactType;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbDiagram;
 import org.wso2.developerstudio.eclipse.gmf.esb.EsbServer;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.Activator;
@@ -48,11 +50,19 @@ import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.buil
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.breakpoint.builder.impl.ESBDebugPointBuilderFactory;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.ESBDebuggerException;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.exception.MediatorNotFoundException;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBAPIDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.AbstractESBDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBProxyDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBSequenceDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.command.ESBTemplateDebugPointMessage;
+import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.messages.event.EventMessageType;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.debugger.model.ESBDebugModelPresentation;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.edit.parts.CloudConnectorOperationEditPart;
 import org.wso2.developerstudio.eclipse.gmf.esb.diagram.part.EsbMultiPageEditor;
 import org.wso2.developerstudio.eclipse.logging.core.IDeveloperStudioLog;
 import org.wso2.developerstudio.eclipse.logging.core.Logger;
+
+import com.google.gson.JsonElement;
 
 public class ESBDebugerUtil {
 
@@ -65,6 +75,8 @@ public class ESBDebugerUtil {
 	private static final String ATTRIBUTE_SEPERATOR = ",";
 	private static final String EMPTY_STRING = "";
 	private static final String SPACE_CHARACTER = " ";
+	private static final String QUOTATION_STRING = "\"";
+	private static final int NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE = 1;
 
 	private static IDeveloperStudioLog log = Logger.getLog(Activator.PLUGIN_ID);
 
@@ -89,7 +101,7 @@ public class ESBDebugerUtil {
 	 * 
 	 * @param breakpoint
 	 */
-	public static void removeESBDebugpointFromBreakpointManager(
+	public static void removeESBDebugPointFromBreakpointManager(
 			IBreakpoint breakpoint) {
 		try {
 			DebugPlugin.getDefault().getBreakpointManager()
@@ -104,7 +116,7 @@ public class ESBDebugerUtil {
 				.getBreakpointManager()
 				.getBreakpoints(ESBDebugModelPresentation.ID);
 		for (IBreakpoint breakpoint : breakpoints) {
-			removeESBDebugpointFromBreakpointManager(breakpoint);
+			removeESBDebugPointFromBreakpointManager(breakpoint);
 		}
 	}
 
@@ -152,7 +164,7 @@ public class ESBDebugerUtil {
 		if (part instanceof FixedSizedAbstractMediator) {
 			if (part instanceof CloudConnectorOperationEditPart) {
 				((CloudConnectorOperationEditPart) part).getPrimaryShape()
-				.addBreakpointMark();
+						.addBreakpointMark();
 			} else {
 				((FixedSizedAbstractMediator) part).getPrimaryShape()
 						.addBreakpointMark();
@@ -168,12 +180,12 @@ public class ESBDebugerUtil {
 		}
 		part.setBreakpointStatus(true);
 	}
-	
+
 	public static void addSkippointMark(AbstractMediator part) {
 		if (part instanceof FixedSizedAbstractMediator) {
 			if (part instanceof CloudConnectorOperationEditPart) {
 				((CloudConnectorOperationEditPart) part).getPrimaryShape()
-				.addSkippointMark();
+						.addSkippointMark();
 			} else {
 				((FixedSizedAbstractMediator) part).getPrimaryShape()
 						.addSkippointMark();
@@ -205,7 +217,7 @@ public class ESBDebugerUtil {
 		}
 		part.setBreakpointStatus(false);
 	}
-	
+
 	public static void removeSkippointMark(AbstractMediator part) {
 		if (part instanceof FixedSizedAbstractMediator) {
 			((FixedSizedAbstractMediator) part).getPrimaryShape()
@@ -394,6 +406,63 @@ public class ESBDebugerUtil {
 		}
 		method = method.trim().replace(SPACE_CHARACTER, ATTRIBUTE_SEPERATOR);
 		return method;
+	}
+
+	/**
+	 * This method remove quotation marks of the entry value of JsonElement and
+	 * return only the string value component
+	 * 
+	 * @param entry
+	 * @return
+	 */
+	public static String formatEntryValueToString(
+			Entry<String, JsonElement> entry) {
+		return entry.getValue().toString()
+				.replace(QUOTATION_STRING, EMPTY_STRING);
+	}
+
+	public static AbstractESBDebugPointMessage getESBDebugPoint(
+			ArtifactType debugPointType, EventMessageType event,
+			JsonElement recievedArtifactInfo) {
+		switch (debugPointType) {
+		case TEMPLATE:
+			return getTemplateDebugPoint(event, recievedArtifactInfo);
+		case SEQUENCE:
+			return getSequenceTypeDebugPoint(event, recievedArtifactInfo);
+		default:
+			throw new IllegalArgumentException(
+					"Illegal Artifacr type for create debug point "
+							+ debugPointType);
+		}
+
+	}
+
+	private static AbstractESBDebugPointMessage getSequenceTypeDebugPoint(
+			EventMessageType event, JsonElement recievedArtifactInfo) {
+		Set<Entry<String, JsonElement>> entrySet = recievedArtifactInfo
+				.getAsJsonObject().entrySet();
+		if (entrySet.size() == NUM_OF_ENTRIES_IN_COMPLEX_SEQ_TYPE) {
+			for (Entry<String, JsonElement> entry : entrySet) {
+				if (ESBDebuggerConstants.PROXY.equalsIgnoreCase(entry.getKey())) {
+					return new ESBProxyDebugPointMessage(event,
+							recievedArtifactInfo);
+				} else if (ESBDebuggerConstants.API.equalsIgnoreCase(entry
+						.getKey())) {
+					return new ESBAPIDebugPointMessage(event,
+							recievedArtifactInfo);
+				}
+			}
+		} else {
+			return new ESBSequenceDebugPointMessage(event, recievedArtifactInfo);
+		}
+		throw new IllegalArgumentException(
+				"Illegal sequence artifact type recived.Artifact should be sequence, proxy or api : "
+						+ recievedArtifactInfo.toString());
+	}
+
+	private static AbstractESBDebugPointMessage getTemplateDebugPoint(
+			EventMessageType event, JsonElement recievedArtifactInfo) {
+		return new ESBTemplateDebugPointMessage(event, recievedArtifactInfo);
 	}
 
 }
